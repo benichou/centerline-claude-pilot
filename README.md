@@ -27,7 +27,7 @@ compliance policy.
   automated-monitoring piece is "designed, pending compliance approval."
 - **Track B — Relationship Review & Renewal Prep + Document-Intelligence** *(the capability we found by
   reading the data)*. Meeting prep, covenant-package intake, cross-source reconciliation / "close-the-loop,"
-  relationship memos, and client communications — one demo beat per RM. **All five of Tom's shadow workflows
+  relationship memos, and client communications — one demo prompt per RM. **All five of Tom's shadow workflows
   are rebuilt compliantly and live across the two tracks.**
 
 ## What reading the data revealed (the creative core)
@@ -79,7 +79,7 @@ See [`CLAUDE.md`](./CLAUDE.md) for the always-on rules Claude follows in this re
 1. **Frame** the problem and the approach.
 2. **Track A** — *"who needs attention this week?"* → *"is this borrower compliant — cushion + trend?"* →
    *"who've I gone quiet on?"* — ending on the honest point that **a flag is not an action**.
-3. **Track B** — one beat per RM: meeting prep + retention; covenant-package intake + missing-docs email;
+3. **Track B** — one prompt per RM: meeting prep + retention; covenant-package intake + missing-docs email;
    reconciliation + close-the-loop + a draw-response letter; and an annual relationship memo that assembles
    the 80% and pauses for the RM's judgment.
 4. **Honest evaluation** (what works / the hard 20%).
@@ -112,8 +112,10 @@ increment**.
 - **Phase 1 — Compliant spine.** Local MCP retrieval over the corpus + central compliance guards
   (restricted-field strip, prohibited-borrower gate, guarantor-document refusal) + the foundation/guardrail
   skills (grounding, the reliability footer, redaction, output screening, client-360, communications, CRM
-  enrichment) + the deterministic hooks. *Exit: in Cowork, retrieve a borrower dossier with restricted fields
-  stripped, every claim cited, the reliability footer attached, and a guarantor document refused.*
+  enrichment) + the deterministic hooks + the **observability harness** (eval runner, a run-trace ledger via
+  hooks, and a generated per-prompt report — all from real runs; no fabricated dashboards). *Exit: in Cowork,
+  retrieve a borrower dossier with restricted fields stripped, every claim cited, the reliability footer
+  attached, a guarantor document refused — and a trace ledger + per-prompt observability report produced.*
 - **Phase 2 — Track A (Early-Warning) = Deliverable A.** Deterministic covenant/trend/deterioration flags
   (lifecycle-aware), the engagement-gap signal, watchlist triage, and a portfolio-sweep sub-agent.
   *Exit: the three Track-A prompts produce real, cited outputs; the "what changed & why" vs the original
@@ -125,7 +127,7 @@ increment**.
   classification/extraction/completeness/quality/cross-validation (+ a package-review sub-agent) and the
   relationship skills (open-items, close-the-loop, since-last-review diffing, industry signals, the
   renewal/retention flag, meeting briefs, and the decomposed relationship memo). *Exit: the four per-RM demo
-  beats run end-to-end — including the restricted-document refusal, scribe-not-author surfacing, and the
+  prompts run end-to-end — including the restricted-document refusal, scribe-not-author surfacing, and the
   memo's human-in-the-loop pause; all five rebuilt shadow workflows confirmed live.*
 - **Phase 5 — Demo integration & dry-runs.** Wire the full one-hour flow, run it end-to-end in Cowork,
   capture real outputs, and write the honest evaluation (what works / the hard 20%). *Exit: a full dry-run
@@ -133,5 +135,8 @@ increment**.
 - **Phase 6 — Packaging & production story.** Optional plugin packaging; the deployment, compliance-approval,
   and per-RM adoption narrative. *Exit: packaging and adoption story ready for Q&A.*
 
+## Scope discipline (built vs designed)
+The brief rewards **depth over breadth** and **honest evaluation**. So a focused **~15 skills are built to depth with evals** — the compliance/trust foundation, both Track-A and Track-B creative cores, and the per-RM rebuilds — while the broader library (the full per-type document-intelligence cluster, since-last-review diffing, the two sub-agents) is presented as **designed architecture**, clearly labeled built-vs-designed. **Both creative gems and the rebuilt early-warning run on real data**; the document-intelligence prompt is the one piece that runs on (clearly labeled) **synthetic** documents and is positioned as a supporting guardrail demonstration, not a creativity claim.
+
 ## Status
-Design complete; **Phase 0 in progress** (repo bootstrap). Next: publish `main`, then Phase 1 (the compliant spine).
+**Phase 0 complete** (repo bootstrapped + pushed). A reassessment (2026-06-09) set the built-vs-designed scope and the demo ordering. Next: **Phase 1 — the compliant spine** (local MCP retrieval + central guards + foundation skills).
