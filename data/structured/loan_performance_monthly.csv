@@ -1,0 +1,86 @@
+date,borrower_name,monthly_revenue_k,monthly_ebitda_k,ebitda_margin_pct,dscr_ttm,leverage_ratio,current_ratio,revolver_utilization_pct,days_past_due,loan_balance_mm,covenant_dscr_min,covenant_leverage_max,covenant_status,notes
+2024-01,Meridian Fabrication LLC,7100,994,14.0,1.45,3.2,1.8,38,0,8.3,1.20,4.0,Compliant,
+2024-02,Meridian Fabrication LLC,6950,972,14.0,1.43,3.3,1.8,41,0,8.3,1.20,4.0,Compliant,
+2024-03,Meridian Fabrication LLC,7400,1010,13.6,1.41,3.3,1.7,36,0,8.2,1.20,4.0,Compliant,Q1 covenant package submitted on time
+2024-04,Meridian Fabrication LLC,7200,972,13.5,1.38,3.5,1.7,44,0,8.2,1.20,4.0,Compliant,Automotive sector orders down 8% YoY per client call
+2024-05,Meridian Fabrication LLC,7100,946,13.3,1.36,3.5,1.7,47,0,8.2,1.20,4.0,Compliant,
+2024-06,Meridian Fabrication LLC,7000,924,13.2,1.33,3.6,1.6,51,0,8.1,1.20,4.0,Compliant,Q2 covenant package submitted — 12 days late
+2024-07,Meridian Fabrication LLC,6800,884,13.0,1.28,3.7,1.6,55,0,8.1,1.20,4.0,Compliant,Aerospace contract delayed to Q4; noted in RM call notes
+2024-08,Meridian Fabrication LLC,6700,862,12.9,1.24,3.7,1.5,58,0,8.0,1.20,4.0,Compliant,
+2024-09,Meridian Fabrication LLC,6850,878,12.8,1.21,3.8,1.5,52,0,8.0,1.20,4.0,Compliant,Q3 covenant package submitted. Annual review completed.
+2024-10,Meridian Fabrication LLC,6600,838,12.7,1.18,3.9,1.5,60,0,7.9,1.20,4.0,Covenant Watch,DSCR below minimum — RM notified; waiver discussion initiated
+2024-11,Meridian Fabrication LLC,6400,806,12.6,1.14,4.0,1.4,65,0,7.9,1.20,4.0,Covenant Breach,Leverage at covenant max; DSCR below min; waiver granted 11/22
+2024-12,Meridian Fabrication LLC,6200,760,12.3,1.10,4.1,1.4,69,0,7.8,1.20,4.0,Covenant Breach,Q4 covenant package not yet received as of 12/31
+2025-01,Meridian Fabrication LLC,6000,720,12.0,1.08,4.2,1.3,72,0,7.8,1.20,4.0,Covenant Breach,Q4 package received 1/18 — 18 days late; CFO email re: outlook
+2025-02,Meridian Fabrication LLC,5900,695,11.8,1.06,4.3,1.3,75,0,7.7,1.20,4.0,Covenant Breach,
+2025-03,Meridian Fabrication LLC,5800,667,11.5,1.05,4.3,1.3,78,0,7.7,1.20,4.0,Covenant Breach,Q1 2025 covenant package due 4/30
+2025-04,Meridian Fabrication LLC,5700,636,11.2,1.04,4.4,1.2,81,0,7.6,1.20,4.0,Covenant Breach,No client contact in 47 days per CRM
+2025-05,Meridian Fabrication LLC,5600,605,10.8,1.03,4.5,1.2,85,0,7.6,1.20,4.0,Covenant Breach,Revolver at 85%; Q1 package overdue as of 5/1
+2024-01,BlueLine Logistics LLC,10500,1365,13.0,1.58,2.8,1.9,42,0,11.8,1.20,4.5,Compliant,
+2024-02,BlueLine Logistics LLC,10200,1275,12.5,1.52,2.9,1.9,46,0,11.8,1.20,4.5,Compliant,
+2024-03,BlueLine Logistics LLC,10400,1248,12.0,1.48,3.0,1.8,44,0,11.7,1.20,4.5,Compliant,Q1 covenant package on time
+2024-04,BlueLine Logistics LLC,9800,1127,11.5,1.42,3.1,1.8,51,0,11.7,1.20,4.5,Compliant,Spot market rates declining; fleet utilization 81% vs 91% prior year
+2024-05,BlueLine Logistics LLC,9400,1034,11.0,1.36,3.3,1.7,57,0,11.6,1.20,4.5,Compliant,
+2024-06,BlueLine Logistics LLC,9100,946,10.4,1.29,3.5,1.7,63,0,11.6,1.20,4.5,Compliant,Q2 package submitted. Client requested 30-day extension on revolver — denied.
+2024-07,BlueLine Logistics LLC,8800,861,9.8,1.22,3.7,1.6,69,0,11.5,1.20,4.5,Compliant,
+2024-08,BlueLine Logistics LLC,8500,782,9.2,1.15,3.9,1.5,74,0,11.5,1.20,4.5,Covenant Watch,DSCR trending below minimum threshold
+2024-09,BlueLine Logistics LLC,8300,714,8.6,1.08,4.1,1.5,79,0,11.4,1.20,4.5,Covenant Breach,Q3 package late by 8 days. DSCR breach confirmed.
+2024-10,BlueLine Logistics LLC,8100,648,8.0,0.98,4.4,1.4,83,0,11.4,1.20,4.5,Covenant Breach,Waiver request submitted by client 10/15
+2024-11,BlueLine Logistics LLC,8000,608,7.6,0.94,4.5,1.4,86,0,11.3,1.20,4.5,Covenant Breach,Waiver granted 11/8 with conditions: monthly reporting and RM site visit
+2024-12,BlueLine Logistics LLC,7900,553,7.0,0.91,4.6,1.3,88,0,11.3,1.20,4.5,Covenant Breach,RM site visit completed 12/4. Waiver condition met. New business plan requested.
+2025-01,BlueLine Logistics LLC,8200,639,7.8,0.93,4.5,1.3,86,0,11.2,1.20,4.5,Covenant Breach,Slight revenue improvement Jan. Business plan received — projects DSCR recovery to 1.25x by Q4 2025.
+2025-02,BlueLine Logistics LLC,8300,664,8.0,0.95,4.4,1.4,84,0,11.2,1.20,4.5,Covenant Breach,
+2025-03,BlueLine Logistics LLC,8400,697,8.3,0.97,4.3,1.4,82,0,11.1,1.20,4.5,Covenant Breach,Q1 package due 4/30. Client says they'll miss DSCR again.
+2025-04,BlueLine Logistics LLC,8300,664,8.0,0.96,4.3,1.4,83,0,11.1,1.20,4.5,Covenant Breach,Patricia Hearn email: requesting second waiver
+2025-05,BlueLine Logistics LLC,8200,631,7.7,0.95,4.4,1.3,85,0,11.0,1.20,4.5,Covenant Breach,Second waiver under review; credit committee meeting scheduled 6/3
+2024-01,Crestwood Capital Advisors,1236,519,42.0,2.45,0.82,3.2,0,0,3.2,1.15,2.5,Compliant,AUM: $2.1B
+2024-02,Crestwood Capital Advisors,1242,522,42.0,2.47,0.81,3.3,0,0,3.2,1.15,2.5,Compliant,
+2024-03,Crestwood Capital Advisors,1268,533,42.1,2.48,0.80,3.3,0,0,3.2,1.15,2.5,Compliant,Q1 covenant package submitted. AUM: $2.14B
+2024-04,Crestwood Capital Advisors,1258,530,42.1,2.49,0.80,3.4,0,0,3.2,1.15,2.5,Compliant,
+2024-05,Crestwood Capital Advisors,1263,532,42.1,2.50,0.79,3.4,0,0,3.2,1.15,2.5,Compliant,
+2024-06,Crestwood Capital Advisors,1290,544,42.2,2.51,0.79,3.5,0,0,3.1,1.15,2.5,Compliant,Q2 package submitted. AUM: $2.18B. Loan matures Aug 2026 — no renewal discussion initiated.
+2024-07,Crestwood Capital Advisors,1295,546,42.2,2.52,0.78,3.5,0,0,3.1,1.15,2.5,Compliant,
+2024-08,Crestwood Capital Advisors,1288,543,42.2,2.51,0.78,3.5,0,0,3.1,1.15,2.5,Compliant,
+2024-09,Crestwood Capital Advisors,1302,549,42.2,2.53,0.77,3.6,0,0,3.1,1.15,2.5,Compliant,Q3 package submitted. AUM: $2.22B
+2024-10,Crestwood Capital Advisors,1310,552,42.1,2.54,0.77,3.6,0,0,3.0,1.15,2.5,Compliant,
+2024-11,Crestwood Capital Advisors,1318,555,42.1,2.55,0.76,3.6,0,0,3.0,1.15,2.5,Compliant,
+2024-12,Crestwood Capital Advisors,1335,562,42.1,2.56,0.76,3.7,0,0,3.0,1.15,2.5,Compliant,Q4 package submitted. AUM: $2.31B. Year-end strong equity markets.
+2025-01,Crestwood Capital Advisors,1342,565,42.1,2.57,0.75,3.7,0,0,3.0,1.15,2.5,Compliant,Annual review completed. Whitmore mentioned exploring refinance options.
+2025-02,Crestwood Capital Advisors,1348,568,42.1,2.58,0.75,3.7,0,0,2.9,1.15,2.5,Compliant,Whitmore email: received competing term sheet from First Midwest at 4.90% fixed
+2025-03,Crestwood Capital Advisors,1355,571,42.1,2.59,0.74,3.8,0,0,2.9,1.15,2.5,Compliant,Q1 package submitted. No renewal proposal from Centerline yet.
+2025-04,Crestwood Capital Advisors,1361,573,42.1,2.60,0.74,3.8,0,0,2.9,1.15,2.5,Compliant,Follow-up email from Whitmore — requesting renewal meeting
+2025-05,Crestwood Capital Advisors,1368,576,42.1,2.61,0.73,3.8,0,0,2.9,1.15,2.5,Compliant,No response from RM on renewal inquiry as of 5/31. Risk of attrition high.
+2024-01,Summit Retail Partners,2600,234,9.0,1.13,3.9,1.3,0,0,5.7,1.10,5.0,Compliant,Post-holiday inventory normalization
+2024-02,Summit Retail Partners,2200,176,8.0,1.12,4.0,1.3,0,0,5.7,1.10,5.0,Compliant,Soft month — expected seasonal pattern
+2024-03,Summit Retail Partners,2800,252,9.0,1.13,3.9,1.3,0,0,5.7,1.10,5.0,Compliant,Q1 package submitted. 2 of 8 locations underperforming.
+2024-04,Summit Retail Partners,3100,294,9.5,1.14,3.8,1.4,0,0,5.7,1.10,5.0,Compliant,Spring traffic above prior year
+2024-05,Summit Retail Partners,3400,340,10.0,1.15,3.8,1.4,0,0,5.6,1.10,5.0,Compliant,
+2024-06,Summit Retail Partners,3600,374,10.4,1.16,3.7,1.4,0,0,5.6,1.10,5.0,Compliant,Q2 package submitted. Lease buyout on 2 locations complete.
+2024-07,Summit Retail Partners,3200,304,9.5,1.16,3.7,1.5,0,0,5.6,1.10,5.0,Compliant,
+2024-08,Summit Retail Partners,3100,294,9.5,1.17,3.6,1.5,0,0,5.5,1.10,5.0,Compliant,
+2024-09,Summit Retail Partners,3300,330,10.0,1.17,3.6,1.5,0,0,5.5,1.10,5.0,Compliant,Q3 package submitted. Back-to-school strong.
+2024-10,Summit Retail Partners,3600,374,10.4,1.18,3.6,1.5,0,0,5.5,1.10,5.0,Compliant,
+2024-11,Summit Retail Partners,4800,576,12.0,1.19,3.5,1.5,0,0,5.4,1.10,5.0,Compliant,Holiday season performing well
+2024-12,Summit Retail Partners,5800,812,14.0,1.21,3.5,1.6,0,0,5.4,1.10,5.0,Compliant,Best December in 4 years per Castillo
+2025-01,Summit Retail Partners,2400,192,8.0,1.20,3.5,1.5,0,0,5.4,1.10,5.0,Compliant,Post-holiday dip as expected
+2025-02,Summit Retail Partners,2100,147,7.0,1.18,3.5,1.4,0,0,5.4,1.10,5.0,Compliant,Feb softer than expected; one location closed for renovation
+2025-03,Summit Retail Partners,2500,175,7.0,1.16,3.6,1.4,0,0,5.3,1.10,5.0,Compliant,Q1 package submitted. RM note: location 3 lease renewal at risk.
+2025-04,Summit Retail Partners,2900,232,8.0,1.14,3.6,1.4,0,0,5.3,1.10,5.0,Compliant,Spring softer than 2024 comp. DSCR drifting toward minimum.
+2025-05,Summit Retail Partners,3000,240,8.0,1.12,3.6,1.4,0,0,5.3,1.10,5.0,Compliant,DSCR 20bps above covenant minimum. Location 3 lease unresolved.
+2024-01,Arcadia Property Group,0,0,0,0,0,1.0,0,0,4.2,0,0,Construction,Draw #3 of 12 complete. Project 22% complete. On schedule.
+2024-02,Arcadia Property Group,0,0,0,0,0,1.0,0,0,5.8,0,0,Construction,Draw #4 complete. 28% complete. On schedule.
+2024-03,Arcadia Property Group,0,0,0,0,0,1.0,0,0,7.5,0,0,Construction,Draw #5 complete. 34% complete. Permitting delay on retail component noted.
+2024-04,Arcadia Property Group,0,0,0,0,0,1.0,0,0,9.1,0,0,Construction,Draw #6 complete. 40% complete. Permitting delay resolved per Liang.
+2024-05,Arcadia Property Group,0,0,0,0,0,1.0,0,0,10.8,0,0,Construction,Draw #7 complete. 46% complete. On schedule.
+2024-06,Arcadia Property Group,0,0,0,0,0,1.0,0,0,12.5,0,0,Construction,Draw #8 complete. 53% complete. Q2 inspector report satisfactory.
+2024-07,Arcadia Property Group,0,0,0,0,0,1.0,0,0,14.2,0,0,Construction,Draw #9 complete. 59% complete. GC flagged HVAC subcontractor delay.
+2024-08,Arcadia Property Group,0,0,0,0,0,1.0,0,0,15.8,0,0,Construction,Draw #10 complete. 65% complete. HVAC delay pushing timeline by 6 weeks.
+2024-09,Arcadia Property Group,0,0,0,0,0,1.0,0,0,17.2,0,0,Construction,No draw request submitted. GC dispute on HVAC change order. Liang email to RM.
+2024-10,Arcadia Property Group,0,0,0,0,0,1.0,0,0,17.2,0,0,Construction,Draw #11 submitted late — GC dispute resolved. 70% complete. Est. completion pushed to Q4 2025.
+2024-11,Arcadia Property Group,0,0,0,0,0,1.0,0,0,18.8,0,0,Construction,Draw #11 funded. 76% complete. Interest reserve adequate through Q1 2026.
+2024-12,Arcadia Property Group,0,0,0,0,0,1.0,0,0,20.1,0,0,Construction,Draw #12 funded. 82% complete. Year-end inspection satisfactory. Original completion was Q3 2025.
+2025-01,Arcadia Property Group,0,0,0,0,0,1.0,0,0,20.1,0,0,Construction,No draw in January. Weather delays. 82% complete.
+2025-02,Arcadia Property Group,0,0,0,0,0,1.0,0,0,21.2,0,0,Construction,Draw funded. 87% complete. Retail pre-leasing at 61% — below 75% target for perm conversion.
+2025-03,Arcadia Property Group,0,0,0,0,0,1.0,0,0,21.9,0,0,Construction,89% complete. Pre-leasing 64%. Liang: 3 LOIs in negotiation.
+2025-04,Arcadia Property Group,0,0,0,0,0,1.0,0,0,22.0,0,0,Construction,Substantially complete. Pre-leasing 68%. Perm conversion requires 75% occupancy or signed leases.
+2025-05,Arcadia Property Group,0,0,0,0,0,1.0,0,0,22.0,0,0,Construction,Pre-leasing 71%. Perm conversion target Q3 2025. Interest reserve: $1.4M remaining (covers ~9 months at current rate).
