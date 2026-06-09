@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+
+# Secrets / credentials — NEVER commit
+.env
+.env.*
+*.key
+*.pem
+*.p12
+secrets/
+.claude/settings.local.json
+
+# Python (MCP server + deterministic scripts)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Editors
+.vscode/
+.idea/
+
+# Claude local session state (keep skills/hooks/.mcp.json TRACKED; ignore local-only)
+.claude/projects/
+.claude/todos/
