@@ -1,0 +1,16 @@
+{
+  "_comment": "Code-surface hooks (do NOT fire in Cowork — see docs/hooks_local_cowork.md). This PreToolUse hook is a minimal RUN-LEDGER: it appends a line to traces/run-ledger.log on every tool use — both the re-test instrument AND a preview of the real observability use. Always exits 0 so it never blocks a tool.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p \"$CLAUDE_PROJECT_DIR/traces\" && echo \"RUN-LEDGER $(date -u +%Y-%m-%dT%H:%M:%SZ) PreToolUse\" >> \"$CLAUDE_PROJECT_DIR/traces/run-ledger.log\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}

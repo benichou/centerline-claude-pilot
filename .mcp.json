@@ -1,0 +1,14 @@
+{
+  "_comment": "Project-scoped MCP config for CLAUDE CODE (repo ROOT — Code's location; NOTE: Cowork does NOT read .mcp.json — it uses ~/Library/Application Support/Claude/claude_desktop_config.json and SDK-bridges the server into its VM, spawned on the host Mac). Registers the local stdio `centerline` server (FastMCP / official SDK; serves ONLY data/; §2.1 strip + §5 gate server-side). Launched via the absolute uv path (GUI apps have minimal PATH); `uv run --project <repo>` uses the repo's pyproject.toml + uv.lock for a reproducible, locked env (the mcp SDK). ABSOLUTE paths are used (not ${CLAUDE_PROJECT_DIR}) because Claude Code does NOT substitute ${CLAUDE_PROJECT_DIR} under `--mcp-config`/`--strict-mcp-config` (only under plain auto-load) — absolute works in both modes + matches the Cowork desktop config. No secrets.",
+  "mcpServers": {
+    "centerline": {
+      "type": "stdio",
+      "command": "/opt/homebrew/bin/uv",
+      "args": ["run", "--project", "/Users/franck.benichou/projects/personal/repos/centerline-claude-pilot", "python", "-m", "centerline_mcp.server"],
+      "env": {
+        "PYTHONPATH": "/Users/franck.benichou/projects/personal/repos/centerline-claude-pilot/mcp",
+        "CENTERLINE_DATA_DIR": "/Users/franck.benichou/projects/personal/repos/centerline-claude-pilot/data"
+      }
+    }
+  }
+}

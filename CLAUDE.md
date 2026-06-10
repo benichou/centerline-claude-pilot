@@ -7,7 +7,7 @@ A Forward-Deployed-Engineer pilot: a composable Claude **skill library** for Cen
 - **Track A — Portfolio Risk & Early-Warning** (compliant rebuild of an RM's shadow workflow; deterministic flags; RM-private).
 - **Track B — Relationship Review & Renewal Prep + Document-Intelligence** (meeting prep, covenant-package intake, reconciliation/close-the-loop, memos, client communications).
 
-Build in **Claude Code** → demo in **Claude Cowork** ("Work in a folder"). Retrieval is via the local **`centerline` MCP server** over `data/reorganized-data/` (+ `data/synthetic/`).
+Build in **Claude Code** → demo in **Claude Cowork** ("Work in a folder"). Retrieval is via the local **`centerline` MCP server** over `data/` only (`structured/` · `emails/` · `memos/` · `synthetic/`); `reference/` (policy, personas, shadow-workflows) is **not** served.
 
 ## Data rules
 - **All data here is synthetic / fictional.** Never invent new credit facts about the five borrowers

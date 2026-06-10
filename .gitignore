@@ -28,3 +28,7 @@ npm-debug.log*
 # Claude local session state (keep skills/hooks/.mcp.json TRACKED; ignore local-only)
 .claude/projects/
 .claude/todos/
+.claude/hook-probe.log
+
+# run-ledger / trace output (runtime)
+traces/

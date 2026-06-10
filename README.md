@@ -96,11 +96,25 @@ See [`CLAUDE.md`](./CLAUDE.md) for the always-on rules Claude follows in this re
 │   └── agents/<name>.md          # sub-agents (fan-out / scheduled only)
 ├── mcp/centerline_mcp/           # local stdio MCP server (+ compliance guards)
 ├── scripts/                      # shared deterministic math (e.g. ratio recompute)
-├── data/
-│   ├── reorganized-data/         # working corpus (synthetic)
-│   └── synthetic/                # synthetic covenant-package documents
+├── .mcp.json                     # registers the local stdio `centerline` MCP server for Claude CODE
+│                                  #   (Cowork does NOT read this — see docs/mcp_local_cowork.md)
+├── data/                         # OPERATIONAL — the only content the MCP serves
+│   ├── structured/               # 3 CSVs (portfolio, monthly performance, activity log)
+│   ├── emails/                   # 4 threads
+│   ├── memos/relationship-review/ # input relationship memo(s)
+│   └── synthetic/                # synthetic covenant-package documents (Phase 3)
+├── reference/                    # build guidance (policy, personas, shadow-workflows) — NOT served
 └── evals/                        # eval cases per skill (authored before docs)
 ```
+
+## Running the MCP server (Claude Code vs Claude Cowork)
+The local `centerline` MCP server is **stdlib-only** (plain `python3`, nothing to install). **Claude Code**
+loads it from the repo-root `.mcp.json`. **Claude Cowork** runs in a sandboxed VM and does **not** read
+`.mcp.json` — you register the server in `~/Library/Application Support/Claude/claude_desktop_config.json`
+and Claude Desktop SDK-bridges it into the VM (it appears as `type: sdk`). Full setup, the *why*, and the
+gotchas (absolute paths, restart-and-new-task, the hooks caveat): **[`docs/mcp_local_cowork.md`](./docs/mcp_local_cowork.md)**.
+To **verify Cowork is aligned with the repo** after any change (MCP present, skills load, hooks fire), use the
+runbook in **[`cowork/`](./cowork/README.md)**.
 
 ## Build roadmap
 Dependency-ordered phases; each keeps a **compliant, working spine** before adding reach. Cross-cutting

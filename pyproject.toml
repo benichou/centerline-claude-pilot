@@ -1,0 +1,13 @@
+[project]
+name = "centerline-claude-pilot"
+version = "0.1.0"
+description = "Local MCP server + compliance guards for the Centerline Claude pilot (synthetic data)."
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.2.0",
+]
+
+[tool.uv]
+# We run the server via PYTHONPATH (the package lives under mcp/centerline_mcp), so uv only needs to
+# manage the *environment* (the mcp SDK) — it does not build/install this repo as a package.
+package = false
