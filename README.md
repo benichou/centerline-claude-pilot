@@ -121,36 +121,40 @@ Dependency-ordered phases; each keeps a **compliant, working spine** before addi
 throughout: **evals authored before docs**, deterministic math, source-grounding, and **a separate commit per
 increment**.
 
-- **Phase 0 — Bootstrap.** Repo, `.gitignore`, `README`, `CLAUDE.md`, first push; choose the MCP runtime.
+- **Phase 0 — Bootstrap ✅.** Repo, `.gitignore`, `README`, `CLAUDE.md`, first push; choose the MCP runtime.
   *Exit: `main` published with the baseline files.*
-- **Phase 1 — Compliant spine.** Local MCP retrieval over the corpus + central compliance guards
+- **Phase 1 — Compliant spine ✅ (core done; eval-runner + observability-report generator pending).** Local MCP retrieval over the corpus + central compliance guards
   (restricted-field strip, prohibited-borrower gate, guarantor-document refusal) + the foundation/guardrail
   skills (grounding, the reliability footer, redaction, output screening, client-360, communications, CRM
   enrichment) + the deterministic hooks + the **observability harness** (eval runner, a run-trace ledger via
   hooks, and a generated per-prompt report — all from real runs; no fabricated dashboards). *Exit: in Cowork,
   retrieve a borrower dossier with restricted fields stripped, every claim cited, the reliability footer
   attached, a guarantor document refused — and a trace ledger + per-prompt observability report produced.*
-- **Phase 2 — Track A (Early-Warning) = Deliverable A.** Deterministic covenant/trend/deterioration flags
-  (lifecycle-aware), the engagement-gap signal, watchlist triage, and a portfolio-sweep sub-agent.
-  *Exit: the three Track-A prompts produce real, cited outputs; the "what changed & why" vs the original
-  shadow workflow is written.*
-- **Phase 3 — Synthetic documents.** A realistic covenant package as **labeled synthetic PDFs** that encode
+- **Phase 2 — Track A (Early-Warning) = Deliverable A 🟡 (engine built + Cowork-verified; packaging pending).**
+  Deterministic covenant/trend/deterioration flags (lifecycle-aware), the engagement-gap signal, watchlist
+  triage, and a portfolio-sweep sub-agent. *Exit: the three Track-A prompts produce real, cited outputs
+  ✅; the "what changed & why" vs the original shadow workflow ⏳ + captured outputs + honest-eval.*
+- **Phase 3 — Synthetic documents ⏳ (not started).** A realistic covenant package as **labeled synthetic PDFs** that encode
   facts already in the data (some deliberately incomplete or flawed), plus per-type extraction schemas.
   *Exit: package + schemas + cross-validation targets in place.*
-- **Phase 4 — Track B (Relationship/Renewal + Doc-Intelligence) = Deliverable B.** Document
+- **Phase 4 — Track B (Relationship/Renewal + Doc-Intelligence) = Deliverable B ⏳ (not started).** Document
   classification/extraction/completeness/quality/cross-validation (+ a package-review sub-agent) and the
   relationship skills (open-items, close-the-loop, since-last-review diffing, industry signals, the
   renewal/retention flag, meeting briefs, and the decomposed relationship memo). *Exit: the four per-RM demo
   prompts run end-to-end — including the restricted-document refusal, scribe-not-author surfacing, and the
   memo's human-in-the-loop pause; all five rebuilt shadow workflows confirmed live.*
-- **Phase 5 — Demo integration & dry-runs.** Wire the full one-hour flow, run it end-to-end in Cowork,
+- **Phase 5 — Demo integration & dry-runs ⏳ (not started).** Wire the full one-hour flow, run it end-to-end in Cowork,
   capture real outputs, and write the honest evaluation (what works / the hard 20%). *Exit: a full dry-run
   within the hour, with outputs captured.*
-- **Phase 6 — Packaging & production story.** Optional plugin packaging; the deployment, compliance-approval,
+- **Phase 6 — Packaging & production story ⏳ (not started).** Optional plugin packaging; the deployment, compliance-approval,
   and per-RM adoption narrative. *Exit: packaging and adoption story ready for Q&A.*
 
 ## Scope discipline (built vs designed)
 The brief rewards **depth over breadth** and **honest evaluation**. So a focused **~15 skills are built to depth with evals** — the compliance/trust foundation, both Track-A and Track-B creative cores, and the per-RM rebuilds — while the broader library (the full per-type document-intelligence cluster, since-last-review diffing, the two sub-agents) is presented as **designed architecture**, clearly labeled built-vs-designed. **Both creative gems and the rebuilt early-warning run on real data**; the document-intelligence prompt is the one piece that runs on (clearly labeled) **synthetic** documents and is positioned as a supporting guardrail demonstration, not a creativity claim.
 
 ## Status
-**Phase 0 complete** (repo bootstrapped + pushed). A reassessment (2026-06-09) set the built-vs-designed scope and the demo ordering. Next: **Phase 1 — the compliant spine** (local MCP retrieval + central guards + foundation skills).
+**Building — Phases 0–2 substantially in (committed 2026-06-10).**
+
+**Done & verified:** repo live; local MCP server with **9 tools** (borrower/loan/activity/email retrieval + `screen_and_finalize` §4.2 + Track-A `check_covenant_compliance` / `detect_deterioration_signals` / `measure_engagement_coverage` / `assemble_watchlist`), with §2.1 strip / §5 gate / guarantor refusal enforced server-side; **11 plugin skills**; a Code-side run-ledger hook; **46 deterministic tests**; **verified end-to-end in Claude Code *and* Cowork** (watchlist ranking, covenant + status-mislabel, the 78-day engagement gap, §4.2 blocking).
+
+**Next:** finish **Deliverable A** packaging — the *"what changed vs Tom's wf5"* write-up, captured real outputs, and the honest-eval — then **Phase 3** (the synthetic Meridian covenant package) → **Phase 4: Track B** → Phase 5 demo integration → Phase 6 packaging.
