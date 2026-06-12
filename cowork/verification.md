@@ -17,18 +17,24 @@ old toolset.
 ```
 Three checks for this project — report each explicitly:
 1. MCP — List any tools named mcp__centerline__*. If present, call get_borrower_dossier for
-   Meridian and tell me whether credit_grade is absent and what the covenant_status is.
-2. SKILLS — Is there a project skill named test-marker? If yes, invoke it and paste its exact output token.
-3. HOOKS — Run a trivial shell command (e.g. echo hi), then read the file .claude/hook-probe.log
-   and show its contents (or say it doesn't exist).
+   Meridian and tell me whether credit_grade is absent and what the covenant_status is; then call
+   assemble_watchlist and give me the borrower order.
+2. SKILLS — Do you see plugin skills from the "centerline" plugin (e.g. assessing-output-reliability,
+   measuring-engagement-coverage)? List the ones you can see.
+3. HOOKS — Run a trivial shell command (e.g. echo hi). (Expected: no project hook fires in Cowork.)
 ```
+
+> **SKILLS prerequisite:** check #2 only passes if `centerline-plugin.zip` is installed in Cowork via
+> **Customize → Personal plugins → Upload plugin**. Project `.claude/skills/` are NOT auto-loaded in
+> Cowork — the plugin is the only route. (The earlier `test-marker` probe skill was removed once this
+> was confirmed.)
 
 ## 2. How to read the result
 | Check | ✅ Aligned | ❌ Drifted / not loaded |
 |---|---|---|
-| **MCP** | `mcp__centerline__get_borrower_dossier` + `get_loan_performance` listed; call returns **`credit_grade` absent** + **`covenant_status` = "Covenant Breach"** | no `mcp__centerline__*` tools |
-| **SKILLS** | `test-marker` listed + outputs `TEST-MARKER-SKILL-LOADED-7F3A` | skill not found |
-| **HOOKS** | `.claude/hook-probe.log` contains a `HOOK-FIRED-9B2E …` line | file missing |
+| **MCP** | `mcp__centerline__get_borrower_dossier` + 8 more listed; call returns **`credit_grade` absent** + **`covenant_status` = "Covenant Breach"**; watchlist order **Meridian → BlueLine → Summit → Arcadia → Crestwood** | no `mcp__centerline__*` tools |
+| **SKILLS** | the 11 `centerline:*` plugin skills are listed (requires the uploaded plugin) | no `centerline:*` skills found → plugin not installed |
+| **HOOKS** | none fires — **expected** (Cowork sandbox ignores project `.claude/settings.json` hooks; this is the known finding, not a failure) | (n/a — absence is the pass condition) |
 
 ## Result of the first run (2026-06-09)
 - **MCP ✅** — `mcp__centerline__*` available; call stripped `credit_grade`, `covenant_status` = "Covenant Breach".
@@ -36,8 +42,14 @@ Three checks for this project — report each explicitly:
 - **HOOKS ❌** — project `.claude/settings.json` hooks do **not** fire in Cowork.
 → **Conclusion:** Cowork (folder-mode) loads **only** the bridged MCP server + file access from this repo —
 not the project's `.claude/` skills or hooks. The full skill library + hooks run in **Claude Code**; to run
-them on the Cowork surface they must be packaged as an **installed plugin** (to be verified). On Cowork,
+them on the Cowork surface they must be packaged as an **installed plugin**. On Cowork,
 §2.1 therefore rests on the **MCP server chokepoint**, not project hooks.
+
+## Update (2026-06-12) — plugin route confirmed
+With `centerline-plugin.zip` uploaded (Customize → Personal plugins): **SKILLS ✅** — all 11
+`centerline:*` skills load in Cowork. **HOOKS still ❌ by design** (the sandbox never fires project
+hooks — confirmed). So the verified cross-surface picture is: **MCP = both surfaces · skills = both
+(via the installed plugin) · hooks = Code-only · §2.1/§4.2 enforced server-side in the MCP.**
 
 ## 3. Troubleshooting
 - **No `mcp__centerline__*`:** check `~/Library/Application Support/Claude/claude_desktop_config.json` has the

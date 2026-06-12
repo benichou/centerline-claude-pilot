@@ -130,10 +130,13 @@ increment**.
   hooks, and a generated per-prompt report — all from real runs; no fabricated dashboards). *Exit: in Cowork,
   retrieve a borrower dossier with restricted fields stripped, every claim cited, the reliability footer
   attached, a guarantor document refused — and a trace ledger + per-prompt observability report produced.*
-- **Phase 2 — Track A (Early-Warning) = Deliverable A 🟡 (engine built + Cowork-verified; packaging pending).**
+- **Phase 2 — Track A (Early-Warning) = Deliverable A 🟢 (engine + "what changed & why" done; recipe + eval-infra remain).**
   Deterministic covenant/trend/deterioration flags (lifecycle-aware), the engagement-gap signal, watchlist
-  triage, and a portfolio-sweep sub-agent. *Exit: the three Track-A prompts produce real, cited outputs
-  ✅; the "what changed & why" vs the original shadow workflow ⏳ + captured outputs + honest-eval.*
+  triage, and a portfolio-sweep sub-agent. *Exit: the three Track-A prompts produce real, cited outputs ✅;
+  the **"what changed & why" vs Tom's wf5** write-up ✅ (`solutions/deliverable-a/what-changed-vs-wf5.md`,
+  with captured outputs + honest-eval + the deterministic-tools/§4.2 case). Remaining: a consolidated
+  **recipe** (verbatim A1/A2/A3 prompts + skill/MCP design) and the Phase-1 **eval/observability infra**
+  that backs the honest-eval.*
 - **Phase 3 — Synthetic documents ⏳ (not started).** A realistic covenant package as **labeled synthetic PDFs** that encode
   facts already in the data (some deliberately incomplete or flawed), plus per-type extraction schemas.
   *Exit: package + schemas + cross-validation targets in place.*
@@ -153,8 +156,8 @@ increment**.
 The brief rewards **depth over breadth** and **honest evaluation**. So a focused **~15 skills are built to depth with evals** — the compliance/trust foundation, both Track-A and Track-B creative cores, and the per-RM rebuilds — while the broader library (the full per-type document-intelligence cluster, since-last-review diffing, the two sub-agents) is presented as **designed architecture**, clearly labeled built-vs-designed. **Both creative gems and the rebuilt early-warning run on real data**; the document-intelligence prompt is the one piece that runs on (clearly labeled) **synthetic** documents and is positioned as a supporting guardrail demonstration, not a creativity claim.
 
 ## Status
-**Building — Phases 0–2 substantially in (committed 2026-06-10).**
+**Building — Phase 0–1 core ✅, Phase 2 / Deliverable A core ✅ (updated 2026-06-12).**
 
-**Done & verified:** repo live; local MCP server with **9 tools** (borrower/loan/activity/email retrieval + `screen_and_finalize` §4.2 + Track-A `check_covenant_compliance` / `detect_deterioration_signals` / `measure_engagement_coverage` / `assemble_watchlist`), with §2.1 strip / §5 gate / guarantor refusal enforced server-side; **11 plugin skills**; a Code-side run-ledger hook; **46 deterministic tests**; **verified end-to-end in Claude Code *and* Cowork** (watchlist ranking, covenant + status-mislabel, the 78-day engagement gap, §4.2 blocking).
+**Done & verified:** repo live; local MCP server with **9 tools** (borrower/loan/activity/email retrieval + `screen_and_finalize` §4.2 + Track-A `check_covenant_compliance` / `detect_deterioration_signals` / `measure_engagement_coverage` / `assemble_watchlist`), with §2.1 strip / §5 gate / guarantor refusal enforced server-side; **11 plugin skills**; a Code-side run-ledger hook; **46 deterministic tests**; **verified end-to-end in Claude Code *and* Cowork** (watchlist ranking, covenant + status-mislabel, the 78-day engagement gap, §4.2 blocking). **Deliverable A's "what changed & why vs Tom's wf5"** write-up complete (`solutions/deliverable-a/what-changed-vs-wf5.md`) — before/after, the 5 violations→fixes, the architecture verdict incl. the deterministic-tools-over-CSV point, captured real outputs, and the honest 80/20 eval.
 
-**Next:** finish **Deliverable A** packaging — the *"what changed vs Tom's wf5"* write-up, captured real outputs, and the honest-eval — then **Phase 3** (the synthetic Meridian covenant package) → **Phase 4: Track B** → Phase 5 demo integration → Phase 6 packaging.
+**Next:** finish **Deliverable A** — a consolidated **recipe** (verbatim A1/A2/A3 prompts + skill/MCP design) + the Phase-1 **eval/observability infra** that backs the honest-eval — then **Phase 3** (the synthetic Meridian covenant package) → **Phase 4: Track B** → Phase 5 demo integration → Phase 6 packaging.
