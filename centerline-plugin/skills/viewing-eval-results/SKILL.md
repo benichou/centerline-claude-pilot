@@ -9,6 +9,11 @@ When the user wants to **see** how the system scored ("show the scorecard", "wha
 "how accurate is it?"), read and summarize the latest report files. This is **display-only** — it works on
 any surface (including Cowork) because it just reads files.
 
+## Getting the latest (pull first)
+To guarantee you're showing the newest report, call the `centerline` MCP tool **`get_latest_report`** with
+`kind="agent_eval"` (or `"observability"`) — it `git pull`s host-side and returns the content, so it's current
+even in Cowork. Then read the files below for the full detail / history.
+
 ## What to read
 - `reports/observability.md` — Layer 1/2: deterministic per-prompt scorecards (tool-logic correctness +
   expected skill/tool/guard trace). Always current; no model needed.

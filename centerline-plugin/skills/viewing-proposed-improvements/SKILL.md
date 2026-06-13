@@ -10,12 +10,16 @@ agent-eval results and writes **advisory** reports proposing changes to the **pr
 skill **displays** those reports so a human (often compliance) can decide what to apply. It only reads files —
 it works on any surface, including Cowork.
 
-## What to read
-- `reports/improvements/latest.md` — the **most recent** advisory report (proposed skill/prompt changes,
-  root causes, §-rationale, and an explicit "why this doesn't weaken a guard" note per item).
-- `reports/improvements/improvements-<UTC stamp>.md` — the **history**: one timestamped report per run
-  (filenames sort chronologically). When asked to "read all reports" / spot recurring themes, list this
-  folder and summarize across them.
+## How to get the latest (always pull first)
+**Call the `centerline` MCP tool `get_latest_report` with `kind="improvements"`.** It runs a read-only
+`git pull --rebase` host-side and returns the report **content** directly — so you get the newest report even
+in Cowork (whose file view can lag), without doing any git yourself. Present the `content` it returns; mention
+the `pulled` status if the sync reported anything notable. If `exists` is false, say there's no report yet
+(the eval/improve workflow hasn't produced one).
+
+For the **history** (recurring themes across runs), after pulling, list `reports/improvements/` —
+`improvements-<UTC stamp>.md` is one timestamped report per run (filenames sort chronologically) — and
+summarize across them.
 
 ## How to present (for a compliance reviewer)
 - Lead with the summary table (finding · type · real issue vs eval artifact · recurring? · proposed file).

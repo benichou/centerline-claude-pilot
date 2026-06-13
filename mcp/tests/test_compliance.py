@@ -193,4 +193,11 @@ check(
     ce["last_substantive_contact"]["date"] == "2025-04-15",
 )
 
+# --- get_latest_report (the always-latest report fetcher) — pull=False to avoid network in tests ---
+glr = core.get_latest_report("improvements", pull=False)
+check("get_latest_report returns the requested kind", glr.get("kind") == "improvements")
+check("get_latest_report reports a path + exists flag", "path" in glr and "exists" in glr)
+check("get_latest_report skips pull when pull=False", glr.get("pulled") == "skipped (pull=False)")
+check("get_latest_report rejects an unknown kind", "error" in core.get_latest_report("bogus", pull=False))
+
 print(f"\nALL {_passed} CHECKS PASSED")

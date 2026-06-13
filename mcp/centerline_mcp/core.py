@@ -443,6 +443,58 @@ def run_evals():
     }
 
 
+def get_latest_report(kind="improvements", pull=True):
+    """Refresh from origin (read-only `git pull --rebase`) and return the latest report's CONTENT + provenance.
+
+    The cross-surface "always-latest" path: this runs HOST-SIDE via the MCP, so even in Cowork (whose file
+    view can lag) the caller gets fresh content in the tool result. Scope is deliberately tiny — it ONLY does
+    a read-only `git pull --rebase --autostash` (NEVER add/commit/push, NEVER the GitHub API) and reads a known
+    report file. kind: improvements | agent_eval | observability."""
+    import os
+    import subprocess
+
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    rels = {
+        "improvements": os.path.join("reports", "improvements", "latest.md"),
+        "agent_eval": os.path.join("reports", "agent_eval", "latest.md"),
+        "observability": os.path.join("reports", "observability.md"),
+    }
+    rel = rels.get(kind)
+    if rel is None:
+        return {"error": f"unknown report kind: {kind}", "known_kinds": sorted(rels)}
+
+    pulled, pull_ok = "skipped (pull=False)", None
+    if pull:
+        try:
+            pr = subprocess.run(
+                ["git", "pull", "--rebase", "--autostash"], cwd=repo, capture_output=True, text=True, timeout=60
+            )
+            lines = (pr.stdout + pr.stderr).strip().splitlines()
+            pulled, pull_ok = (lines[-1] if lines else "ok"), pr.returncode == 0
+        except Exception as exc:  # noqa: BLE001 — best-effort sync; still return the on-disk report
+            pulled, pull_ok = f"pull failed: {exc}", False
+
+    abspath = os.path.join(repo, rel)
+    if not os.path.exists(abspath):
+        return {
+            "kind": kind,
+            "path": rel,
+            "exists": False,
+            "pulled": pulled,
+            "pull_ok": pull_ok,
+            "content": None,
+            "note": "no report yet — run the eval/improve workflow (or evals/*.py) first",
+        }
+    return {
+        "kind": kind,
+        "path": rel,
+        "exists": True,
+        "pulled": pulled,
+        "pull_ok": pull_ok,
+        "content": open(abspath, encoding="utf-8").read(),
+    }
+
+
 def assemble_watchlist(borrowers=None):
     """Compose covenant + deterioration + engagement into a portfolio triage list, ranked by
     risk × neglect (facts-derived order, NOT a credit rating). RM-private; §4.1 monitoring → CCO approval."""

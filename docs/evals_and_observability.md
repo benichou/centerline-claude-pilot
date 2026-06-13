@@ -159,6 +159,11 @@ decides and edits. This mirrors the product's own §4.3 principle.
   `centerline` MCP is unchanged — GitHub is a *separate* connector, authenticated to the personal account).
 - Run locally: `python3 evals/improve.py --model claude-sonnet-4-6` (or `--dry-run` for a no-model plumbing check).
 
+**Always-latest, cross-surface:** the `centerline` MCP tool **`get_latest_report`** (kind = `improvements` /
+`agent_eval` / `observability`) runs a read-only `git pull --rebase` host-side and returns the report
+**content** — so the `viewing-*` skills show the newest report even in Cowork (whose file view can lag),
+without anyone running git by hand. It never commits/pushes and never calls the GitHub API.
+
 ## What "performance" means here (no single %)
 > performance = compliance (T2) + step-correctness (T3 expected-trace) + computation accuracy (T1) + generative quality (T4: rubric + edit-rate)
 

@@ -107,6 +107,17 @@ def run_evals() -> dict:
     return core.run_evals()
 
 
+@mcp.tool()
+def get_latest_report(kind: str = "improvements", pull: bool = True) -> dict:
+    """Fetch the latest eval/improvement report, refreshing from git FIRST so you always get the newest.
+
+    Use when asked to show the latest proposed improvements / eval results / scorecard. Runs a read-only
+    `git pull --rebase` host-side (NEVER commits/pushes, NEVER the GitHub API), then returns the report
+    CONTENT — so it's current even in Cowork (whose file view can lag). kind: 'improvements' (proposed skill
+    changes), 'agent_eval' (the agent-behavior eval), or 'observability' (deterministic scorecards)."""
+    return core.get_latest_report(kind, pull)
+
+
 def main():
     mcp.run()  # stdio transport by default
 
