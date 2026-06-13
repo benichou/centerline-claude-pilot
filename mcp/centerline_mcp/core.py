@@ -341,6 +341,53 @@ def measure_engagement_coverage(borrower_name, as_of=None):
     }
 
 
+def run_evals():
+    """Run the golden-set evaluation against THIS live tool logic and refresh the observability report.
+
+    Deterministic, no LLM in the grader: each case calls the real core/guards function and checks
+    source-grounded expectations (T1 ground-truth) + compliance assertions (T2). Also regenerates
+    reports/observability.md so the per-prompt scorecards stay in sync. Returns a structured summary
+    Claude can render in-console on either surface (Code or Cowork)."""
+    import os
+    import sys
+
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    evals_dir = os.path.join(repo, "evals")
+    if evals_dir not in sys.path:
+        sys.path.insert(0, evals_dir)
+    import runner  # evals/runner.py — stdlib, dispatches cases to this same core/guards logic
+    import observability  # evals/observability.py — writes reports/observability.md
+
+    results = runner.run_all()
+    report_path, _, _ = observability.build(results)
+
+    by_prompt, by_tier = {}, {}
+    for r in results:
+        for bucket, key in ((by_prompt, r["prompt"]), (by_tier, r["tier"])):
+            agg = bucket.setdefault(key, {"passed": 0, "total": 0})
+            agg["total"] += 1
+            agg["passed"] += 1 if r["passed"] else 0
+    npass = sum(1 for r in results if r["passed"])
+    failures = [{"id": r["id"], "detail": r["detail"]} for r in results if not r["passed"]]
+
+    return {
+        "total": len(results),
+        "passed": npass,
+        "failed": len(results) - npass,
+        "all_passed": npass == len(results),
+        "by_prompt": by_prompt,
+        "by_tier": by_tier,
+        "failures": failures,
+        "observability_report": os.path.relpath(report_path, repo),
+        "_compliance": {
+            "note": "Deterministic eval of the live MCP tool logic — T1 source-grounded ground truth + "
+                    "T2 binary compliance assertions (§2.1 strip / §5 halt / guarantor refusal / §4.2 "
+                    "block) + negatives. NO LLM in the grader; 'accuracy' is a clean number only here, "
+                    "never a fabricated single % for generative output."
+        },
+    }
+
+
 def assemble_watchlist(borrowers=None):
     """Compose covenant + deterioration + engagement into a portfolio triage list, ranked by
     risk × neglect (facts-derived order, NOT a credit rating). RM-private; §4.1 monitoring → CCO approval."""

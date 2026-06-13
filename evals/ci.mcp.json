@@ -1,0 +1,10 @@
+{
+  "_comment": "Portable MCP config for CI (GitHub Actions) — NO absolute Mac paths. uv is resolved from PATH (setup-uv); --project '.' = the repo root (the workflow runs from $GITHUB_WORKSPACE). PYTHONPATH + CENTERLINE_DATA_DIR are supplied by the workflow's env: block (absolute, via github.workspace) and inherited by the spawned server. Used by: agent_eval.py --mcp-config evals/ci.mcp.json. The Mac/local config stays in the repo-root .mcp.json.",
+  "mcpServers": {
+    "centerline": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--project", ".", "python", "-m", "centerline_mcp.server"]
+    }
+  }
+}

@@ -94,6 +94,18 @@ def assemble_watchlist(borrowers: Optional[list] = None) -> dict:
     return core.assemble_watchlist(borrowers)
 
 
+@mcp.tool()
+def run_evals() -> dict:
+    """Run the golden-set evaluation suite against the live tool logic and refresh the observability report.
+
+    Use when asked to "run the evals", "check accuracy", "prove the numbers", or "show the scorecard".
+    Grades source-grounded ground-truth cases (T1: e.g. Meridian DSCR 1.03/breach, the 78-day gap) and
+    binary compliance assertions (T2: §2.1 strip, §5 halt, guarantor refusal, §4.2 block) — plus negative
+    cases. The grader is deterministic Python (NO LLM), calling the same code the demo uses. Also regenerates
+    reports/observability.md. Returns pass/fail totals, per-prompt and per-tier breakdowns, and any failures."""
+    return core.run_evals()
+
+
 def main():
     mcp.run()  # stdio transport by default
 
