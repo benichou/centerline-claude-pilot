@@ -25,6 +25,9 @@ dev = [
     "black>=24.10",
     "flake8>=7.1",
     "pre-commit>=3.8",
+    # generation-time only: builds the synthetic covenant-package PDFs (the server only *reads* them, so this
+    # is NOT a runtime dep). Used by data/synthetic/generate_meridian_package.py.
+    "reportlab>=4.0",
 ]
 
 [tool.black]
