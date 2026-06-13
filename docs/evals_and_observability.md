@@ -164,6 +164,22 @@ decides and edits. This mirrors the product's own §4.3 principle.
 **content** — so the `viewing-*` skills show the newest report even in Cowork (whose file view can lag),
 without anyone running git by hand. It never commits/pushes and never calls the GitHub API.
 
+### Governance — who reviews and maintains the skill library
+The loop deliberately stops at **advice**; a **human owns the decision and the maintenance.** Concretely:
+- **Owner / reviewer:** a designated human — in this engagement, **Compliance (the CCO's delegate) or a named
+  skill-library maintainer** — periodically reviews the advisory reports in Cowork via
+  **`viewing-proposed-improvements`** (no terminal, no git). They are accountable for the compliance skill
+  library's wording.
+- **Decision:** they approve / reject / defer each item. Approved changes are **applied by hand** to the
+  skill `.md` files and go through the normal gate: **pre-commit (black/flake8) → eval re-validation
+  (`agent-eval`) → the next improvement report confirms it resolved.**
+- **Separation of duties (why this is safe):** the analyst (AI) *proposes* and has **no write access** to
+  code, guards, or the eval answer key; the human *disposes*. That division is the §4.3 "human review"
+  principle applied to the *tooling itself* — the same governance the product gives borrower-facing output.
+- **Audit trail:** every advisory report is timestamped and committed (`reports/improvements/`), and every
+  applied change is an ordinary reviewed commit — so "what was suggested, what was decided, by whom, when" is
+  reconstructable (supports the §7 audit / §4.1 monitoring-governance story).
+
 ## What "performance" means here (no single %)
 > performance = compliance (T2) + step-correctness (T3 expected-trace) + computation accuracy (T1) + generative quality (T4: rubric + edit-rate)
 
