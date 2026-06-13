@@ -137,6 +137,28 @@ artifact. Setup + honest caveats:
   set `permissions: contents: read` — history then lives only as run artifacts (downloadable from Actions,
   but not visible to the folder-reading skill).
 
+## Layer 4 — the improvement loop (AI flags, human decides)
+`evals/improve.py` (run by the **`eval-improve`** workflow) closes the loop *safely*: it reads the agent-eval
+report **history** (latest in full + summaries of prior runs, so it can tell a one-off from a **recurring/flaky**
+pattern), and writes a **timestamped advisory report** to `reports/improvements/` proposing changes to the
+**prompt/skill library**. The report separates **Must-fix** (tied to a failed/flaky/recurring run) from a
+**severity-gated Proactive** section (concrete hardening only — allowed to be empty), each with root cause, the
+concrete skill edit, the §-rationale, and a "why this doesn't weaken a guard" note. On a fully-clean history it
+says **"no action needed"** rather than manufacturing churn. A human (often compliance) reads it via the
+**`viewing-proposed-improvements`** skill (works in Cowork) and applies anything approved **by hand** (through
+the normal pre-commit + eval-validation gate).
+
+**Why report-only, not auto-PR or auto-merge:** the analyst has **no write access** to code, guards, or the
+eval answer key — it runs with read-only tools and the workflow commits **only `reports/improvements/`**. So
+it structurally **cannot** weaken a guardrail or the answer key to make the eval pass (the reward-hacking risk
+that makes autonomous self-modification dangerous for a compliance system). It can only *advise*; a human
+decides and edits. This mirrors the product's own §4.3 principle.
+
+- **Triggers:** after each `agent-eval` run (`workflow_run`) + a manual button (`workflow_dispatch`). The
+  manual trigger is what a **personal-GitHub connector** lets a compliance reviewer fire from Cowork (the
+  `centerline` MCP is unchanged — GitHub is a *separate* connector, authenticated to the personal account).
+- Run locally: `python3 evals/improve.py --model claude-sonnet-4-6` (or `--dry-run` for a no-model plumbing check).
+
 ## What "performance" means here (no single %)
 > performance = compliance (T2) + step-correctness (T3 expected-trace) + computation accuracy (T1) + generative quality (T4: rubric + edit-rate)
 
@@ -160,7 +182,9 @@ evals/runner.py              Layer 1: deterministic tool-logic grader -> evals/r
 evals/observability.py       Layer 2: report-card generator           -> reports/observability.md
 evals/agent_eval.py          Layer 3: agent-behavior eval (real model) -> reports/agent_eval/{<UTC>.md, latest.md}
 evals/ci.mcp.json            portable MCP config for CI (no absolute paths)
+evals/improve.py             Layer 4: improvement analyst (advisory) -> reports/improvements/{<UTC>.md, latest.md}
 .github/workflows/agent-eval.yml  nightly Layer-3 run on Sonnet 4.6 (schedule + manual)
+.github/workflows/eval-improve.yml  Layer-4 advisory report after agent-eval + manual (Sonnet 4.6)
 mcp/centerline_mcp/core.py   run_evals() (the tool logic)
 mcp/centerline_mcp/server.py exposes the run_evals MCP tool
 centerline-plugin/skills/running-the-eval-suite/   the in-console skill

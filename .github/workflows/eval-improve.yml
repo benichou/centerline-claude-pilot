@@ -1,0 +1,72 @@
+# Improvement analyst (Layer 4 — "AI flags, human decides"). Reads the latest agent-eval report and writes an
+# ADVISORY improvements report to reports/improvements/. It NEVER edits code/skills/guards/eval-cases — it only
+# describes what a human might change. A compliance reviewer reads it (in Cowork via the viewing-proposed-
+# improvements skill, or here as an artifact) and applies anything approved BY HAND.
+#
+# COST: Sonnet 4.6 via the ANTHROPIC_API_KEY secret (pay-per-token). One analysis call per run.
+# TRIGGERS: after each agent-eval run (workflow_run) + manual button (workflow_dispatch) — the latter is what a
+#           personal-GitHub connector lets a compliance reviewer fire from Cowork.
+# DATA RESIDENCY: synthetic data only -> cloud CI is fine. Real data (§2.3) -> self-hosted/on-prem.
+
+name: eval-improve
+
+on:
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ["agent-eval"]
+    types: [completed]   # run whether the eval passed or failed — failures are exactly what we analyze
+
+permissions:
+  contents: write   # commits the advisory report to main (history). It does NOT commit code/skill changes.
+
+jobs:
+  improve:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4   # main now includes the agent-eval report that agent-eval committed
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Analyze the latest eval report -> advisory improvements report
+        run: |
+          if [ ! -f reports/agent_eval/latest.md ]; then
+            echo "no agent-eval report on main yet (agent-eval must run + commit first) — skipping"; exit 0
+          fi
+          # history-aware: analyzes the latest report in full + summaries of the prior runs (recurring/flaky)
+          python3 evals/improve.py --model claude-sonnet-4-6 --max-history 8
+
+      - name: Commit the advisory report to main (history)
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/improvements/   # ONLY the report — never code/skills
+          if git diff --cached --quiet; then
+            echo "no improvements report to commit"
+          else
+            git commit -m "chore(improve): advisory improvements report $(date -u +%Y-%m-%dT%H:%MZ) [skip ci]"
+            git push origin HEAD:main
+          fi
+
+      - name: Upload the advisory report as an artifact (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: improvements-report
+          path: reports/improvements/
