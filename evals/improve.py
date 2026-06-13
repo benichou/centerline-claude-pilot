@@ -56,8 +56,12 @@ passed the threshold, and patterns that RECUR across the prior runs). Per findin
 3. **Proactive (optional)** — concrete hardening only (ambiguous skill wording, a coverage gap, a near-miss). \
 SEVERITY-GATED: include an item ONLY if it is specific and actionable. If nothing concrete, write \
 "No proactive items — the skill library looks sound for what the eval covers."
-4. If there are NO must-fix findings AND no concrete proactive items, state plainly at the top: \
-"No action needed — latest run clean, no recurring failures, nothing concrete to harden."
+4. **Automation / eval-loop observations (for human attention — flag only, do NOT propose editing workflows)** \
+— concrete observations about the automations themselves (e.g. eval coverage is thin, a prompt is flaky and \
+might warrant more runs, the pass-rate threshold, the cron cadence). You do NOT edit workflows/CI yourself; \
+just surface these for a human. If none, write "No automation observations."
+5. If there are NO must-fix findings, no proactive items, AND no automation observations, state plainly at \
+the top: "No action needed — latest run clean, no recurring failures, nothing concrete to harden."
 
 Here is the eval-report history to analyze (latest in full, then prior-run summaries, newest first):
 

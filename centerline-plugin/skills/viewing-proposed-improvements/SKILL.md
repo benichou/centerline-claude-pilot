@@ -1,14 +1,18 @@
 ---
 name: viewing-proposed-improvements
-description: Use when a reviewer (e.g. compliance) asks what improvements the eval loop has proposed, what should change in the skill library, or to review the latest/all advisory improvement reports. Display-only.
+description: Use when asked to show the latest proposed improvements to our skills and automations — the improvements Claude suggested from the eval loop, what should change in the skill library, or to review the latest/all advisory improvement reports. Display-only.
 ---
 
-# Viewing proposed improvements
+# Viewing proposed improvements (to our skills and automations)
 
-The CI "improvement analyst" (`evals/improve.py`, run by the `eval-improve` workflow) reads the latest
-agent-eval results and writes **advisory** reports proposing changes to the **prompt/skill library**. This
+The CI "improvement analyst" (`evals/improve.py`, run by the `eval-improve` workflow) reads the agent-eval
+history and writes **advisory** reports — the improvements **Claude suggested** for the **skill library**
+(proposed prompt/skill changes) plus **automation / eval-loop observations flagged for human attention**. This
 skill **displays** those reports so a human (often compliance) can decide what to apply. It only reads files —
 it works on any surface, including Cowork.
+
+**Triggers:** "show me the latest proposed improvements to our skills and automations" · "what did Claude
+suggest we change?" · "review the latest improvement report."
 
 ## How to get the latest (always pull first)
 **Call the `centerline` MCP tool `get_latest_report` with `kind="improvements"`.** It runs a read-only
@@ -26,8 +30,10 @@ summarize across them.
 - Separate **Must-fix** (tied to a failed/flaky/**recurring** run) from **Proactive (optional)** hardening; a
   clean history may simply say **"no action needed"** — report that honestly, don't invent items.
 - For each item, give the plain-English root cause + the proposed skill change + which § it relates to.
-- Call out anything the analyst **flagged for human attention** (i.e. a failure it would NOT fix because it
-  would require touching a guard or the eval answer key) — those are the most important to surface.
+- Call out anything the analyst **flagged for human attention** rather than auto-proposing — i.e. items it
+  won't change itself because they touch a guard / the eval answer key, **or are about the automations / the
+  eval loop** (e.g. eval coverage, run count, thresholds, cadence). Those flags are the most important to
+  surface, since the analyst only *proposes* edits to the skill library, not to the automations.
 
 ## Be honest about what this is (and isn't)
 - **Advisory only.** Nothing here has been applied. Approving a change means a **human edits the skill library
