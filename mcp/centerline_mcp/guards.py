@@ -15,6 +15,7 @@ DESIGN NOTES (honest):
     close-the-loop skill) is a POLICY-INTERPRETATION refinement still to settle with
     the user. For now we redact explicit designation phrasing in CSV notes only.
 """
+
 import re
 
 # §2.1 — hard-restricted structured field (internal credit rating: B+/BB-/A- …)
@@ -98,7 +99,9 @@ _CREDIT_LANGUAGE_PATTERNS = [
     re.compile(r"\bprobability\s+of\s+default\b", re.IGNORECASE),
     re.compile(r"\b(poor|weak|strong|deteriorating|improving)\s+credit\s+(quality|profile|risk)\b", re.IGNORECASE),
     re.compile(r"\brisky\s+borrower\b", re.IGNORECASE),
-    re.compile(r"\b(recommend|suggest|advise|should)\s+(approv|den(y|ie)|waiv|modif|restructur|downgrad|upgrad)", re.IGNORECASE),
+    re.compile(
+        r"\b(recommend|suggest|advise|should)\s+(approv|den(y|ie)|waiv|modif|restructur|downgrad|upgrad)", re.IGNORECASE
+    ),
     re.compile(r"\b(risk\s+rating|risk\s+grade)\b", re.IGNORECASE),
 ]
 

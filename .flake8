@@ -1,0 +1,7 @@
+[flake8]
+# black owns line length (line-length 120 in pyproject), so flake8 defers on E501 and the two
+# black-incompatible checks (E203 slicing, W503 line-break-before-binary-operator). flake8 then focuses
+# on REAL issues: unused/undefined names (F4xx/F8xx), syntax, obvious bugs.
+max-line-length = 120
+extend-ignore = E203, E501, W503
+exclude = .git, .venv, __pycache__, data, reference, traces

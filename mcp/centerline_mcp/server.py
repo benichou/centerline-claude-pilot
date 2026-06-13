@@ -9,6 +9,7 @@ BOTH surfaces because the server is spawned on the HOST Mac (where uv lives):
 All tool logic + the §2.1/§5 guards live in core.py / guards.py (stdlib, SDK-free), so they are
 unit-testable without the SDK and apply even on direct calls.
 """
+
 from typing import Optional
 
 from mcp.server.fastmcp import FastMCP

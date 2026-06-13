@@ -1,0 +1,75 @@
+# Nightly agent-behavior eval (Layer 3) — runs the Track-A demo prompts through Claude Code headless
+# and grades the MODEL's decisions (tool selection, §4.2-on-output, fact faithfulness) with deterministic code.
+#
+# COST: uses Sonnet 4.6 via an API key (pay-per-token) — NOT the Pro/Max subscription. ~9 short agent
+#       sessions/night. Change the model below if you want a different cost/fidelity trade-off.
+#       NOTE: nightly runs on Sonnet are a cheap *smoke/regression* signal; the live demo runs on Opus, so
+#       re-run with `--model claude-opus-4-8` (or omit --model) before the actual panel to test the demo model.
+#
+# DATA RESIDENCY: this repo's data is SYNTHETIC/fictional, so sending it to the API from cloud CI is fine.
+#       For REAL borrower data (production, §2.3 residency) you would NOT run this in cloud CI — use a
+#       self-hosted/on-prem runner or run locally. Do not copy this pattern onto real data.
+#
+# SECRETS: requires the repo secret ANTHROPIC_API_KEY (Settings → Secrets and variables → Actions).
+#       Triggers are schedule + manual only (never pull_request), so the key never reaches a PR-triggered run.
+
+name: agent-eval
+
+on:
+  schedule:
+    # 03:00 UTC = 22:00 EST (UTC-5). NOTE: GitHub Actions cron is ALWAYS UTC and does NOT follow DST, so
+    # during EDT (mid-Mar–early-Nov) this fires at 23:00 Eastern. For 22:00 Eastern during EDT use "0 2 * * *".
+    - cron: "0 3 * * *"
+  workflow_dispatch: {}       # manual "Run workflow" button
+
+permissions:
+  contents: read
+
+jobs:
+  agent-eval:
+    runs-on: ubuntu-latest
+    env:
+      # absolute paths the spawned MCP server inherits (the portable evals/ci.mcp.json has no abs paths)
+      PYTHONPATH: ${{ github.workspace }}/mcp
+      CENTERLINE_DATA_DIR: ${{ github.workspace }}/data
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Pre-warm the MCP server (resolve the locked uv env once)
+        run: uv run --project . python -c "import centerline_mcp.core; print('mcp ok')"
+
+      - name: Run the agent-behavior eval (Sonnet 4.6, 3 runs/prompt)
+        run: |
+          python3 evals/agent_eval.py \
+            --model claude-sonnet-4-6 \
+            --mcp-config evals/ci.mcp.json \
+            --runs 3 \
+            --min-pass-rate 0.67
+        # --min-pass-rate 0.67 tolerates one varied run out of three (the model is non-deterministic);
+        # a real regression (a prompt failing across runs) still drops below the bar and fails the job.
+
+      - name: Upload the report (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-eval-report
+          path: |
+            reports/agent_eval.md
+            traces/agent_eval/

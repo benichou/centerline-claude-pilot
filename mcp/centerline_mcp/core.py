@@ -3,6 +3,11 @@
 Every borrower-facing read passes through the §2.1 / §5 guards before returning.
 covenant_status is a FACTUAL field and is preserved (decided 2026-06-09).
 """
+
+import calendar as _cal
+import re as _re
+from datetime import date as _date
+
 from . import data_access as da
 from . import guards
 
@@ -28,8 +33,8 @@ def get_borrower_dossier(borrower_name):
 
     return {
         "borrower": borrower,
-        "profile": profile,                         # credit_grade removed
-        "latest_performance": latest,               # covenant_status kept; notes redacted
+        "profile": profile,  # credit_grade removed
+        "latest_performance": latest,  # covenant_status kept; notes redacted
         "has_relationship_memo": da.memo_path_for(borrower) is not None,
         "_compliance": {"policy": ["§2.1", "§5"], "redactions": log},
     }
@@ -46,17 +51,15 @@ def get_loan_performance(borrower_name, months=None):
     guards.assert_processable(borrower, log=log)  # §5
 
     if months:
-        rows = rows[-int(months):]
+        rows = rows[-int(months) :]
     clean = [guards.strip_record(r, free_text_fields=("notes",), log=log) for r in rows]
     return {
         "borrower": borrower,
         "months": len(clean),
-        "performance": clean,                       # covenant_status preserved
+        "performance": clean,  # covenant_status preserved
         "_compliance": {"policy": ["§2.1", "§5"], "redactions": log},
     }
 
-
-import re as _re
 
 # heuristic: does the text carry a source citation? — file:row, known data files, an as-of date, or a
 # centerline MCP tool/provenance reference (outputs grounded in the deterministic tools cite those by name).
@@ -128,7 +131,7 @@ def get_activity_log(borrower_name, limit=None):
     borrower = rows[0]["borrower_name"]
     guards.assert_processable(borrower, log=log)
     if limit:
-        rows = rows[-int(limit):]
+        rows = rows[-int(limit) :]
     clean = [guards.strip_record(r, free_text_fields=("raw_notes",), log=log) for r in rows]
     return {
         "borrower": borrower,
@@ -156,6 +159,7 @@ def get_emails(borrower_name):
 
 
 # ---- Track A: deterministic portfolio-risk computations (facts only — the RM owns the credit judgment) ----
+
 
 def _f(v, default=0.0):
     try:
@@ -186,12 +190,21 @@ def check_covenant_compliance(borrower_name):
     borrower = rows[0]["borrower_name"]
     guards.assert_processable(borrower, log=log)
     latest = rows[-1]
-    comp = {"policy": ["§2.1", "§4.2", "§5"], "redactions": log, "note": "factual covenant computation; the RM owns the credit judgment"}
+    comp = {
+        "policy": ["§2.1", "§4.2", "§5"],
+        "redactions": log,
+        "note": "factual covenant computation; the RM owns the credit judgment",
+    }
 
     if _is_construction(latest):
-        return {"borrower": borrower, "as_of": latest["date"], "applicable": False,
-                "reason": "Construction phase — operating DSCR/leverage covenants are not yet in effect; see detect_deterioration_signals for lifecycle signals.",
-                "reported_status": latest.get("covenant_status"), "_compliance": comp}
+        return {
+            "borrower": borrower,
+            "as_of": latest["date"],
+            "applicable": False,
+            "reason": "Construction phase — operating DSCR/leverage covenants are not yet in effect; see detect_deterioration_signals for lifecycle signals.",
+            "reported_status": latest.get("covenant_status"),
+            "_compliance": comp,
+        }
 
     dscr, dscr_min = _f(latest.get("dscr_ttm")), _f(latest.get("covenant_dscr_min"))
     lev, lev_max = _f(latest.get("leverage_ratio")), _f(latest.get("covenant_leverage_max"))
@@ -199,11 +212,13 @@ def check_covenant_compliance(borrower_name):
     computed = "Covenant Breach" if (dscr_breach or lev_breach) else "Compliant"
     reported = latest.get("covenant_status", "")
     return {
-        "borrower": borrower, "as_of": latest["date"],
+        "borrower": borrower,
+        "as_of": latest["date"],
         "dscr": {"value": dscr, "min": dscr_min, "cushion": round(dscr - dscr_min, 2), "breach": dscr_breach},
         "leverage": {"value": lev, "max": lev_max, "headroom": round(lev_max - lev, 2), "breach": lev_breach},
         "revolver_utilization_pct": _f(latest.get("revolver_utilization_pct")),
-        "reported_status": reported, "computed_status": computed,
+        "reported_status": reported,
+        "computed_status": computed,
         "status_matches_computed": (("breach" in reported.lower()) == (computed == "Covenant Breach")),
         "_compliance": comp,
     }
@@ -226,40 +241,76 @@ def detect_deterioration_signals(borrower_name, revolver_alert_pct=75.0):
         m = _re.search(r"pre-leasing\s+(\d+)\s*%", note, _re.IGNORECASE)
         if m:
             pl = int(m.group(1))
-            signals.append({"type": "lease_up", "fact": f"pre-leasing {pl}% vs the 75% perm-conversion threshold", "gap_pp": 75 - pl})
-        signals.append({"type": "lifecycle",
-                        "fact": "construction phase — operating DSCR/leverage covenants not in effect; monitor % complete, schedule slip, interest-reserve runway, and pre-leasing vs the 75% perm threshold"})
-        return {"borrower": borrower, "as_of": latest["date"], "lifecycle": "construction", "signals": signals, "_compliance": comp}
+            signals.append(
+                {
+                    "type": "lease_up",
+                    "fact": f"pre-leasing {pl}% vs the 75% perm-conversion threshold",
+                    "gap_pp": 75 - pl,
+                }
+            )
+        signals.append(
+            {
+                "type": "lifecycle",
+                "fact": "construction phase — operating DSCR/leverage covenants not in effect; monitor % complete, schedule slip, interest-reserve runway, and pre-leasing vs the 75% perm threshold",
+            }
+        )
+        return {
+            "borrower": borrower,
+            "as_of": latest["date"],
+            "lifecycle": "construction",
+            "signals": signals,
+            "_compliance": comp,
+        }
 
     dscr = [_f(r.get("dscr_ttm")) for r in rows]
     rev = [_f(r.get("revolver_utilization_pct")) for r in rows]
     dscr_min = _f(latest.get("covenant_dscr_min"))
 
     if dscr[-1] < dscr[0]:
-        signals.append({"type": "dscr_trend", "fact": f"DSCR declined {dscr[0]}→{dscr[-1]} over {len(rows)} months",
-                        "floor": dscr_min, "below_floor": dscr[-1] < dscr_min})
+        signals.append(
+            {
+                "type": "dscr_trend",
+                "fact": f"DSCR declined {dscr[0]}→{dscr[-1]} over {len(rows)} months",
+                "floor": dscr_min,
+                "below_floor": dscr[-1] < dscr_min,
+            }
+        )
     if rev[-1] > rev[0]:
         signals.append({"type": "revolver_trend", "fact": f"revolver utilization rose {rev[0]}%→{rev[-1]}%"})
     if rev[-1] >= revolver_alert_pct:
-        signals.append({"type": "revolver_alert", "fact": f"revolver utilization {rev[-1]}% ≥ {revolver_alert_pct}% alert level (non-covenant metric)"})
+        signals.append(
+            {
+                "type": "revolver_alert",
+                "fact": f"revolver utilization {rev[-1]}% ≥ {revolver_alert_pct}% alert level (non-covenant metric)",
+            }
+        )
 
     compliant_declining = sum(
-        1 for i in range(1, len(rows))
+        1
+        for i in range(1, len(rows))
         if rows[i].get("covenant_status", "").strip().lower() == "compliant" and dscr[i] < dscr[i - 1]
     )
     if compliant_declining >= 3:
-        signals.append({"type": "status_vs_trend",
-                        "fact": f"covenant_status read 'Compliant' during {compliant_declining} months of DSCR decline — the label lagged the trajectory"})
+        signals.append(
+            {
+                "type": "status_vs_trend",
+                "fact": f"covenant_status read 'Compliant' during {compliant_declining} months of DSCR decline — the label lagged the trajectory",
+            }
+        )
 
     cushion = round(dscr[-1] - dscr_min, 2)
     if 0 <= cushion <= 0.05:
-        signals.append({"type": "thin_cushion", "fact": f"DSCR {dscr[-1]} is only {cushion} above the {dscr_min} floor (thin)"})
+        signals.append(
+            {"type": "thin_cushion", "fact": f"DSCR {dscr[-1]} is only {cushion} above the {dscr_min} floor (thin)"}
+        )
 
-    return {"borrower": borrower, "as_of": latest["date"], "lifecycle": "operating", "signals": signals, "_compliance": comp}
-
-
-import calendar as _cal
-from datetime import date as _date
+    return {
+        "borrower": borrower,
+        "as_of": latest["date"],
+        "lifecycle": "operating",
+        "signals": signals,
+        "_compliance": comp,
+    }
 
 
 def _parse_date(s):
@@ -323,14 +374,18 @@ def measure_engagement_coverage(borrower_name, as_of=None):
     one_way_since = [
         {"date": r["log_date"], "type": r.get("contact_type"), "outcome": r.get("outcome")}
         for r in rows
-        if last_sub_d and _parse_date(r["log_date"]) and _parse_date(r["log_date"]) > last_sub_d and not _is_substantive(r)
+        if last_sub_d
+        and _parse_date(r["log_date"])
+        and _parse_date(r["log_date"]) > last_sub_d
+        and not _is_substantive(r)
     ]
     return {
         "borrower": borrower,
         "as_of": as_of_d.isoformat() if as_of_d else None,
         "last_substantive_contact": (
             {"date": last_sub["log_date"], "type": last_sub.get("contact_type"), "outcome": last_sub.get("outcome")}
-            if last_sub else None
+            if last_sub
+            else None
         ),
         "days_since_substantive_contact": days_sub,
         "days_since_any_logged_entry": days_any,
@@ -381,9 +436,9 @@ def run_evals():
         "observability_report": os.path.relpath(report_path, repo),
         "_compliance": {
             "note": "Deterministic eval of the live MCP tool logic — T1 source-grounded ground truth + "
-                    "T2 binary compliance assertions (§2.1 strip / §5 halt / guarantor refusal / §4.2 "
-                    "block) + negatives. NO LLM in the grader; 'accuracy' is a clean number only here, "
-                    "never a fabricated single % for generative output."
+            "T2 binary compliance assertions (§2.1 strip / §5 halt / guarantor refusal / §4.2 "
+            "block) + negatives. NO LLM in the grader; 'accuracy' is a clean number only here, "
+            "never a fabricated single % for generative output."
         },
     }
 
@@ -400,16 +455,21 @@ def assemble_watchlist(borrowers=None):
         construction = det.get("lifecycle") == "construction"
         breach = (not construction) and cc.get("computed_status") == "Covenant Breach"
         signals = det.get("signals", [])
-        items.append({
-            "borrower": n,
-            "lifecycle": det.get("lifecycle"),
-            "covenant_status": (cc.get("reported_status") if construction else cc.get("computed_status")),
-            "breach": breach,
-            "signal_count": len(signals),
-            "top_signals": [s["fact"] for s in signals[:3]],
-            "days_since_substantive_contact": eng.get("days_since_substantive_contact"),
-        })
-    items.sort(key=lambda it: (1 if it["breach"] else 0, it["signal_count"], it["days_since_substantive_contact"] or 0), reverse=True)
+        items.append(
+            {
+                "borrower": n,
+                "lifecycle": det.get("lifecycle"),
+                "covenant_status": (cc.get("reported_status") if construction else cc.get("computed_status")),
+                "breach": breach,
+                "signal_count": len(signals),
+                "top_signals": [s["fact"] for s in signals[:3]],
+                "days_since_substantive_contact": eng.get("days_since_substantive_contact"),
+            }
+        )
+    items.sort(
+        key=lambda it: (1 if it["breach"] else 0, it["signal_count"], it["days_since_substantive_contact"] or 0),
+        reverse=True,
+    )
     aod = _as_of_date()
     return {
         "as_of": aod.isoformat() if aod else None,

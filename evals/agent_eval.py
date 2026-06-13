@@ -23,6 +23,7 @@ Notes
 * Known limit: the §4.2-on-output scan can't distinguish use from mention — if the agent *quotes* a
   blocked phrase while explaining it, that's a (rare, prompt-specific) false positive; flagged, not fatal.
 """
+
 import argparse
 import datetime
 import json
@@ -37,9 +38,16 @@ from centerline_mcp import guards  # noqa: E402  (reuse the SAME §4.2 scanner t
 _REPORTS_DIR = os.path.join(_REPO, "reports")
 
 _CENTERLINE_TOOLS = [
-    "get_borrower_dossier", "get_loan_performance", "get_activity_log", "get_emails",
-    "screen_and_finalize", "check_covenant_compliance", "detect_deterioration_signals",
-    "measure_engagement_coverage", "assemble_watchlist", "run_evals",
+    "get_borrower_dossier",
+    "get_loan_performance",
+    "get_activity_log",
+    "get_emails",
+    "screen_and_finalize",
+    "check_covenant_compliance",
+    "detect_deterioration_signals",
+    "measure_engagement_coverage",
+    "assemble_watchlist",
+    "run_evals",
 ]
 _ALLOWED = ",".join(f"mcp__centerline__{t}" for t in _CENTERLINE_TOOLS)
 
@@ -48,7 +56,7 @@ PROMPTS = [
     {
         "id": "A1",
         "prompt": "Who in my portfolio needs attention this week? Rank them and show the facts behind "
-                  "each — don't characterize their credit, just the numbers and the gaps.",
+        "each — don't characterize their credit, just the numbers and the gaps.",
         "required_tools": {"assemble_watchlist"},
         "borrower": None,
         "required_facts": ["meridian"],
@@ -57,7 +65,7 @@ PROMPTS = [
     {
         "id": "A2",
         "prompt": "Is Meridian covenant-compliant as of the latest month? Show DSCR against the covenant "
-                  "minimum with the cushion, and whether the reported status matches the trend.",
+        "minimum with the cushion, and whether the reported status matches the trend.",
         "required_tools": {"check_covenant_compliance"},
         "bonus_tools": {"detect_deterioration_signals"},
         "borrower": "meridian",
@@ -67,7 +75,7 @@ PROMPTS = [
     {
         "id": "A3",
         "prompt": "Which of my distressed borrowers have I actually gone quiet on? For Meridian, count days "
-                  "since the last real two-way contact — a one-way notice or a missed call doesn't count.",
+        "since the last real two-way contact — a one-way notice or a missed call doesn't count.",
         "required_tools": {"measure_engagement_coverage"},
         "borrower": "meridian",
         "required_facts": ["78"],
@@ -78,13 +86,21 @@ PROMPTS = [
 
 def _claude_cmd(prompt, model=None, mcp_config=None):
     cmd = [
-        "claude", "-p", prompt,
-        "--output-format", "stream-json", "--verbose",
-        "--mcp-config", mcp_config or os.path.join(_REPO, ".mcp.json"),
-        "--plugin-dir", os.path.join(_REPO, "centerline-plugin"),
+        "claude",
+        "-p",
+        prompt,
+        "--output-format",
+        "stream-json",
+        "--verbose",
+        "--mcp-config",
+        mcp_config or os.path.join(_REPO, ".mcp.json"),
+        "--plugin-dir",
+        os.path.join(_REPO, "centerline-plugin"),
         "--strict-mcp-config",
-        "--setting-sources", "project",
-        "--allowedTools", _ALLOWED,
+        "--setting-sources",
+        "project",
+        "--allowedTools",
+        _ALLOWED,
     ]
     if model:
         cmd += ["--model", model]
@@ -128,11 +144,11 @@ def _grade(spec, tool_calls, final_text):
     if sel_ok and spec.get("borrower"):
         b = spec["borrower"]
         sel_ok = any(
-            b in json.dumps(c.get("input", {})).lower()
-            for c in tool_calls if c["name"] in spec["required_tools"]
+            b in json.dumps(c.get("input", {})).lower() for c in tool_calls if c["name"] in spec["required_tools"]
         )
     checks["tool_selection"] = {
-        "ok": sel_ok, "called": sorted(called),
+        "ok": sel_ok,
+        "called": sorted(called),
         "missing_required": sorted(missing),
         "bonus_called": sorted(spec.get("bonus_tools", set()) & called),
     }
@@ -156,28 +172,78 @@ def _grade(spec, tool_calls, final_text):
 
 def _run_prompt(spec, timeout, model=None, mcp_config=None):
     try:
-        proc = subprocess.run(_claude_cmd(spec["prompt"], model, mcp_config), cwd=_REPO, capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(
+            _claude_cmd(spec["prompt"], model, mcp_config), cwd=_REPO, capture_output=True, text=True, timeout=timeout
+        )
     except subprocess.TimeoutExpired:
         return {"error": "timeout", "tool_calls": [], "final_text": "", "checks": {"passed": False}}
     except FileNotFoundError:
-        return {"error": "claude CLI not found on PATH", "tool_calls": [], "final_text": "", "checks": {"passed": False}}
+        return {
+            "error": "claude CLI not found on PATH",
+            "tool_calls": [],
+            "final_text": "",
+            "checks": {"passed": False},
+        }
     tool_calls, final_text = _parse_stream(proc.stdout)
     if not tool_calls and not final_text:
-        return {"error": f"no parseable output (exit {proc.returncode}); stderr: {proc.stderr[-300:]}",
-                "tool_calls": [], "final_text": "", "checks": {"passed": False}}
-    return {"error": None, "tool_calls": tool_calls, "final_text": final_text, "checks": _grade(spec, tool_calls, final_text)}
+        return {
+            "error": f"no parseable output (exit {proc.returncode}); stderr: {proc.stderr[-300:]}",
+            "tool_calls": [],
+            "final_text": "",
+            "checks": {"passed": False},
+        }
+    return {
+        "error": None,
+        "tool_calls": tool_calls,
+        "final_text": final_text,
+        "checks": _grade(spec, tool_calls, final_text),
+    }
 
 
 # --- fixture for --selftest: a synthetic "good" A2 trace, to prove the grader works with no model call ---
-_FIXTURE_STREAM = "\n".join([
-    json.dumps({"type": "assistant", "message": {"content": [
-        {"type": "tool_use", "id": "t1", "name": "mcp__centerline__check_covenant_compliance", "input": {"borrower_name": "Meridian"}}]}}),
-    json.dumps({"type": "assistant", "message": {"content": [
-        {"type": "tool_use", "id": "t2", "name": "mcp__centerline__detect_deterioration_signals", "input": {"borrower_name": "Meridian"}}]}}),
-    json.dumps({"type": "result", "subtype": "success", "is_error": False,
+_FIXTURE_STREAM = "\n".join(
+    [
+        json.dumps(
+            {
+                "type": "assistant",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "t1",
+                            "name": "mcp__centerline__check_covenant_compliance",
+                            "input": {"borrower_name": "Meridian"},
+                        }
+                    ]
+                },
+            }
+        ),
+        json.dumps(
+            {
+                "type": "assistant",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "t2",
+                            "name": "mcp__centerline__detect_deterioration_signals",
+                            "input": {"borrower_name": "Meridian"},
+                        }
+                    ]
+                },
+            }
+        ),
+        json.dumps(
+            {
+                "type": "result",
+                "subtype": "success",
+                "is_error": False,
                 "result": "Meridian's DSCR is 1.03 vs the 1.20 covenant minimum (cushion -0.17) -> Covenant Breach "
-                          "(loan_performance, 2025-05). The reported status lagged the declining trend."}),
-])
+                "(loan_performance, 2025-05). The reported status lagged the declining trend.",
+            }
+        ),
+    ]
+)
 
 
 def _selftest():
@@ -200,17 +266,25 @@ def _write_report(results, runs):
     os.makedirs(_REPORTS_DIR, exist_ok=True)
     today = datetime.date.today().isoformat()
     L = [
-        "# Agent-behavior eval (the LLM-driven decisions)", "",
-        f"_Generated {today} by `evals/agent_eval.py` — {runs} run(s) per prompt through Claude Code headless._", "",
+        "# Agent-behavior eval (the LLM-driven decisions)",
+        "",
+        f"_Generated {today} by `evals/agent_eval.py` — {runs} run(s) per prompt through Claude Code headless._",
+        "",
         "Grades the **model's** decisions with deterministic code: tool selection, §4.2 on the agent's own "
-        "narration, and fact faithfulness. Complements `runner.py` (which unit-tests the tool logic).", "",
-        "| Prompt | Runs passed | Tool selection | §4.2 on output | Facts |", "|---|---|---|---|---|",
+        "narration, and fact faithfulness. Complements `runner.py` (which unit-tests the tool logic).",
+        "",
+        "| Prompt | Runs passed | Tool selection | §4.2 on output | Facts |",
+        "|---|---|---|---|---|",
     ]
     for pid, runs_list in results.items():
         npass = sum(1 for r in runs_list if r["checks"].get("passed"))
+
         def frac(key):
-            return f"{sum(1 for r in runs_list if r['checks'].get(key, {}).get('ok')) }/{len(runs_list)}"
-        L.append(f"| **{pid}** | {npass}/{len(runs_list)} | {frac('tool_selection')} | {frac('section_4_2_output')} | {frac('fact_faithfulness')} |")
+            return f"{sum(1 for r in runs_list if r['checks'].get(key, {}).get('ok'))}/{len(runs_list)}"
+
+        L.append(
+            f"| **{pid}** | {npass}/{len(runs_list)} | {frac('tool_selection')} | {frac('section_4_2_output')} | {frac('fact_faithfulness')} |"
+        )
     L += ["", "## Per-run detail (with the model's captured analysis)", ""]
     trans_dir = os.path.join(_REPO, "traces", "agent_eval")
     os.makedirs(trans_dir, exist_ok=True)
@@ -221,10 +295,12 @@ def _write_report(results, runs):
                 L.append(f"- run {i}: ⚠️ ERROR — {r['error']}")
                 continue
             c = r["checks"]
-            L.append(f"- run {i}: {'✅ PASS' if c['passed'] else '❌ FAIL'} · "
-                     f"tools={c['tool_selection']['called']} · "
-                     f"§4.2 hits={c['section_4_2_output']['hits']} · "
-                     f"missing facts={c['fact_faithfulness']['missing_facts']}")
+            L.append(
+                f"- run {i}: {'✅ PASS' if c['passed'] else '❌ FAIL'} · "
+                f"tools={c['tool_selection']['called']} · "
+                f"§4.2 hits={c['section_4_2_output']['hits']} · "
+                f"missing facts={c['fact_faithfulness']['missing_facts']}"
+            )
             # the model's actual analysis text (what was graded) — inline + a raw transcript on disk
             narration = (r.get("final_text") or "").strip()
             with open(os.path.join(trans_dir, f"{pid}-run{i}.md"), "w", encoding="utf-8") as fh:
@@ -235,12 +311,14 @@ def _write_report(results, runs):
             L.append("\n  </details>")
         L.append("")
     L += [
-        "## Honest limits", "",
+        "## Honest limits",
+        "",
         "- **Non-deterministic** — the model can vary run to run; read the pass-rate, run with `--runs N`.",
         "- **§4.2 use-vs-mention** — the scanner flags a blocked phrase even if the agent is *quoting* it to "
         "explain a block; rare for A1/A2/A3, noted not fatal.",
         "- **Small prompt set** — the three Track-A prompts; Track-B prompts (emails/memos) will add a "
-        "generative-quality layer that may warrant an LLM-as-judge (a signal, not ground truth).", "",
+        "generative-quality layer that may warrant an LLM-as-judge (a signal, not ground truth).",
+        "",
     ]
     path = os.path.join(_REPORTS_DIR, "agent_eval.md")
     with open(path, "w", encoding="utf-8") as fh:
@@ -253,9 +331,15 @@ def main():
     ap.add_argument("--runs", type=int, default=1, help="runs per prompt (model is non-deterministic)")
     ap.add_argument("--timeout", type=int, default=240, help="per-run timeout (seconds)")
     ap.add_argument("--model", default=None, help="model override, e.g. claude-sonnet-4-6 (CI uses Sonnet for cost)")
-    ap.add_argument("--mcp-config", default=None, help="path to an MCP config (default: repo .mcp.json; CI: evals/ci.mcp.json)")
-    ap.add_argument("--min-pass-rate", type=float, default=1.0,
-                    help="exit 0 if overall pass-rate >= this (default 1.0 strict; CI may relax for non-determinism)")
+    ap.add_argument(
+        "--mcp-config", default=None, help="path to an MCP config (default: repo .mcp.json; CI: evals/ci.mcp.json)"
+    )
+    ap.add_argument(
+        "--min-pass-rate",
+        type=float,
+        default=1.0,
+        help="exit 0 if overall pass-rate >= this (default 1.0 strict; CI may relax for non-determinism)",
+    )
     ap.add_argument("--selftest", action="store_true", help="grade a fixture trace (no model call)")
     args = ap.parse_args()
 
@@ -280,8 +364,10 @@ def main():
     total_runs = sum(len(v) for v in results.values())
     total_pass = sum(1 for v in results.values() for r in v if r["checks"].get("passed"))
     rate = (total_pass / total_runs) if total_runs else 0.0
-    print(f"\n{total_pass}/{total_runs} runs passed (rate {rate:.2f}, threshold {args.min_pass_rate:.2f}) "
-          f"— wrote {os.path.relpath(path, _REPO)}")
+    print(
+        f"\n{total_pass}/{total_runs} runs passed (rate {rate:.2f}, threshold {args.min_pass_rate:.2f}) "
+        f"— wrote {os.path.relpath(path, _REPO)}"
+    )
     return 0 if rate >= args.min_pass_rate else 1
 
 

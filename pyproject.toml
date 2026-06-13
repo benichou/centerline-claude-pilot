@@ -11,3 +11,18 @@ dependencies = [
 # We run the server via PYTHONPATH (the package lives under mcp/centerline_mcp), so uv only needs to
 # manage the *environment* (the mcp SDK) — it does not build/install this repo as a package.
 package = false
+
+# Dev tooling (PEP 735 dependency group; uv installs `dev` by default). Pinned in uv.lock so pre-commit
+# runs the SAME versions everywhere (the .pre-commit-config.yaml local hooks call these via `uv run`).
+[dependency-groups]
+dev = [
+    "black>=24.10",
+    "flake8>=7.1",
+    "pre-commit>=3.8",
+]
+
+[tool.black]
+line-length = 120
+target-version = ["py310", "py311"]
+# data/ + reference/ markdown are content, not code (black only touches .py anyway; this is belt-and-braces)
+extend-exclude = '''/(\.venv|data|reference)/'''

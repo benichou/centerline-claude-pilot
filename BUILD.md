@@ -14,6 +14,20 @@ PYTHONPATH=mcp python3 mcp/tests/test_compliance.py
 `core.py` / `guards.py` are SDK-free, so the §2.1 strip / redaction / §5 gate / guarantor-refusal /
 covenant_status checks (11) run with a plain `python3`.
 
+## Linting & formatting (black + flake8, via pre-commit, uv-native)
+Dev tools are pinned in `uv.lock` (the `dev` dependency group), so everyone runs the same versions.
+**black** owns formatting (line-length 120); **flake8** lints real issues (it defers line-length to black —
+see `.flake8`). Pre-commit runs them via `uv run` (config in `.pre-commit-config.yaml`).
+```bash
+uv run pre-commit install          # one-time: install the git hook (runs on every commit)
+uv run pre-commit run --all-files  # run all hooks now
+uv run black .                     # format
+uv run flake8 .                    # lint
+```
+First commit after `pre-commit install`: if a hygiene hook (trailing-whitespace / end-of-file-fixer)
+auto-fixes a file, the commit aborts with the fix applied — just `git add -u` and re-commit. `data/` and
+`reference/` (the synthetic corpus) are excluded from formatting.
+
 ## Smoke-test the MCP server (FastMCP via uv)
 ```bash
 PYTHONPATH=mcp CENTERLINE_DATA_DIR=$(pwd)/data \

@@ -15,6 +15,7 @@ Tiers (see evals/GOLDEN.md):
 
 Exit code is non-zero if any case fails (CI-friendly).
 """
+
 import datetime
 import glob
 import json
@@ -80,7 +81,7 @@ def _num(x):
 def _compare(actual, spec):
     """True if `actual` satisfies `spec`. Scalar spec = equality; dict spec = one comparator."""
     if isinstance(spec, dict):
-        (op, val), = spec.items()
+        ((op, val),) = spec.items()
         try:
             if op == "contains":
                 return val in actual
@@ -181,11 +182,17 @@ def run_all():
     out = []
     for c in _load_cases():
         passed, detail = _grade(c)
-        out.append({
-            "id": c["id"], "tier": c.get("tier", "?"), "prompt": c.get("prompt", "?"),
-            "skill": c.get("skill", ""), "source": c.get("source", ""),
-            "passed": passed, "detail": detail,
-        })
+        out.append(
+            {
+                "id": c["id"],
+                "tier": c.get("tier", "?"),
+                "prompt": c.get("prompt", "?"),
+                "skill": c.get("skill", ""),
+                "source": c.get("source", ""),
+                "passed": passed,
+                "detail": detail,
+            }
+        )
     return out
 
 
@@ -195,13 +202,18 @@ def _write_results(results):
     npass = sum(1 for r in results if r["passed"])
     today = datetime.date.today().isoformat()
     lines = [
-        "# Eval results", "",
-        f"_Generated {today} by `evals/runner.py` against the live `centerline_mcp` logic._", "",
-        f"**{npass}/{n} cases passed.**", "",
+        "# Eval results",
+        "",
+        f"_Generated {today} by `evals/runner.py` against the live `centerline_mcp` logic._",
+        "",
+        f"**{npass}/{n} cases passed.**",
+        "",
         "Grading is deterministic: each case calls the real tool/guard and checks source-grounded",
-        "expectations. \"Accuracy\" is a clean number only here (T1/T2 ground truth); generative quality",
-        "(T4) is rubric + edit-rate, reported separately — never a fabricated single %.", "",
-        "| Case | Tier | Prompt | Result | Detail |", "|---|---|---|---|---|",
+        'expectations. "Accuracy" is a clean number only here (T1/T2 ground truth); generative quality',
+        "(T4) is rubric + edit-rate, reported separately — never a fabricated single %.",
+        "",
+        "| Case | Tier | Prompt | Result | Detail |",
+        "|---|---|---|---|---|",
     ]
     for r in results:
         mark = "✅ PASS" if r["passed"] else "❌ FAIL"
