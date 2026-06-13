@@ -5,6 +5,12 @@ description = "Local MCP server + compliance guards for the Centerline Claude pi
 requires-python = ">=3.10"
 dependencies = [
     "mcp>=1.2.0",
+    # doc-intelligence: the classify/extract MCP tools call the Anthropic API with Pydantic-typed,
+    # schema-forced structured output (validated deterministically). Key comes from env (ANTHROPIC_API_KEY),
+    # never committed. anthropic is imported lazily inside the doc-intel tools so the server still starts
+    # without it for the non-doc-intel tools.
+    "anthropic>=0.40",
+    "pydantic>=2",
 ]
 
 [tool.uv]

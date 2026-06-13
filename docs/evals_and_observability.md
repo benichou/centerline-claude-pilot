@@ -180,6 +180,34 @@ The loop deliberately stops at **advice**; a **human owns the decision and the m
   applied change is an ordinary reviewed commit — so "what was suggested, what was decided, by whom, when" is
   reconstructable (supports the §7 audit / §4.1 monitoring-governance story).
 
+### Demo prompts — showing the eval system (the two display skills)
+**Prereqs (Cowork):** upload the latest `centerline-plugin.zip` (Customize → Personal plugins) and **fully
+relaunch** (Cmd-Q → reopen → New task) so the bridged MCP server has `get_latest_report`. *(Claude Code: launch
+with `--plugin-dir ./centerline-plugin --mcp-config .mcp.json --setting-sources project`.)*
+
+**0. (optional) confirm it's loaded:**
+> "List the `centerline` plugin skills and the `mcp__centerline__*` tools you can see."
+
+Expect **14 skills** (incl. `viewing-eval-results` + `viewing-proposed-improvements`) and **11 tools** (incl. `get_latest_report`).
+
+**1. Agent-eval display — `viewing-eval-results` ("how is it doing?"):**
+> "Show me the latest agent eval."
+
+→ calls `get_latest_report(kind="agent_eval")` (pulls host-side first), then presents the **Layer-3** per-prompt
+results (A1/A2/A3: tool selection · §4.2-on-output · fact faithfulness) with each run's narration. *(Ask "show me
+the eval scorecard" for the Layer-1/2 deterministic `observability.md` view.)*
+
+**2. Eval-improve display — `viewing-proposed-improvements` ("what should we change?"):**
+> "Show me the latest proposed improvements to our skills and automations."
+
+→ calls `get_latest_report(kind="improvements")` (pulls first), then presents **Layer-4** Must-fix (e.g. the A1
+"creditworthiness" finding), Proactive, and Automation/eval-loop observations — **advisory only**; a human
+(Compliance / skill-library maintainer) decides and applies by hand.
+
+**The one-line framing for the panel:** *"how is it doing?"* → `viewing-eval-results`; *"what should we
+change?"* → `viewing-proposed-improvements`. Both pull the latest committed cron output via `get_latest_report`,
+so they're current even in Cowork.
+
 ## What "performance" means here (no single %)
 > performance = compliance (T2) + step-correctness (T3 expected-trace) + computation accuracy (T1) + generative quality (T4: rubric + edit-rate)
 
