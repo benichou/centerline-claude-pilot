@@ -99,13 +99,19 @@ avoided** — an evaluator must be independent of what it grades.
 Run it (you run this — it invokes Claude Code headless on **your** account; uses scoped `--allowedTools`, not a
 permission bypass):
 ```bash
-PYTHONPATH=mcp python3 evals/agent_eval.py --runs 1                       # real model runs -> reports/agent_eval.md
+PYTHONPATH=mcp python3 evals/agent_eval.py --runs 1                       # real model runs -> reports/agent_eval/
 PYTHONPATH=mcp python3 evals/agent_eval.py --runs 3                       # 3x per prompt -> read the pass-rate
 PYTHONPATH=mcp python3 evals/agent_eval.py --model claude-sonnet-4-6      # cheaper model (cost lever)
 PYTHONPATH=mcp python3 evals/agent_eval.py --selftest                     # prove the GRADER works, no model call
 ```
 Because the model is non-deterministic, read the **pass-rate** across runs, not a single boolean. Each run's
-narration is saved (collapsible in `reports/agent_eval.md`; full transcript in `traces/agent_eval/`).
+narration is saved (collapsible in the report; full transcript in `traces/agent_eval/<stamp>/`).
+
+**History & "which is latest":** each run writes a timestamped `reports/agent_eval/agent_eval-<UTC>.md`
+(filenames sort chronologically) **and** overwrites `reports/agent_eval/latest.md` — so a skill/reader just
+opens `latest.md` for the newest, or lists the folder for history. The nightly CI **commits these back to
+main** (below), so the history persists in the repo and the `viewing-eval-results` skill can show it on any
+surface.
 
 **Flags:** `--model <id>` (override; default = CLI default, which is the demo model), `--mcp-config <path>`
 (default repo `.mcp.json`; CI uses `evals/ci.mcp.json`), `--min-pass-rate <0..1>` (exit 0 if the overall
@@ -114,7 +120,8 @@ pass-rate clears the bar — default 1.0 strict; CI relaxes it for non-determini
 ### Scheduled CI (nightly regression) — `.github/workflows/agent-eval.yml`
 A GitHub Actions workflow runs this nightly (+ a manual button) on **Sonnet 4.6** (`--model claude-sonnet-4-6`)
 to keep cost low, with `--min-pass-rate 0.67` so one varied run out of three doesn't flake the build, and
-uploads `reports/agent_eval.md` as an artifact. Setup + honest caveats:
+commits the timestamped report to `reports/agent_eval/` on main (history) **and** uploads it as a run
+artifact. Setup + honest caveats:
 - **Secret:** add `ANTHROPIC_API_KEY` (Settings → Secrets → Actions). CI auth = an **API key → pay-per-token**,
   not the Pro/Max subscription. Triggers are `schedule` + `workflow_dispatch` only (never `pull_request`), so
   the key never reaches a PR-triggered run.
@@ -124,6 +131,11 @@ uploads `reports/agent_eval.md` as an artifact. Setup + honest caveats:
   NOT run this in cloud CI — use a self-hosted/on-prem runner or run locally. The workflow header says so.
 - **Portable config:** `evals/ci.mcp.json` has no absolute Mac paths (uv from PATH, `--project .`); the
   workflow supplies `PYTHONPATH`/`CENTERLINE_DATA_DIR` as absolute via `${{ github.workspace }}`.
+- **Commit-back (history):** the job needs `permissions: contents: write` and pushes a nightly
+  `chore(eval): … [skip ci]` commit to main with the timestamped report (the `[skip ci]` + GITHUB_TOKEN push
+  don't re-trigger it). Don't want a nightly bot commit? Delete the "Commit the timestamped report" step and
+  set `permissions: contents: read` — history then lives only as run artifacts (downloadable from Actions,
+  but not visible to the folder-reading skill).
 
 ## What "performance" means here (no single %)
 > performance = compliance (T2) + step-correctness (T3 expected-trace) + computation accuracy (T1) + generative quality (T4: rubric + edit-rate)
@@ -146,7 +158,7 @@ evals/GOLDEN.md              methodology
 evals/cases/*.jsonl          the golden set (81 cases)
 evals/runner.py              Layer 1: deterministic tool-logic grader -> evals/results/latest.md
 evals/observability.py       Layer 2: report-card generator           -> reports/observability.md
-evals/agent_eval.py          Layer 3: agent-behavior eval (real model) -> reports/agent_eval.md + traces/agent_eval/
+evals/agent_eval.py          Layer 3: agent-behavior eval (real model) -> reports/agent_eval/{<UTC>.md, latest.md}
 evals/ci.mcp.json            portable MCP config for CI (no absolute paths)
 .github/workflows/agent-eval.yml  nightly Layer-3 run on Sonnet 4.6 (schedule + manual)
 mcp/centerline_mcp/core.py   run_evals() (the tool logic)

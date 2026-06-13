@@ -23,7 +23,8 @@ on:
   workflow_dispatch: {}       # manual "Run workflow" button
 
 permissions:
-  contents: read
+  contents: write   # the job commits the timestamped report back to main (history). Remove the commit-back
+                    # step below + set this to read-only if you'd rather keep history only as run artifacts.
 
 jobs:
   agent-eval:
@@ -65,11 +66,24 @@ jobs:
         # --min-pass-rate 0.67 tolerates one varied run out of three (the model is non-deterministic);
         # a real regression (a prompt failing across runs) still drops below the bar and fails the job.
 
-      - name: Upload the report (always)
+      - name: Commit the timestamped report to the repo (history)
+        if: always()   # record the report even if the run dipped below the pass-rate threshold
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/agent_eval/
+          if git diff --cached --quiet; then
+            echo "no report changes to commit"
+          else
+            git commit -m "chore(eval): nightly agent-eval report $(date -u +%Y-%m-%dT%H:%MZ) [skip ci]"
+            git push origin HEAD:main
+          fi
+
+      - name: Upload the report + transcripts as a run artifact (always)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agent-eval-report
           path: |
-            reports/agent_eval.md
+            reports/agent_eval/
             traces/agent_eval/

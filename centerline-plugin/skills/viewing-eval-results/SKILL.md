@@ -12,8 +12,13 @@ any surface (including Cowork) because it just reads files.
 ## What to read
 - `reports/observability.md` — Layer 1/2: deterministic per-prompt scorecards (tool-logic correctness +
   expected skill/tool/guard trace). Always current; no model needed.
-- `reports/agent_eval.md` — Layer 3: the **agent-behavior** eval (real-model runs) — tool selection, §4.2 on
-  the agent's own narration, fact faithfulness, with each run's captured analysis.
+- `reports/agent_eval/latest.md` — Layer 3: the **most recent** agent-behavior eval (real-model runs) —
+  tool selection, §4.2 on the agent's own narration, fact faithfulness, with each run's captured analysis.
+  **Always read `latest.md` for "the latest"** (it's overwritten each run; its header shows the run's
+  UTC timestamp + model).
+- `reports/agent_eval/agent_eval-<UTC stamp>.md` — the **history**: one timestamped file per run
+  (filenames sort chronologically, so the newest is the max). List this folder if asked for trends/history
+  or to compare runs over time.
 - `evals/results/latest.md` — the raw golden-case pass/fail table.
 
 ## How to present

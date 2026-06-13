@@ -262,13 +262,17 @@ def _selftest():
     return 0 if good else 1
 
 
-def _write_report(results, runs):
-    os.makedirs(_REPORTS_DIR, exist_ok=True)
-    today = datetime.date.today().isoformat()
+def _write_report(results, runs, model=None):
+    # versioned history: reports/agent_eval/agent_eval-<UTC stamp>.md + a stable latest.md pointer
+    out_dir = os.path.join(_REPORTS_DIR, "agent_eval")
+    os.makedirs(out_dir, exist_ok=True)
+    now = datetime.datetime.now(datetime.timezone.utc)
+    stamp = now.strftime("%Y%m%d-%H%M%SZ")  # sortable -> "latest" == max(filename)
+    human = now.strftime("%Y-%m-%d %H:%M UTC")
     L = [
         "# Agent-behavior eval (the LLM-driven decisions)",
         "",
-        f"_Generated {today} by `evals/agent_eval.py` — {runs} run(s) per prompt through Claude Code headless._",
+        f"_Run {human} · model: {model or 'CLI default'} · {runs} run(s)/prompt · via `evals/agent_eval.py`._",
         "",
         "Grades the **model's** decisions with deterministic code: tool selection, §4.2 on the agent's own "
         "narration, and fact faithfulness. Complements `runner.py` (which unit-tests the tool logic).",
@@ -286,7 +290,7 @@ def _write_report(results, runs):
             f"| **{pid}** | {npass}/{len(runs_list)} | {frac('tool_selection')} | {frac('section_4_2_output')} | {frac('fact_faithfulness')} |"
         )
     L += ["", "## Per-run detail (with the model's captured analysis)", ""]
-    trans_dir = os.path.join(_REPO, "traces", "agent_eval")
+    trans_dir = os.path.join(_REPO, "traces", "agent_eval", stamp)
     os.makedirs(trans_dir, exist_ok=True)
     for pid, runs_list in results.items():
         L.append(f"### {pid}")
@@ -320,10 +324,13 @@ def _write_report(results, runs):
         "generative-quality layer that may warrant an LLM-as-judge (a signal, not ground truth).",
         "",
     ]
-    path = os.path.join(_REPORTS_DIR, "agent_eval.md")
-    with open(path, "w", encoding="utf-8") as fh:
-        fh.write("\n".join(L) + "\n")
-    return path
+    body = "\n".join(L) + "\n"
+    ts_path = os.path.join(out_dir, f"agent_eval-{stamp}.md")
+    latest_path = os.path.join(out_dir, "latest.md")
+    for p in (ts_path, latest_path):
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write(body)
+    return ts_path
 
 
 def main():
@@ -360,13 +367,13 @@ def main():
             runs_list.append(r)
         results[spec["id"]] = runs_list
 
-    path = _write_report(results, args.runs)
+    path = _write_report(results, args.runs, args.model)
     total_runs = sum(len(v) for v in results.values())
     total_pass = sum(1 for v in results.values() for r in v if r["checks"].get("passed"))
     rate = (total_pass / total_runs) if total_runs else 0.0
     print(
         f"\n{total_pass}/{total_runs} runs passed (rate {rate:.2f}, threshold {args.min_pass_rate:.2f}) "
-        f"— wrote {os.path.relpath(path, _REPO)}"
+        f"— wrote {os.path.relpath(path, _REPO)} (+ reports/agent_eval/latest.md)"
     )
     return 0 if rate >= args.min_pass_rate else 1
 

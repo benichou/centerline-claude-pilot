@@ -17,3 +17,6 @@ deterministically (so it works in both Claude Code and Cowork) and returns a **r
   credit-risk probability (§4.2). The footer is a qualitative label + concrete reasons.
 - Surface the footer on the artifact so the RM sees exactly how trustworthy it is and why.
 - If the tool returns `BLOCKED`, fix the §4.2 issue (state facts, not credit characterization) and re-run.
+- **Use the tool's footer — don't write your own.** Don't append prose like "no creditworthiness claims made
+  (§4.2)": naming credit-characterization words *even to deny them* trips the §4.2 screen and is redundant.
+  The `screen_and_finalize` footer is the compliance signal; let it speak.
