@@ -1,0 +1,27 @@
+id: extract_management_representation_letter
+system: |
+  {{ persona }}
+
+  For this task you are acting as the EXTRACTION step for a MANAGEMENT REPRESENTATION LETTER. Whether the
+  letter is actually signed is a quality signal the lender relies on, so judge the signature carefully.
+instruction: |
+  Extract the metadata of the management representation letter.
+
+  Where to find each field:
+  - `signed`: this is the key judgment. Set TRUE only if an ACTUAL signature is present (a handwritten/script
+    signature). A printed or typed name above a blank signature line, or a blank "Date: ____", means the
+    letter is UNSIGNED → set `signed` to false. Do not be fooled by a typed signatory name.
+  - `signatory_name`, `signatory_title`, `signed_date`: capture only if the letter is actually signed;
+    otherwise null.
+  - `letter_date`: the date printed at the top of the letter (if any).
+  - `represents_covenant_compliance`: set TRUE if any numbered representation asserts compliance with
+    contractual/financial covenants; otherwise false.
+
+  Conventions: use null for any field not present.
+
+  Return ONLY a JSON object matching this shape:
+  {
+    "letter_date": "<string or null>", "signed": <true or false>,
+    "signatory_name": "<string or null>", "signatory_title": "<string or null>",
+    "signed_date": "<string or null>", "represents_covenant_compliance": <true or false>
+  }

@@ -1,0 +1,40 @@
+# Document-type catalog, rendered into the classifier prompt as {{ doc_types }}. Single source of truth.
+doc_types:
+  - name: covenant_compliance_certificate
+    signals: >
+      A borrower certificate delivered under a credit agreement that CERTIFIES financial-covenant
+      calculations (DSCR, leverage, liquidity, capital expenditures) for a reporting period; references a
+      Credit Agreement section; shows required-vs-certified covenant levels; often includes an EBITDA
+      add-back bridge and a signature block (usually the CFO).
+  - name: financial_statement
+    signals: >
+      Income statement, balance sheet, and/or statement of cash flows (often comparative, with notes)
+      reporting ACTUAL financial results for a period. It reports results; it does not certify covenants.
+  - name: ar_aging_report
+    signals: >
+      Accounts-RECEIVABLE balances bucketed by days outstanding (Current, 1-30, 31-60, 61-90, 90+), typically
+      by customer or invoice. Note: an accounts-PAYABLE aging is NOT this type.
+  - name: management_representation_letter
+    signals: >
+      A letter addressed to the lender or auditor making written REPRESENTATIONS about the financial
+      statements (management responsibility, completeness, no fraud/irregularities, covenant compliance),
+      with a signature block.
+  - name: guarantor_personal_financial_statement
+    signals: >
+      The PERSONAL financial statement of an INDIVIDUAL guarantor (and/or spouse): personal assets (primary
+      residence, automobiles, personal bank and brokerage accounts), personal liabilities, and personal net
+      worth; often patterned on SBA Form 413. This is non-public personal information of an individual.
+  - name: purchase_order
+    signals: >
+      A customer purchase order or firm order for goods/services, with order quantities, part numbers, and
+      amounts.
+  - name: financial_projections
+    signals: >
+      Forward-looking PROJECTED or forecast financials / cash-flow forecasts with stated assumptions (future
+      periods), as opposed to actual historical results.
+  - name: other
+    signals: >
+      Any document that does not clearly match a type above — for example a Certificate of INSURANCE, a tax
+      form, a bank statement, a vendor invoice, or correspondence. When torn between a specific type and
+      `other`, choose the specific type only if the document's PRIMARY purpose clearly fits it; otherwise
+      choose `other`.

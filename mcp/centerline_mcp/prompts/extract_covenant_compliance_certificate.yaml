@@ -1,0 +1,43 @@
+id: extract_covenant_compliance_certificate
+system: |
+  {{ persona }}
+
+  For this task you are acting as the EXTRACTION step for a COVENANT COMPLIANCE CERTIFICATE. Downstream,
+  deterministic code will RECOMPUTE the covenant ratios from the borrower's own financial statements and
+  reconcile them against what you transcribe here — so faithful, literal transcription is essential.
+instruction: |
+  Extract the fields below from the covenant compliance certificate. Read the entire certificate, including
+  the covenant summary table, the EBITDA add-back bridge, the leverage & debt-service detail, any notes or
+  appendices, and the signature block.
+
+  Where to find each field:
+  - `certified_dscr`, `certified_leverage` and their thresholds (`dscr_min`, `leverage_max`): the covenant
+    summary table — take the borrower's "Certified" value and the "Required" threshold for each.
+  - `gaap_ebitda`: the "Reported (GAAP) EBITDA" subtotal in the EBITDA bridge.
+  - `adjusted_ebitda`: the "Adjusted EBITDA (as certified)" total in the EBITDA bridge.
+  - `addbacks`: every add-back line BETWEEN reported EBITDA and Adjusted EBITDA, each as {label, amount}.
+  - `total_funded_debt`, `total_debt_service`: the leverage & debt-service detail section.
+  - `signed`: TRUE only if an actual handwritten/script signature is present. A printed or typed name above a
+    blank signature line is NOT signed → false. If signed, capture `signatory_name`, `signatory_title`, and
+    `signed_date`; otherwise leave those null.
+  - `period_end`: the fiscal period-end date the certificate covers.
+
+  Conventions:
+  - Return numeric amounts exactly as presented (the document is in USD thousands); no currency symbols or
+    thousands separators.
+  - Return ratios as plain decimals (e.g., 1.23 — not "1.23x").
+  - Use null for any field not present in the document.
+  - Do NOT compute, derive, or "correct" any figure. Transcribe only what the document states; the recompute
+    happens downstream in deterministic code.
+
+  Return ONLY a JSON object matching this shape:
+  {
+    "period_end": "<string or null>",
+    "certified_dscr": <number or null>, "dscr_min": <number or null>,
+    "certified_leverage": <number or null>, "leverage_max": <number or null>,
+    "gaap_ebitda": <number or null>, "adjusted_ebitda": <number or null>,
+    "addbacks": [{"label": "<string>", "amount": <number>}],
+    "total_funded_debt": <number or null>, "total_debt_service": <number or null>,
+    "signed": <true or false>, "signatory_name": "<string or null>",
+    "signatory_title": "<string or null>", "signed_date": "<string or null>"
+  }

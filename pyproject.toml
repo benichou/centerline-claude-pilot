@@ -11,6 +11,13 @@ dependencies = [
     # without it for the non-doc-intel tools.
     "anthropic>=0.40",
     "pydantic>=2",
+    # doc-intel prompts are authored as YAML + Jinja2 templates (config, not hardcoded strings) and rendered
+    # at call time by centerline_mcp.prompts.
+    "jinja2>=3.1",
+    "pyyaml>=6",
+    # render_pdf MCP tool: turns a screened artifact (markdown) into a credit-file-grade PDF, host-side so
+    # it works in Code AND Cowork. Also used by data/synthetic/generate_meridian_package.py (gets it here).
+    "reportlab>=4.0",
 ]
 
 [tool.uv]
@@ -25,9 +32,6 @@ dev = [
     "black>=24.10",
     "flake8>=7.1",
     "pre-commit>=3.8",
-    # generation-time only: builds the synthetic covenant-package PDFs (the server only *reads* them, so this
-    # is NOT a runtime dep). Used by data/synthetic/generate_meridian_package.py.
-    "reportlab>=4.0",
 ]
 
 [tool.black]

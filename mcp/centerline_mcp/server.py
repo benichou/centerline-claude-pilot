@@ -38,15 +38,29 @@ def get_loan_performance(borrower_name: str, months: Optional[int] = None) -> di
 
 
 @mcp.tool()
-def screen_and_finalize(text: str, requires_rm_review: bool = True) -> dict:
+def screen_and_finalize(
+    text: str,
+    requires_rm_review: bool = True,
+    low_confidence_inputs: list = None,
+    cross_source_mismatches: list = None,
+) -> dict:
     """Screen a drafted artifact before presenting/sending it (the cross-surface OUTPUT guard).
 
     Scans for §4.2 credit-characterizing/predictive/recommending language (blocks if found — the RM owns the
     credit judgment), attaches a deterministic reliability footer (label + reasons, never a numeric %), and
     tags the output for RM review (§4.3). Route ALL generated artifacts (briefs, digests, emails, memos,
     readouts) through this before they leave.
+
+    For an HONEST footer, pass `cross_source_mismatches` (e.g. the list from cross_validate_covenant) and
+    `low_confidence_inputs` (e.g. from review_package — missing docs, unsigned letter, withheld names): with
+    either present the footer reads **Partial** with reasons, instead of a false "Grounded · 0 issues".
     """
-    return core.screen_and_finalize(text, requires_rm_review=requires_rm_review)
+    return core.screen_and_finalize(
+        text,
+        low_confidence_inputs=low_confidence_inputs,
+        cross_source_mismatches=cross_source_mismatches,
+        requires_rm_review=requires_rm_review,
+    )
 
 
 @mcp.tool()
@@ -116,6 +130,82 @@ def get_latest_report(kind: str = "improvements", pull: bool = True) -> dict:
     CONTENT — so it's current even in Cowork (whose file view can lag). kind: 'improvements' (proposed skill
     changes), 'agent_eval' (the agent-behavior eval), or 'observability' (deterministic scorecards)."""
     return core.get_latest_report(kind, pull)
+
+
+@mcp.tool()
+def list_documents(directory: str) -> dict:
+    """List the files in a package directory HOST-SIDE — use this FIRST to enumerate a covenant package
+    instead of guessing filenames or listing from the sandbox (which would trigger a Cowork folder-access
+    prompt). The server runs on the host in both Code and Cowork, so it reads the real directory. `directory`
+    is repo-relative (e.g. data/synthetic/meridian-package) or absolute. Returns {count, files, pdfs};
+    classify each entry in `pdfs` next. Deterministic (no API)."""
+    from . import docintel
+
+    return docintel.list_documents(directory)
+
+
+@mcp.tool()
+def classify_document(path: str) -> dict:
+    """Classify one covenant-package document (PDF) into a document type. Runs the §2.1 pre-screen first — a
+    guarantor personal financial statement is refused on intake and NEVER sent to a model. Otherwise calls the
+    Anthropic API (temp 0, Pydantic-forced schema) and returns {doc_type, confidence, rationale, key_signals,
+    is_restricted_personal_guarantor_info}. `path` is the PDF path (absolute, or relative to the repo)."""
+    from . import docintel
+
+    return docintel.classify_document(path)
+
+
+@mcp.tool()
+def extract_document_fields(path: str, doc_type: str) -> dict:
+    """Extract structured fields from a classified document, using the per-type schema. `other` (and
+    purchase_order/financial_projections) are skipped (no schema); a guarantor personal financial statement is
+    refused (§2.1). Otherwise returns the validated extracted fields for the type. Call classify_document first
+    to get `doc_type`."""
+    from . import docintel
+
+    return docintel.extract_document_fields(path, doc_type)
+
+
+@mcp.tool()
+def cross_validate_covenant(certificate: dict, financials: dict, borrower: str = "Meridian Fabrication") -> dict:
+    """Reconcile a covenant certificate's CERTIFIED ratios against the RECOMPUTED ratios from the attached
+    unadjusted (GAAP) financials AND the bank's own loan_performance. Surfaces the EBITDA add-back bridge
+    that drives any gap and flags — as a factual covenant-test result (§4.2) — where the certified figure
+    clears a threshold the recomputed figure does not. EVERY figure is provenance-tagged (document + field
+    + value; the bank figure to the deriving tool) and each finding carries its `sources` — assert nothing
+    untraceable (the RM was burned by an unreliable AI). Also returns `cross_source_mismatches` — pass it to
+    `screen_and_finalize` so the reliability footer is honest. Pass the `extracted` dicts from
+    extract_document_fields for the certificate and the financial statement. Deterministic (no API)."""
+    from . import package_review
+
+    return package_review.cross_validate_covenant(certificate, financials, borrower)
+
+
+@mcp.tool()
+def review_package(items: list, borrower: str = "Meridian Fabrication") -> dict:
+    """Intake summary for a classified+extracted covenant package: completeness (required vs received →
+    missing documents + outstanding data elements), quality flags (unsigned rep letter, withheld A/R
+    names) — each tagged with its source document + field + value — and the §2.1 refusals. `items` = list
+    of classify/extract result dicts ({doc_type, path?, extracted?, refused?, skipped?}). Also returns
+    `low_confidence_inputs` — pass it to `screen_and_finalize` so the reliability footer reflects the
+    package's gaps. Facts only (§4.2). Deterministic (no API)."""
+    from . import package_review
+
+    return package_review.review_package(items, borrower)
+
+
+@mcp.tool()
+def render_pdf(text: str, title: str = None, output_path: str = None, timestamp: bool = True) -> dict:
+    """Render a SCREENED artifact (markdown) to a credit-file-grade PDF, host-side (works in Code AND
+    Cowork). Pass the `finalized_text` from screen_and_finalize so the DRAFT / "Requires RM review" banner
+    and the reliability footer are preserved in the PDF. This is an ADDITIONAL output — the markdown
+    artifact is unchanged and still renders inline. Renders a small markdown subset (headings, bold/italic,
+    bullet/numbered lists, GFM tables, rules). `output_path` is repo-relative (default reports/pdf/); a UTC
+    timestamp is appended so each save is a unique, sortable file (timestamp=False writes the exact name).
+    Returns {ok, path, bytes}. Deterministic (no API)."""
+    from . import pdf_render
+
+    return pdf_render.render_pdf(text, title=title, output_path=output_path, timestamp=timestamp)
 
 
 def main():

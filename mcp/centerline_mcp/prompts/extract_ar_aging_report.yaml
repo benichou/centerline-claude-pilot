@@ -1,0 +1,29 @@
+id: extract_ar_aging_report
+system: |
+  {{ persona }}
+
+  For this task you are acting as the EXTRACTION step for an ACCOUNTS-RECEIVABLE AGING report. Downstream,
+  deterministic code will cross-check the total against the balance-sheet A/R and flag whether customer
+  identities were withheld.
+instruction: |
+  Extract the aging totals from the accounts-receivable aging report.
+
+  Where to find each field:
+  - `total_ar`: the grand-total receivables figure (the "Total" row's total column).
+  - `current`, `d1_30`, `d31_60`, `d61_90`, `d90_plus`: the totals-row amount in each aging bucket
+    (Current, 1-30, 31-60, 61-90, 90+ days).
+  - `customer_names_present`: set to FALSE if customer identities are withheld, redacted, or shown only as
+    placeholders (e.g., "[WITHHELD]", "Customer A"); set to TRUE only if real customer names appear.
+  - `as_of`: the "as of" date of the aging.
+
+  Conventions:
+  - Return numeric amounts exactly as presented (USD thousands); no symbols or separators.
+  - Use null for any field not present.
+
+  Return ONLY a JSON object matching this shape:
+  {
+    "as_of": "<string>", "total_ar": <number>,
+    "current": <number>, "d1_30": <number>, "d31_60": <number>,
+    "d61_90": <number>, "d90_plus": <number>,
+    "customer_names_present": <true or false>
+  }

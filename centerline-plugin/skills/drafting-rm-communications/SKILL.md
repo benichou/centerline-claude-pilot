@@ -14,4 +14,6 @@ package items are still outstanding). Covers Tom's draw-response letters [wf1] a
 - State **facts + clear requests** only ("To process Draw #13 we still need: 1) … 2) … 3) …").
 - **Route the draft through `screen_and_finalize`** (§4.2 scan) — it tags the output **"Requires RM review"**
   (§4.3). Never send without the RM.
+- **Then call `render_pdf`** on the returned `finalized_text` to emit a PDF copy (DRAFT banner + footer
+  preserved) — keep the markdown shown inline too. See `screening-and-gating-output`.
 - Ground every referenced fact (see `grounding-claims-to-source`).

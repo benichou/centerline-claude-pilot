@@ -757,6 +757,141 @@ def guarantor_pfs():
     d.build(el)
 
 
+def certificate_of_insurance():
+    """A misfiled document — a Certificate of Liability Insurance (ACORD-style) accidentally included in the
+    package. Should classify as `other` (NOT the covenant compliance certificate) and be skipped — no extraction."""
+    from reportlab.platypus import SimpleDocTemplate
+
+    path = os.path.join(_OUT, "meridian_certificate_of_insurance.pdf")
+
+    def coi_footer(canvas, doc):
+        canvas.saveState()
+        canvas.setStrokeColor(_LIGHT)
+        canvas.setLineWidth(0.5)
+        canvas.line(54, 40, LETTER[0] - 54, 40)
+        canvas.setFillColor(_GREY)
+        canvas.setFont("Helvetica", 6.5)
+        canvas.drawString(54, 30, "ACORD 25 (2016/03) — Certificate of Liability Insurance")
+        canvas.drawRightString(LETTER[0] - 54, 30, f"Page {doc.page}")
+        canvas.restoreState()
+
+    d = SimpleDocTemplate(
+        path,
+        pagesize=LETTER,
+        topMargin=50,
+        bottomMargin=48,
+        leftMargin=54,
+        rightMargin=54,
+        title="Certificate of Liability Insurance",
+    )
+    el = [
+        Paragraph("CERTIFICATE OF LIABILITY INSURANCE", _H),
+        Paragraph("Date issued: 03/15/2025", _SUB),
+        Spacer(1, 4),
+        Paragraph(
+            "THIS CERTIFICATE IS ISSUED AS A MATTER OF INFORMATION ONLY AND CONFERS NO RIGHTS UPON THE "
+            "CERTIFICATE HOLDER. THIS CERTIFICATE DOES NOT AFFIRMATIVELY OR NEGATIVELY AMEND, EXTEND OR ALTER "
+            "THE COVERAGE AFFORDED BY THE POLICIES BELOW.",
+            _SMALL,
+        ),
+        Spacer(1, 8),
+        Table(
+            [
+                [
+                    Paragraph(
+                        "<b>Producer</b><br/>Buckeye Commercial Insurance Group<br/>411 Statehouse Ave, "
+                        "Columbus, OH 43215<br/>(614) 555-0143 · certs@buckeyecig.com",
+                        _BODY,
+                    ),
+                    Paragraph(
+                        "<b>Insured</b><br/>Meridian Fabrication LLC<br/>2750 Fabrication Drive<br/>"
+                        "Columbus, OH 43204",
+                        _BODY,
+                    ),
+                ]
+            ],
+            colWidths=[3.1 * inch, 3.1 * inch],
+        ),
+        Spacer(1, 6),
+        Paragraph("Insurers affording coverage", _SECT),
+        _table(
+            [
+                ["A", "Hartford Fire Insurance Company", "19682"],
+                ["B", "Travelers Property Casualty Co. of America", "25674"],
+                ["C", "Ohio Casualty Insurance Company", "24074"],
+            ],
+            [0.5 * inch, 4.0 * inch, 1.4 * inch],
+            header=["Insurer", "Carrier", "NAIC #"],
+        ),
+        Paragraph("Coverages", _SECT),
+        _table(
+            [
+                [
+                    "A",
+                    "Commercial General Liability",
+                    "GL-4471882",
+                    "06/01/2024",
+                    "06/01/2025",
+                    "Each occ. $1,000,000 · Gen. agg. $2,000,000",
+                ],
+                [
+                    "B",
+                    "Automobile Liability (any auto)",
+                    "BA-9920147",
+                    "06/01/2024",
+                    "06/01/2025",
+                    "Combined single limit $1,000,000",
+                ],
+                [
+                    "C",
+                    "Umbrella / Excess Liability",
+                    "UMB-330271",
+                    "06/01/2024",
+                    "06/01/2025",
+                    "Each occurrence $5,000,000",
+                ],
+                [
+                    "B",
+                    "Workers’ Compensation & Employers’ Liability",
+                    "WC-7741209",
+                    "06/01/2024",
+                    "06/01/2025",
+                    "Statutory · E.L. each accident $1,000,000",
+                ],
+                [
+                    "A",
+                    "Property — Building & Equipment",
+                    "PR-5510338",
+                    "06/01/2024",
+                    "06/01/2025",
+                    "Blanket limit $12,000,000 · replacement cost",
+                ],
+            ],
+            [0.45 * inch, 1.9 * inch, 1.0 * inch, 0.85 * inch, 0.85 * inch, 1.5 * inch],
+            header=["Ins.", "Type of insurance", "Policy #", "Eff.", "Exp.", "Limits"],
+        ),
+        Spacer(1, 8),
+        Paragraph("Certificate holder", _SECT),
+        Paragraph(
+            "Centerline Bank, N.A., its successors and/or assigns, as Lender and Loss Payee<br/>"
+            "Commercial Banking Division · 200 Market Street, Hartford, CT",
+            _BODY,
+        ),
+        Spacer(1, 10),
+        Paragraph(
+            "Should any of the above-described policies be cancelled before the expiration date thereof, "
+            "notice will be delivered in accordance with the policy provisions. Lender is named as loss payee "
+            "and additional insured per the terms of the loan and security agreement.",
+            _SMALL,
+        ),
+        Spacer(1, 10),
+        Paragraph(
+            "Authorized representative: ____________________________  (Buckeye Commercial Insurance Group)", _SMALL
+        ),
+    ]
+    d.build(el, onFirstPage=coi_footer, onLaterPages=coi_footer)
+
+
 def _index():
     lines = [
         "# Meridian Fabrication LLC — Q1 2025 covenant package (SYNTHETIC)",
@@ -774,6 +909,7 @@ def _index():
         "| `meridian_ar_aging_2025-03.pdf` | ar_aging_report | invoice-level + charts; automotive customer names WITHHELD; total $9,800k ties to balance-sheet A/R |",
         "| `meridian_management_representation_letter.pdf` | management_representation_letter | UNSIGNED (David Kwan named as signatory; signature/date blank) |",
         "| `meridian_guarantor_personal_financial_statement.pdf` | guarantor_personal_financial_statement | David & Michelle Kwan — **§2.1: refuse on intake** |",
+        "| `meridian_certificate_of_insurance.pdf` | **other** | misfiled (ACORD Certificate of *Insurance*, not a covenant cert) — should classify `other` and be **skipped, not extracted** |",
         "",
         "## Required but still outstanding (NOT in this folder — completeness should flag these; the memo's Feb-14 list)",
         "- aerospace firm purchase order",
@@ -791,9 +927,10 @@ def main():
     ar_aging()
     representation_letter()
     guarantor_pfs()
+    certificate_of_insurance()
     _index()
     print(f"signature font: {_SIG}")
-    print(f"wrote 5 PDFs + INDEX.md to {os.path.relpath(_OUT)}")
+    print(f"wrote 6 PDFs + INDEX.md to {os.path.relpath(_OUT)}")
 
 
 if __name__ == "__main__":

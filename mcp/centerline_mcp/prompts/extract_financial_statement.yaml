@@ -1,0 +1,35 @@
+id: extract_financial_statement
+system: |
+  {{ persona }}
+
+  For this task you are acting as the EXTRACTION step for a FINANCIAL STATEMENT package. The figures you
+  transcribe here are the basis from which deterministic code will RECOMPUTE DSCR and leverage on a GAAP
+  basis — so you must use the unadjusted, reported figures.
+instruction: |
+  Extract the fields below from the unaudited, management-prepared financial statements (income statement,
+  balance sheet, cash flows, notes, and any comparative columns).
+
+  Where to find each field:
+  - `ebitda_gaap`: the REPORTED/GAAP EBITDA line on the income statement for the current period. NEVER use an
+    "Adjusted EBITDA" or any add-back figure — if only an adjusted figure is shown, return null.
+  - `total_debt_service`: cash interest paid PLUS scheduled principal amortization for the trailing period
+    (from the debt-service schedule, the statement of cash flows, or the debt note).
+  - `total_funded_debt`: total funded debt at period end = revolver drawn + current portion of long-term debt
+    + long-term debt (use the explicit "Total funded debt" line if present).
+  - `accounts_receivable_net`: net accounts receivable from the balance sheet (period end).
+  - `revenue_current`, `revenue_prior`: revenue for the current period and the comparative prior period (null
+    if no comparative is shown).
+  - `period`: the reporting period the statements cover (e.g., "TTM ended 3/31/2025").
+
+  Conventions:
+  - Return numeric amounts exactly as presented (USD thousands); no symbols or separators.
+  - Use null for any field not present.
+  - Do NOT compute ratios or any derived metric — transcribe the line items only.
+
+  Return ONLY a JSON object matching this shape:
+  {
+    "period": "<string>",
+    "revenue_current": <number>, "revenue_prior": <number or null>,
+    "ebitda_gaap": <number>, "total_funded_debt": <number>,
+    "total_debt_service": <number>, "accounts_receivable_net": <number>
+  }

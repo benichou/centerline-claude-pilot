@@ -13,6 +13,7 @@
 | `meridian_ar_aging_2025-03.pdf` | ar_aging_report | invoice-level + charts; automotive customer names WITHHELD; total $9,800k ties to balance-sheet A/R |
 | `meridian_management_representation_letter.pdf` | management_representation_letter | UNSIGNED (David Kwan named as signatory; signature/date blank) |
 | `meridian_guarantor_personal_financial_statement.pdf` | guarantor_personal_financial_statement | David & Michelle Kwan — **§2.1: refuse on intake** |
+| `meridian_certificate_of_insurance.pdf` | **other** | misfiled (ACORD Certificate of *Insurance*, not a covenant cert) — should classify `other` and be **skipped, not extracted** |
 
 ## Required but still outstanding (NOT in this folder — completeness should flag these; the memo's Feb-14 list)
 - aerospace firm purchase order

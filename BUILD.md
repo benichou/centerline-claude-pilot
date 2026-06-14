@@ -14,6 +14,15 @@ PYTHONPATH=mcp python3 mcp/tests/test_compliance.py
 `core.py` / `guards.py` are SDK-free, so the §2.1 strip / redaction / §5 gate / guarantor-refusal /
 covenant_status checks (11) run with a plain `python3`.
 
+## Run the doc-intel tests (needs the uv env — pydantic / jinja2 / pyyaml; NO Anthropic API call)
+```bash
+PYTHONPATH=mcp uv run python mcp/tests/test_docintel.py
+```
+Covers the deterministic, model-independent parts of `docintel.py`: the §2.1 pre-screen, the
+`other`/guarantor/unknown extract short-circuits, the schema↔prompt wiring, and Pydantic validation.
+The LIVE `classify_document` / `extract_document_fields` calls (which spend tokens) are run by hand on
+the real `data/synthetic/meridian-package/` PDFs — they read `ANTHROPIC_API_KEY` from the environment.
+
 ## Linting & formatting (black + flake8, via pre-commit, uv-native)
 Dev tools are pinned in `uv.lock` (the `dev` dependency group), so everyone runs the same versions.
 **black** owns formatting (line-length 120); **flake8** lints real issues (it defers line-length to black —

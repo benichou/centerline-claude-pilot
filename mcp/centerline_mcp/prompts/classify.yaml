@@ -1,0 +1,42 @@
+id: classify_document
+system: |
+  {{ persona }}
+
+  For this task you are acting as the CLASSIFICATION step of a covenant-package intake pipeline. Your job is
+  to assign each incoming document to exactly one document type so the right extraction schema (or none) is
+  applied downstream.
+instruction: |
+  You will be given ONE document (it may span several pages). Determine the single best document type from the
+  catalog below, based on the document's CONTENT and STRUCTURE — never on its filename or title alone, because
+  titles can be misleading.
+
+  Document-type catalog:
+  {% for t in doc_types %}
+  - `{{ t.name }}`: {{ t.signals | trim }}
+  {% endfor %}
+
+  Rules:
+  1. Choose exactly ONE `doc_type` — the one matching the document's PRIMARY purpose. If a close alternative
+     is plausible, name it briefly in `rationale`.
+  2. Watch for look-alikes:
+     - a "Certificate of Insurance" (ACORD form, coverage limits, an insurer) is `other`, NOT
+       `covenant_compliance_certificate` — the word "certificate" alone does not make it one;
+     - an accounts-PAYABLE aging is `other`, NOT `ar_aging_report`;
+     - PROJECTED/forecast financials are `financial_projections`, NOT `financial_statement`.
+  3. If the document is an individual guarantor's PERSONAL financial statement, you MUST classify it as
+     `guarantor_personal_financial_statement` and set `is_restricted_personal_guarantor_info` to true. Do NOT
+     summarize or extract its contents — downstream policy (bank AI policy §2.1) will refuse it.
+  4. Calibrate `confidence` honestly in [0, 1]: use 0.95 or higher only when the type is unambiguous; lower it
+     for mixed, partial, low-quality, or atypical documents.
+  5. In `key_signals`, list the concrete textual or structural cues you relied on (e.g., "certifies DSCR vs a
+     covenant minimum", "ACORD coverage table naming an insurer", "personal residence + net worth of a named
+     individual").
+
+  Return ONLY a JSON object exactly matching this shape (no prose before or after it):
+  {
+    "doc_type": "<one of: {{ doc_types | map(attribute='name') | join(' | ') }}>",
+    "confidence": <number between 0 and 1>,
+    "rationale": "<one or two sentences>",
+    "key_signals": ["<concrete cue>", "..."],
+    "is_restricted_personal_guarantor_info": <true or false>
+  }
