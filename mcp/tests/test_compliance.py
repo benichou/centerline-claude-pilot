@@ -246,4 +246,36 @@ check(
     mr["healthy"] is False and mr["retention_attention"] is False,
 )
 
+# --- reliability footer now ENUMERATES the why (low-confidence inputs + cross-source mismatches) ---
+sf = core.screen_and_finalize(
+    "DSCR 1.03 vs the 1.20 minimum [loan_performance, 2025-05].",
+    low_confidence_inputs=[
+        {"reason": "no relationship memo on file", "tool": "get_borrower_dossier", "source": "portfolio_reference.csv"},
+        "record may be stale (newest 2025-05-31)",
+    ],
+    cross_source_mismatches=[
+        {
+            "metric": "DSCR",
+            "certified": 1.23,
+            "recomputed": 1.03,
+            "tool": "cross_validate_covenant",
+            "source": "covenant_compliance_certificate vs financial_statement",
+        }
+    ],
+)
+foot = sf["reliability"]["footer"]
+check("footer: Partial when low-confidence/mismatch present", sf["reliability"]["label"] == "Partial")
+check("footer: enumerates the low-confidence inputs (the 'why')", "no relationship memo on file" in foot)
+check("footer: enumerates the cross-source mismatch with its reason", "DSCR certified 1.23 vs recomputed 1.03" in foot)
+check(
+    "footer: renders each reason as its own markdown bullet (not a run-on)", "\n- no relationship memo on file" in foot
+)
+check(
+    "footer: each reason carries [tool · source] provenance", "[get_borrower_dossier · portfolio_reference.csv]" in foot
+)
+check(
+    "footer: mismatch carries [tool · source] provenance",
+    "[cross_validate_covenant · covenant_compliance_certificate vs financial_statement]" in foot,
+)
+
 print(f"\nALL {_passed} CHECKS PASSED")

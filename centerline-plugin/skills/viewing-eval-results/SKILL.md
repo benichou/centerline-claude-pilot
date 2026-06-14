@@ -34,10 +34,11 @@ even in Cowork. Then read the files below for the full detail / history.
 - The Layer-1 scorecard (`reports/observability.md`) now spans **both tracks** — A1/A2/A3 (Track A) **and**
   B1/B2/B3/B4 (Track B) — so present it as a whole-system reliability read for the CCO, not just early-warning.
 
-## Optional: a Centerline-styled PDF copy (for the CCO / the file)
-If the user wants a fileable, shareable copy, pass the report content (from `get_latest_report` or the file)
-to the **`render_pdf`** MCP tool — it adds the Centerline Bank letterhead + footer and writes a timestamped
-PDF to `reports/pdf/`. Keep showing the markdown inline; the PDF is an additional output.
+## Also render a Centerline-styled PDF (every view — for the CCO / the file)
+After presenting the report inline, **render it to a Centerline-letterheaded PDF**: pass the report content
+(from `get_latest_report` or the file) to the **`render_pdf`** MCP tool → a timestamped PDF in
+`reports/pdf/`. Keep showing the markdown inline; the PDF is the fileable copy. (If the report body is
+truncated/empty because a CI run failed, say so and render the last complete report instead.)
 
 ## Important: display vs run (be honest about the surface)
 - **`run_evals`** (the MCP tool / `running-the-eval-suite` skill) re-runs Layers 1/2 live — works in Code **and**

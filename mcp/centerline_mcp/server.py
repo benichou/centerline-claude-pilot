@@ -218,17 +218,22 @@ def review_package(items: list, borrower: str = "Meridian Fabrication") -> dict:
 
 
 @mcp.tool()
-def render_pdf(text: str, title: str = None, output_path: str = None, timestamp: bool = True) -> dict:
+def render_pdf(
+    text: str, title: str = None, output_path: str = None, timestamp: bool = True, charts: list = None
+) -> dict:
     """Render a SCREENED artifact (markdown) to a credit-file-grade PDF, host-side (works in Code AND
     Cowork). Pass the `finalized_text` from screen_and_finalize so the DRAFT / "Requires RM review" banner
     and the reliability footer are preserved in the PDF. This is an ADDITIONAL output — the markdown
     artifact is unchanged and still renders inline. Renders a small markdown subset (headings, bold/italic,
     bullet/numbered lists, GFM tables, rules). `output_path` is repo-relative (default reports/pdf/); a UTC
     timestamp is appended so each save is a unique, sortable file (timestamp=False writes the exact name).
-    Returns {ok, path, bytes}. Deterministic (no API)."""
+    `charts` (optional) appends stylish trend charts — a list of {title, type:'line'|'bar', labels, series,
+    threshold?} (e.g. the Meridian DSCR trend with a 1.20 floor, or the engagement gaps as bars), fed the
+    deterministic series from get_loan_performance / detect_deterioration_signals. Returns {ok, path, bytes}.
+    Deterministic (no API)."""
     from . import pdf_render
 
-    return pdf_render.render_pdf(text, title=title, output_path=output_path, timestamp=timestamp)
+    return pdf_render.render_pdf(text, title=title, output_path=output_path, timestamp=timestamp, charts=charts)
 
 
 def main():

@@ -11,7 +11,11 @@ decision (§4.2). All borrower-facing / credit-file output requires RM review be
 
 ## How
 1. Call the **`centerline` MCP tool `screen_and_finalize`** on the draft (this is the cross-surface guard — it
-   runs server-side in both Code and Cowork).
+   runs server-side in both Code and Cowork). Pass `low_confidence_inputs` and `cross_source_mismatches` so
+   the footer explains *why* it's Partial — and pass each as a **structured** item
+   `{"reason": ..., "tool": ..., "source": ...}` so every reason cites the tool that surfaced it and the
+   source file/data (the footer renders `- reason [tool · source]`). Tools that emit these
+   (`cross_validate_covenant`, `review_package`) already return the structured form — pass it straight through.
 2. If `blocked` (a §4.2 hit), **revise to facts only** — present the numbers and let the RM author any
    judgment — then re-screen. Examples to remove: "elevated credit risk", "likely to default", "I recommend
    waiving", "risk rating". Keep factual status: "DSCR 1.03 vs the 1.20 covenant minimum", "covenant_status:

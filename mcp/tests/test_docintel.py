@@ -177,8 +177,12 @@ check(
 )
 check(
     "footer tie-in: low_confidence_inputs covers missing + unsigned + withheld (for screen_and_finalize)",
-    any("aerospace_purchase_order" in i for i in rp["low_confidence_inputs"])
-    and any("unsigned" in i for i in rp["low_confidence_inputs"]),
+    any("aerospace_purchase_order" in i["reason"] for i in rp["low_confidence_inputs"])
+    and any("unsigned" in i["reason"] for i in rp["low_confidence_inputs"]),
+)
+check(
+    "low_confidence_inputs carry tool + source provenance",
+    all(i.get("tool") == "review_package" and i.get("source") for i in rp["low_confidence_inputs"]),
 )
 check(
     "review_package: a clean borrower with all docs has no missing",

@@ -60,13 +60,21 @@ def _split_row(line):
     return [c.strip() for c in cells]
 
 
-def render_pdf(text, title=None, output_path=None, timestamp=True):
+def render_pdf(text, title=None, output_path=None, timestamp=True, charts=None):
     """Render `text` (markdown) to a PDF. Returns {ok, path, bytes}. `output_path` is repo-relative
     (resolved on the host) or absolute; defaults under reports/pdf/. By default a UTC timestamp is appended
     to the filename so each save is a unique, chronologically-sortable file (set timestamp=False to write
     the exact name). The text is rendered verbatim — pass the finalized output from screen_and_finalize so
     the banner + reliability footer are preserved. `title` is used only when the body does not already begin
-    with its own H1 (otherwise the title would print twice)."""
+    with its own H1 (otherwise the title would print twice).
+
+    `charts` (optional) renders STYLISH trend charts after the body — a list of
+    {title, type: 'line'|'bar', labels: [...], series: [...], threshold?: float}. e.g. the Meridian DSCR
+    trend (type 'line', threshold 1.20) or the engagement gaps (type 'bar'). Fed the deterministic series
+    from get_loan_performance / detect_deterioration_signals."""
+    from reportlab.graphics.charts.barcharts import VerticalBarChart
+    from reportlab.graphics.charts.linecharts import HorizontalLineChart
+    from reportlab.graphics.shapes import Drawing, String
     from reportlab.lib import colors
     from reportlab.lib.enums import TA_LEFT
     from reportlab.lib.pagesizes import LETTER
@@ -212,6 +220,53 @@ def render_pdf(text, title=None, output_path=None, timestamp=True):
             para.append(stripped)
         i += 1
     flush_para(para)
+
+    # --- trend charts (optional) — reportlab.graphics line/bar, appended after the body ---
+    def _chart_flowable(spec):
+        d = Drawing(460, 168)
+        d.add(String(0, 154, str(spec.get("title", "")), fontName="Helvetica-Bold", fontSize=9.5, fillColor=_NAVY))
+        labels = [str(x) for x in (spec.get("labels") or [])]
+        series = [v for v in (spec.get("series") or [])]
+        if spec.get("type") == "bar":
+            bc = VerticalBarChart()
+            bc.x, bc.y, bc.width, bc.height = 30, 22, 410, 118
+            bc.data = [series]
+            bc.categoryAxis.categoryNames = labels
+            bc.categoryAxis.labels.fontSize = 7
+            bc.valueAxis.valueMin = 0
+            bc.bars[0].fillColor = _NAVY
+            d.add(bc)
+        else:  # line (optional threshold rendered as a dashed second line)
+            lc = HorizontalLineChart()
+            lc.x, lc.y, lc.width, lc.height = 35, 24, 405, 116
+            threshold = spec.get("threshold")
+            lc.data = [series] + ([[threshold] * len(series)] if threshold is not None else [])
+            lc.categoryAxis.categoryNames = labels
+            lc.categoryAxis.labels.fontSize = 5
+            lc.categoryAxis.labels.angle = 30
+            lc.categoryAxis.labels.boxAnchor = "ne"
+            lc.valueAxis.labels.fontSize = 6
+            lc.lines[0].strokeColor = _NAVY
+            lc.lines[0].strokeWidth = 1.5
+            if threshold is not None:
+                lc.lines[1].strokeColor = _GOLD
+                lc.lines[1].strokeDashArray = [3, 2]
+            vals = [v for v in series if isinstance(v, (int, float))] + (
+                [threshold] if isinstance(threshold, (int, float)) else []
+            )
+            if vals:
+                lo, hi = min(vals), max(vals)
+                pad = (hi - lo) * 0.15 or (abs(hi) * 0.1 or 0.1)
+                lc.valueAxis.valueMin, lc.valueAxis.valueMax = lo - pad, hi + pad
+            d.add(lc)
+        return d
+
+    for spec in charts or []:
+        try:
+            flow.append(Spacer(1, 10))
+            flow.append(_chart_flowable(spec))
+        except Exception:  # noqa: BLE001 — a chart must never break the readout
+            pass
 
     target = output_path or "reports/pdf/artifact.pdf"
     abspath = _resolve(_stamped(target) if timestamp else target)

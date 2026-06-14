@@ -20,10 +20,16 @@ assessment** — which §4.2 forbids. The fix isn't a disclaimer; it's **decompo
    covenant status, engagement summary, open items — **every line cited** (`grounding-claims-to-source`),
    **no credit characterization**.
 
-2. **⏸ STOP — ask the RM for the assessment, in their words.** Explicitly pause and request the RM's own
-   credit read ("In your words: what's your assessment of this relationship / the credit?"). **Do NOT
-   generate, infer, suggest, or "draft for approval" the assessment** — that is the §4.2 line. If no
-   RM-authored assessment is provided, the memo is **not complete** — say so; do not fill the gap.
+2. **⏸ STOP — ask the RM for the assessment, in their words.** Pause and elicit, with these **exact fields
+   every time** (so the form is consistent run-to-run):
+   1. **Assessment** *(required, free text)* — "In your words: what's your assessment of this relationship
+      and the credit?"
+   2. **Outlook** — one of **Positive / Stable / Watch-monitor / Other**.
+   3. **Next steps / conditions** *(optional)* — anything to carry in the RM's voice.
+   4. **Attribution** — whose name the memo is filed under (**the RM of record / Other**).
+   **Do NOT generate, infer, suggest, or "draft for approval" the assessment or the outlook** — that is the
+   §4.2 line. If no RM-authored assessment is provided, the memo is **not complete** — say so; do not fill
+   the gap.
 
 3. **DRAFT the narrative around the RM's assessment.** Place the RM's words as the assessment section
    **verbatim and attributed**, and write the surrounding narrative to *organize and present* the facts and
@@ -31,7 +37,9 @@ assessment** — which §4.2 forbids. The fix isn't a disclaimer; it's **decompo
 
 4. **SCREEN + render.** Route the memo through **`screen_and_finalize`** (it blocks any credit-adjacent
    language that slipped in, attaches the reliability footer, tags §4.3). Then `render_pdf` for a fileable
-   copy; keep the markdown inline. The memo goes to the credit file only after RM review (§4.3).
+   copy, **including the DSCR arc as a chart** — `charts=[{"title":"DSCR trend (TTM)","type":"line",
+   "labels":<months>,"series":<dscr_ttm from get_loan_performance>,"threshold":<covenant min>}]`; keep the
+   markdown inline. The memo goes to the credit file only after RM review (§4.3).
 
 ## Keep the line crisp (§4.2)
 - AI MAY: assemble data, summarize the trend as facts, format, and draft narrative **around** the RM's

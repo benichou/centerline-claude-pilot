@@ -153,7 +153,16 @@ def cross_validate_covenant(certificate, financials, borrower="Meridian Fabricat
                 ],
             }
         )
-        mismatches.append({"metric": "DSCR", "certified": certified_dscr, "recomputed": rc_dscr, "minimum": dscr_min})
+        mismatches.append(
+            {
+                "metric": "DSCR",
+                "certified": certified_dscr,
+                "recomputed": rc_dscr,
+                "minimum": dscr_min,
+                "tool": "cross_validate_covenant",
+                "source": f"{CERT} vs {FIN}",
+            }
+        )
     if cert_lev_ok and rc_lev_ok is False:
         findings.append(
             {
@@ -166,7 +175,16 @@ def cross_validate_covenant(certificate, financials, borrower="Meridian Fabricat
                 ],
             }
         )
-        mismatches.append({"metric": "leverage", "certified": certified_lev, "recomputed": rc_lev, "maximum": lev_max})
+        mismatches.append(
+            {
+                "metric": "leverage",
+                "certified": certified_lev,
+                "recomputed": rc_lev,
+                "maximum": lev_max,
+                "tool": "cross_validate_covenant",
+                "source": f"{CERT} vs {FIN}",
+            }
+        )
     if addback_total:
         labels = ", ".join(f"{a.get('label')} ({a.get('amount')})" for a in addbacks) if addbacks else "unspecified"
         findings.append(
@@ -295,11 +313,26 @@ def review_package(items, borrower="Meridian Fabrication"):
             }
         )
 
-    # Ready-to-pass list for screen_and_finalize so the reliability footer reflects provenance coverage.
+    # Ready-to-pass list for screen_and_finalize — each carries its tool + source so the footer's "why" is
+    # fully provenance-tagged (reason [tool · source]).
+    def _q_src(q):
+        s = q.get("source") or {}
+        return f"{s.get('document', q['doc_type'])} ({s.get('field')}={s.get('value')})" if s else q["doc_type"]
+
     low_confidence_inputs = (
-        [f"missing document: {m['document']}" for m in missing]
-        + [f"{q['doc_type']}: {q['flag']}" for q in quality]
-        + [f"outstanding data element: {e}" for e in spec["required_data_elements"]]
+        [
+            {
+                "reason": f"missing document: {m['document']}",
+                "tool": "review_package",
+                "source": "required-vs-received (Feb-14 list)",
+            }
+            for m in missing
+        ]
+        + [{"reason": f"{q['doc_type']}: {q['flag']}", "tool": "review_package", "source": _q_src(q)} for q in quality]
+        + [
+            {"reason": f"outstanding data element: {e}", "tool": "review_package", "source": "ar_aging_report"}
+            for e in spec["required_data_elements"]
+        ]
     )
 
     return {

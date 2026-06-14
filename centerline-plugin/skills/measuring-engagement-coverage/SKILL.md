@@ -19,3 +19,12 @@ in covenant breach — vs a naive **33 days** (because the only entry since was 
   or any risk characterization.
 - **RM-private and advisory** — the RM can annotate ("saw them at a conference") or dismiss; never auto-escalate.
 - Pair with `detecting-deterioration-signals`: a long gap *during distress* is the signal that matters.
+- **Route the written readout through `screen_and_finalize`; do not write your own reliability footer or
+  compliance disclaimer** (no "Reliability: High/Moderate" scale, no "…not a creditworthiness judgment"
+  line — credit vocab even in negation trips §4.2). Pass the log-completeness caveat as a
+  **structured** `low_confidence_input` — `{"reason":"gaps computed from the activity log only; off-log
+  contact would shorten the true gap","tool":"measure_engagement_coverage","source":"rm_activity_log.csv"}` —
+  so the footer cites its tool + source. See `screening-and-gating-output`.
+- Then **`render_pdf`** the finalized text for an RM-fileable Centerline PDF (keep the inline readout too),
+  **including the gaps as a bar chart** — `charts=[{"title":"Days since substantive contact","type":"bar",
+  "labels":<borrowers>,"series":<days>}]`.

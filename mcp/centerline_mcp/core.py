@@ -67,7 +67,9 @@ _CITATION_RE = _re.compile(
     r"(:L?\d+\b|\bL\d+\b|\(source:|loan_perf|activity_log|portfolio_ref|thread-\d|meridian-review"
     r"|\.csv\b|\.md\b|\.pdf\b|\bcenterline\b|\bmcp\b|as[\s\-]of|\b\d{4}-\d{2}\b"
     r"|check_covenant_compliance|detect_deterioration_signals|measure_engagement_coverage|assemble_watchlist"
-    r"|get_borrower_dossier|get_loan_performance|get_activity_log|get_emails)",
+    r"|get_borrower_dossier|get_loan_performance|get_activity_log|get_emails"
+    r"|cross_validate_covenant|review_package|flag_renewal_and_retention|get_relationship_timeline"
+    r"|classify_document|extract_document_fields|financial_statement|covenant_compliance_certificate)",
     _re.IGNORECASE,
 )
 
@@ -86,25 +88,65 @@ def screen_and_finalize(text, low_confidence_inputs=None, cross_source_mismatche
     violations = guards.scan_credit_language(text)
     has_citation = bool(_CITATION_RE.search(text or ""))
 
-    reasons = []
+    def _prov(d):
+        # a " [tool · source]" provenance tag from a {tool, source} dict (either may be absent)
+        parts = [p for p in (d.get("tool"), d.get("source")) if p]
+        return f" [{' · '.join(parts)}]" if parts else ""
+
+    def _fmt_lc(x):
+        # a low-confidence input: a plain string, or {reason|text, tool?, source?} -> "reason [tool · source]"
+        if isinstance(x, dict):
+            return (x.get("reason") or x.get("text") or "").strip() + _prov(x)
+        return str(x)
+
+    def _fmt_mismatch(m):
+        if isinstance(m, dict):
+            metric = m.get("metric", "metric")
+            if "certified" in m and "recomputed" in m:
+                base = f"{metric} certified {m['certified']} vs recomputed {m['recomputed']}"
+            else:
+                base = f"{metric}: " + ", ".join(
+                    f"{k}={v}" for k, v in m.items() if k not in ("metric", "tool", "source")
+                )
+            return base + _prov(m)
+        return str(m)
+
+    head_reasons, detail_sections = [], []  # head = inline on the label line; sections = bulleted below
     label = "Grounded"
     if violations:
         label = "BLOCKED (§4.2)"
-        reasons.append(f"credit-adjacent language: {sorted(set(violations))}")
+        head_reasons.append(f"credit-adjacent language: {sorted(set(violations))}")
     if not has_citation:
         if label == "Grounded":
             label = "Unverified"
-        reasons.append("no source citation detected")
+        head_reasons.append("no source citation detected")
     if low_confidence_inputs:
         if label == "Grounded":
             label = "Partial"
-        reasons.append(f"{len(low_confidence_inputs)} low-confidence input(s)")
+        detail_sections.append(
+            (f"{len(low_confidence_inputs)} low-confidence input(s):", [_fmt_lc(x) for x in low_confidence_inputs])
+        )
     if cross_source_mismatches:
         if label == "Grounded":
             label = "Partial"
-        reasons.append(f"{len(cross_source_mismatches)} cross-source mismatch(es)")
+        detail_sections.append(
+            (
+                f"{len(cross_source_mismatches)} cross-source mismatch(es):",
+                [_fmt_mismatch(m) for m in cross_source_mismatches],
+            )
+        )
 
-    footer = f"Reliability: {label}" + (" · " + " · ".join(reasons) if reasons else " · 0 issues")
+    # "Reliability: <label>" + any inline head reasons; then EACH low-confidence/mismatch reason as its own
+    # markdown bullet (-) under a heading, so the "why" renders as clear bullets (not a run-on) in chat + PDF.
+    if head_reasons:
+        footer = f"Reliability: {label} · " + " · ".join(head_reasons)
+    elif detail_sections:
+        footer = f"Reliability: {label}"
+    else:
+        footer = f"Reliability: {label} · 0 issues"
+    for heading, items in detail_sections:
+        footer += "\n\n" + heading + "\n" + "\n".join(f"- {it}" for it in items)
+    reasons = head_reasons + [it for _, items in detail_sections for it in items]
     blocked = bool(violations)
     finalized = None
     if not blocked:

@@ -20,4 +20,10 @@ server-side). It looks across the *full* history, not just the binary status, an
 - Present signals as **facts** (§4.2) — never "high/elevated risk" or predictions. The RM judges.
 - A pristine, improving borrower (e.g., Crestwood) returns **no signals** — say so honestly (the early-warning
   is structurally blind to a healthy borrower; relationship/renewal risk is a *separate* lens).
-- Cite the data; route any written summary through `screen_and_finalize`.
+- Cite the data and **route the written summary through `screen_and_finalize`**. **Do not write your own
+  reliability footer or compliance disclaimer** — no "Reliability: High/Moderate" scale, no "no
+  creditworthiness…" line (credit vocab even in negation trips §4.2); the tool's deterministic footer is the
+  authoritative signal. See `screening-and-gating-output`.
+- Then **`render_pdf`** the finalized text for an RM-fileable Centerline PDF (keep the inline readout too),
+  **including the trend as a chart** — e.g. `charts=[{"title":"DSCR trend (TTM)","type":"line","labels":
+  <months>,"series":<dscr_ttm from get_loan_performance>,"threshold":<floor>}]` (and/or the revolver trend).

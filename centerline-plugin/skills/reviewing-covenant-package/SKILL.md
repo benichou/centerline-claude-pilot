@@ -47,7 +47,8 @@ them against the repo root on the host, so this works identically in Claude Code
    comes with a `derivation`. **Present the finding AND its source** — e.g. *"recomputed DSCR 1.03 = GAAP
    EBITDA 10,100 [financial_statement] ÷ debt service 9,800 [financial_statement]; certified 1.23
    [covenant_compliance_certificate]; bank loan_performance 1.03."* It also returns
-   `cross_source_mismatches` — keep it for step 6.
+   `cross_source_mismatches` — keep it for step 6. **Units:** the figures are in **thousands ($k)** — state
+   magnitudes clearly (e.g. *"$2.0M of add-backs"*, not *"$2,000"*; *"EBITDA $10.1M"*).
 
 5. **Completeness + quality.** Call `review_package(items, borrower)` with one entry per document
    (`{doc_type, path, extracted, refused, skipped}`). It returns **missing documents**, **outstanding data
@@ -66,8 +67,10 @@ them against the repo root on the host, so this works identically in Claude Code
    Fabrication — Q1 2025 Covenant Package — Intake Readout", output_path="reports/pdf/meridian-q1-intake-readout.pdf")`**
    to emit a credit-file-grade PDF (banner + footer preserved; `render_pdf` auto-appends a UTC timestamp so
    each save is a unique file — pass the plain base name) — **keep showing the markdown readout inline
-   too**; the PDF is an additional output. The natural next step is a missing-docs email — hand off to
-   `drafting-rm-communications`.
+   too**; the PDF is an additional output. **Include the DSCR trend as a chart** in the PDF —
+   `charts=[{"title":"DSCR trend (TTM) vs the 1.20 floor","type":"line","labels":<months>,"series":<dscr_ttm
+   from get_loan_performance for the borrower>,"threshold":1.20}]` — so the certified-vs-recomputed story is
+   visual. The natural next step is a missing-docs email — hand off to `drafting-rm-communications`.
 
 ## Keep it factual (§4.2)
 "Recomputes to 1.03, below the 1.20 minimum" and "rep letter is unsigned" are **facts** — state them with

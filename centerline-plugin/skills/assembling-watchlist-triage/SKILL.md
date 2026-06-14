@@ -20,4 +20,11 @@ retention risk is a *separate* lens).
 - **Facts only** (§4.2) — each line is a metric + source, never "high risk." The RM owns the judgment.
 - **RM-private and advisory**; nothing auto-escalates. As **automated monitoring**, it's presented as
   "designed, pending CCO approval" (§4.1).
-- Source-cite every figure (`grounding-claims-to-source`); route any written readout through `screen_and_finalize`.
+- Source-cite every figure (`grounding-claims-to-source`) and **route the readout through `screen_and_finalize`**.
+- **Do not write your own reliability footer or compliance disclaimer.** The tool's deterministic footer
+  (Grounded/Partial + the enumerated reasons) is the authoritative signal — never append a "Reliability:
+  High/Moderate" *scale* or a "no creditworthiness…" line (naming credit vocab **even in negation** trips
+  the §4.2 scanner). Pass any uncertain/missing inputs as `low_confidence_inputs` so the footer explains
+  itself. See `screening-and-gating-output`.
+- Then **`render_pdf`** the finalized text → an RM-fileable Centerline-letterheaded PDF (keep the inline
+  readout too).

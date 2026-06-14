@@ -1,6 +1,6 @@
 # Eval results
 
-_Generated 2026-06-13 by `evals/runner.py` against the live `centerline_mcp` logic._
+_Generated 2026-06-14 by `evals/runner.py` against the live `centerline_mcp` logic._
 
 **95/95 cases passed.**
 
