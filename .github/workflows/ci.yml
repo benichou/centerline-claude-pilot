@@ -1,0 +1,50 @@
+# Prod-merge gate — code style (PEP 8 / black / flake8, the SAME checks as the local pre-commit hooks) +
+# the deterministic test suites. Runs on every PR to main and on push to main, so nothing merges that
+# isn't formatted, lint-clean, and green. No secrets, no API tokens — safe on pull_request (the
+# token-spending agent-eval is a SEPARATE nightly workflow).
+#
+# To make this a HARD merge gate: repo Settings -> Branches -> Branch protection rule on `main` ->
+# "Require status checks to pass" -> select `lint` and `tests`.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint (black + flake8 — PEP 8, same as pre-commit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install deps (versions pinned by uv.lock — same as local pre-commit)
+        run: uv sync
+      - name: black --check (line-length 120; pyproject config)
+        run: uv run black --check .
+      - name: flake8 (.flake8 config — real issues; defers E501 to black)
+        run: uv run flake8 .
+
+  tests:
+    name: deterministic tests (no API)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install deps
+        run: uv sync
+      - name: Compliance guards + Track-A/B tool logic
+        run: PYTHONPATH=mcp uv run python mcp/tests/test_compliance.py
+      - name: Golden eval suite (Layer 1 — both tracks)
+        run: PYTHONPATH=mcp uv run python evals/runner.py
+      - name: Doc-intel + package-review + render_pdf
+        run: PYTHONPATH=mcp uv run python mcp/tests/test_docintel.py
+      - name: Agent-eval grader self-test (no model call)
+        run: PYTHONPATH=mcp uv run python evals/agent_eval.py --selftest
