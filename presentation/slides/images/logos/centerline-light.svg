@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Centerline Bank mark">
+  <!-- the "center line" mark we built for the credit-file letterhead, light variant for dark backgrounds -->
+  <rect x="2" y="2" width="36" height="36" rx="7" fill="#1F3A5F" stroke="#B08D57" stroke-width="1.5"/>
+  <line x1="9"  y1="20" x2="31" y2="20" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="13" y1="13.5" x2="27" y2="13.5" stroke="#B08D57" stroke-width="1.3" stroke-linecap="round"/>
+  <line x1="13" y1="26.5" x2="27" y2="26.5" stroke="#B08D57" stroke-width="1.3" stroke-linecap="round"/>
+</svg>

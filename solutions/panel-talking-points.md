@@ -80,10 +80,10 @@ is the whole trust story (and why §2.1/§4.2 hold regardless of what the model 
 - **Lands:** to David Kwan; the four items (aerospace PO, projections, signed rep letter, named A/R for
   the 60–90 day balances); factual requests only — **no rate/commitment, no covenant-status/credit
   language, no breach mention, no guarantor reference**; DRAFT / §4.3.
-- **The calibration contrast to narrate (once fixed):** the *readout* is **Partial** (it asserts the
-  breach reconciliation) but the *email* is **Grounded** (it only requests docs) — "honest Partial where
-  it makes a contestable claim, Grounded where it doesn't." *(Batch fix: the email currently over-reads
-  Partial — it shouldn't inherit the package's low-confidence inputs.)*
+- **Footer (decided):** the email reads **Partial** with the honest reason shown — *"doc receipt
+  unconfirmed — confirm before sending [get_activity_log · rm_activity_log.csv]"* — because a document
+  *request*'s premise ("these are still outstanding") depends on the record being complete (which B3 showed
+  it may not be). Each reliability reason is a bullet tagged `[tool · source]`.
 - **The point:** the package review **tells the letter what to ask for**; compliant rebuild of Tom's wf3.
 
 ### B3 — "reconcile Arcadia emails vs the CRM log" (close-the-loop gem) — letterheaded PDF ✅

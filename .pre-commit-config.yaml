@@ -16,6 +16,8 @@ repos:
       - id: check-json
       - id: check-merge-conflict
       - id: check-added-large-files
+        # rendered Marp deck PDFs are regenerable build artifacts — exempt from the 500 KB cap
+        exclude: '^presentation/slides/.*\.pdf$'
 
   - repo: local
     hooks:

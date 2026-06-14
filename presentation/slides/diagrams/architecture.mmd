@@ -1,0 +1,36 @@
+flowchart TB
+  Code["Claude Code — build surface<br/>skills · hooks · MCP"]:::surf
+  Cowork["Claude Cowork — RM surface<br/>skills · MCP bridge · no terminal"]:::surf
+
+  Skills["Composable skill library (~19 skills)<br/>Foundation · Track A early-warning · Track B relationship + doc-intel"]:::skill
+
+  subgraph MCPS["centerline MCP server — local, Python — the cross-surface compliance chokepoint"]
+    direction TB
+    Guard["Input guards — §2.1 strip · §5 gate · guarantor refusal"]:::guard
+    Ret["Retrieval — dossier · loan performance · activity log · emails · timeline · documents"]:::tool
+    Det["Deterministic analysis + doc-intel<br/>covenant · deterioration · engagement · watchlist · classify/extract · recompute · cross-validate<br/>(math runs in code, not the LLM)"]:::tool
+    Screen["screen_and_finalize — §4.2 scan · reliability footer · §4.3 tag"]:::guard
+    Render["render_pdf — Centerline letterhead"]:::tool
+  end
+
+  Data[("Corpus — CSVs · emails · memo<br/>+ synthetic Meridian covenant package")]:::data
+  Out["Artifact — screened markdown + credit-file PDF"]:::out
+  Human(["Human review — RM §4.3 · CCO §4.1"]):::human
+  Eval["Eval + governance<br/>L1 golden · L3 agent-eval · L4 improve loop · CI gate"]:::eval
+
+  Code --> Skills
+  Cowork --> Skills
+  Data --> Guard
+  Skills --> Guard
+  Guard --> Ret --> Det --> Screen --> Render --> Out --> Human
+  Eval -. continuously measures .-> Skills
+  Eval -. reports to the CCO .-> Human
+
+  classDef surf fill:#1F3A5F,color:#ffffff,stroke:#0E1E38;
+  classDef skill fill:#13294B,color:#ffffff,stroke:#B08D57,stroke-width:2px;
+  classDef guard fill:#fdecea,color:#b71c1c,stroke:#e53935;
+  classDef tool fill:#f5f7fa,color:#1c2530,stroke:#c9d2dd;
+  classDef data fill:#eef2f7,color:#13294b,stroke:#5b6b7f;
+  classDef out fill:#fff7e6,color:#8a6d3b,stroke:#B08D57;
+  classDef human fill:#e8f5e9,color:#1b5e20,stroke:#43a047;
+  classDef eval fill:#ede7f6,color:#4527a0,stroke:#7e57c2;
