@@ -1,7 +1,8 @@
 """Agent-behavior eval — grades the LLM-DRIVEN decisions, not just the tool logic.
 
 The deterministic runner (`runner.py`) tests the tool functions in isolation. THIS harness runs the
-three Track-A demo prompts through the *real model* (Claude Code headless) and grades, with code:
+demo prompts — A1-A3 (Track A) + B1 (retention) & B3 (reconciliation, Track B) — through the *real model*
+(Claude Code headless) and grades, with code:
   1. TOOL SELECTION  — did the agent call the right mcp__centerline__* tool, with the right borrower?
   2. §4.2 ON OUTPUT  — does the agent's actual narration contain credit-adjacent language? (the gap the
                        unit tests can't see — we scan the model's own reply with guards.scan_credit_language)
@@ -48,10 +49,19 @@ _CENTERLINE_TOOLS = [
     "measure_engagement_coverage",
     "assemble_watchlist",
     "run_evals",
+    # Track B (deterministic) — for the B1/B3 agent-eval prompts. classify_document / extract_document_fields
+    # are deliberately EXCLUDED so the nightly cron never spends doc-intel API tokens.
+    "get_relationship_timeline",
+    "flag_renewal_and_retention",
+    "cross_validate_covenant",
+    "review_package",
+    "render_pdf",
 ]
 _ALLOWED = ",".join(f"mcp__centerline__{t}" for t in _CENTERLINE_TOOLS)
 
-# The three Track-A demo prompts + what a correct agentic response must exhibit.
+# The live agent-eval prompts + what a correct agentic response must exhibit. A1-A3 (Track A) + the two
+# deterministic Track-B gems (B1 retention, B3 reconciliation). B2 (doc-intel — extra API) and B4 (an
+# interactive HITL pause) are covered by the golden set + unit tests + the live Cowork demo, not headless.
 PROMPTS = [
     {
         "id": "A1",
@@ -79,6 +89,26 @@ PROMPTS = [
         "required_tools": {"measure_engagement_coverage"},
         "borrower": "meridian",
         "required_facts": ["78"],
+        "order_before": None,
+    },
+    {
+        "id": "B1",
+        "prompt": "Prep me for my Crestwood meeting — pull the relationship picture, the renewal/maturity "
+        "clock, and the competitive situation; flag anything I should act on before they shop us.",
+        "required_tools": {"flag_renewal_and_retention"},
+        "bonus_tools": {"get_borrower_dossier", "get_relationship_timeline"},
+        "borrower": "crestwood",
+        "required_facts": ["first midwest", "2026"],  # the competitor signal + the maturity clock surfaced
+        "order_before": None,
+    },
+    {
+        "id": "B3",
+        "prompt": "Reconcile Arcadia's email thread against the CRM log — what actually happened, what's "
+        "mis-dated, what decision isn't in the file, and what's still open?",
+        "required_tools": {"get_relationship_timeline"},
+        "bonus_tools": {"get_emails", "get_activity_log", "detect_deterioration_signals"},
+        "borrower": "arcadia",
+        "required_facts": ["chen", "75%"],  # the email-only credit decision (scribe) + the 75% condition
         "order_before": None,
     },
 ]

@@ -83,6 +83,54 @@ def render_pdf(text, title=None, output_path=None, timestamp=True):
         TableStyle,
     )
 
+    # --- Centerline Bank letterhead (commercial-bank convention: logo + name LEFT, descriptor RIGHT) ---
+    _NAVY = colors.HexColor("#1f3a5f")
+    _GOLD = colors.HexColor("#b8860b")
+    _GREY = colors.HexColor("#5b6b7f")
+    _RULE = colors.HexColor("#9bb0c9")
+
+    def _letterhead(c, d):
+        """Draw the Centerline Bank letterhead + footer on every page (vector — no image asset)."""
+        c.saveState()
+        w, h = d.pagesize
+        left, right, topy = d.leftMargin, w - d.rightMargin, h - 0.5 * inch
+        # mark: a navy rounded square with a white 'center line' through it + two gold rules (the wordplay)
+        sz = 26
+        mx, my = left, topy - sz + 4
+        c.setFillColor(_NAVY)
+        c.roundRect(mx, my, sz, sz, 4, fill=1, stroke=0)
+        c.setStrokeColor(colors.white)
+        c.setLineWidth(2)
+        c.line(mx + 4, my + sz / 2, mx + sz - 4, my + sz / 2)
+        c.setStrokeColor(_GOLD)
+        c.setLineWidth(1)
+        c.line(mx + 8, my + sz / 2 + 5, mx + sz - 8, my + sz / 2 + 5)
+        c.line(mx + 8, my + sz / 2 - 5, mx + sz - 8, my + sz / 2 - 5)
+        # wordmark
+        tx = mx + sz + 10
+        c.setFillColor(_NAVY)
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(tx, topy - 9, "CENTERLINE BANK")
+        c.setFillColor(_GREY)
+        c.setFont("Helvetica", 7.5)
+        c.drawString(tx, topy - 19, "COMMERCIAL BANKING")
+        # right-aligned descriptor (honest: this is a synthetic pilot, not a real institution)
+        c.drawRightString(right, topy - 9, "Relationship Management")
+        c.drawRightString(right, topy - 19, "Synthetic pilot - not a real institution")
+        # header rule
+        c.setStrokeColor(_NAVY)
+        c.setLineWidth(1.2)
+        c.line(left, topy - 30, right, topy - 30)
+        # footer rule + page number + confidentiality line
+        c.setStrokeColor(_RULE)
+        c.setLineWidth(0.5)
+        c.line(left, 0.62 * inch, right, 0.62 * inch)
+        c.setFillColor(_GREY)
+        c.setFont("Helvetica", 7)
+        c.drawString(left, 0.46 * inch, "Centerline Bank · Commercial Banking · CONFIDENTIAL (synthetic pilot data)")
+        c.drawRightString(right, 0.46 * inch, "Page %d" % d.page)
+        c.restoreState()
+
     ss = getSampleStyleSheet()
     body = ParagraphStyle("body", parent=ss["BodyText"], fontSize=9.5, leading=13, alignment=TA_LEFT)
     h1 = ParagraphStyle("h1", parent=ss["Heading1"], fontSize=15, leading=19, spaceBefore=4, spaceAfter=6)
@@ -171,9 +219,10 @@ def render_pdf(text, title=None, output_path=None, timestamp=True):
     doc = SimpleDocTemplate(
         abspath,
         pagesize=LETTER,
-        title=title or "Centerline artifact",
-        topMargin=0.7 * inch,
-        bottomMargin=0.7 * inch,
+        title=title or "Centerline Bank artifact",
+        author="Centerline Bank - Commercial Banking",
+        topMargin=1.15 * inch,  # room for the letterhead
+        bottomMargin=0.85 * inch,  # room for the footer
         leftMargin=0.8 * inch,
         rightMargin=0.8 * inch,
     )
@@ -181,7 +230,7 @@ def render_pdf(text, title=None, output_path=None, timestamp=True):
     if title and not _leading_h1(text):
         flow.insert(0, Spacer(1, 2))
         flow.insert(0, Paragraph(_inline(title), h1))
-    doc.build(flow)
+    doc.build(flow, onFirstPage=_letterhead, onLaterPages=_letterhead)
     size = os.path.getsize(abspath)
     return {
         "ok": True,

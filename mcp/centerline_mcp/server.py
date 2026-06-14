@@ -78,6 +78,17 @@ def get_emails(borrower_name: str) -> dict:
 
 
 @mcp.tool()
+def get_relationship_timeline(borrower_name: str) -> dict:
+    """Merge the CRM activity log + the email thread into ONE source-tagged, chronological timeline so the
+    RM can reconcile the system of record against the actual correspondence — mis-dated / conflated log
+    entries (a log row dated before the emails it summarizes) and decisions that live only in email surface
+    immediately. Each event = {date, source, who, kind, summary, ref}. §2.1-redacted, §5-gated, facts only
+    (§4.2). Use for "reconcile X's emails vs the log — what happened, what's mis-dated, what's only in email?"
+    """
+    return core.get_relationship_timeline(borrower_name)
+
+
+@mcp.tool()
 def check_covenant_compliance(borrower_name: str) -> dict:
     """Deterministic covenant test (latest month): DSCR/leverage vs the borrower's covenant thresholds,
     cushion/headroom, breach flags, and whether the reported covenant_status matches the computed result.
@@ -107,6 +118,18 @@ def assemble_watchlist(borrowers: Optional[list] = None) -> dict:
     ranked by risk × neglect (facts-derived order, NOT a credit rating). RM-private; automated alerting needs
     CCO approval (§4.1). Facts only (§4.2)."""
     return core.assemble_watchlist(borrowers)
+
+
+@mcp.tool()
+def flag_renewal_and_retention(borrower_name: str) -> dict:
+    """Proactive renewal/retention radar — the INVERSE of the early-warning watchlist. Fires when a
+    borrower is HEALTHY *and* approaching renewal / being courted by a competitor / has renewal activity on
+    record — the attrition risk distress-monitoring is structurally blind to (e.g. Crestwood: pristine
+    metrics, but a competitor term sheet on the table and the renewal stalling). Surfaces the maturity
+    clock, health & trend, the competitive signal, and relationship value as FACTS (§4.2) and flags that
+    the RM should ENGAGE — it NEVER recommends a rate/price (pricing committee owns that). §4.1: automated
+    alerting needs CCO approval. Use for "who am I about to lose?" / "prep me for <healthy borrower>"."""
+    return core.flag_renewal_and_retention(borrower_name)
 
 
 @mcp.tool()

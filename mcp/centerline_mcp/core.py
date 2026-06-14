@@ -158,6 +158,81 @@ def get_emails(borrower_name):
     }
 
 
+_MONTHS = {m: i for i, m in enumerate(_cal.month_name) if m}
+
+
+def _parse_email_date(s):
+    """Parse an email 'Date:' line like 'April 22, 2025, 2:06 PM' -> 'YYYY-MM-DD' (date only; None if it
+    doesn't parse). Used to merge emails onto the same timeline as the CRM log."""
+    m = _re.match(r"\s*([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})", s or "")
+    if not m:
+        return None
+    mon = _MONTHS.get(m.group(1))
+    if not mon:
+        return None
+    return f"{int(m.group(3)):04d}-{mon:02d}-{int(m.group(2)):02d}"
+
+
+def get_relationship_timeline(borrower_name):
+    """Merge the CRM activity log + the email thread into ONE source-tagged, chronological timeline — so the
+    RM can see where the system of record and the actual correspondence diverge (mis-dated / conflated log
+    entries, decisions that live only in email). Deterministic; §2.1-redacted; §5-gated. Facts only — the
+    reconciliation judgment is the RM's.
+
+    Each event: {date, source: 'activity_log'|'email', who, kind, summary, ref}. Sorted ascending by date,
+    so a log entry dated before the emails it summarizes sits visibly out of place.
+    """
+    log = []
+    pf = da.match_borrower(borrower_name, da.portfolio())
+    borrower = pf[0]["borrower_name"] if pf else borrower_name
+    guards.assert_processable(borrower, log=log)
+
+    events = []
+    for r in da.match_borrower(borrower_name, da.activity_log()):
+        rr = guards.strip_record(r, free_text_fields=("raw_notes",), log=log)
+        events.append(
+            {
+                "date": rr.get("log_date"),
+                "source": "activity_log",
+                "who": rr.get("rm_name"),
+                "kind": rr.get("contact_type"),
+                "summary": rr.get("raw_notes"),
+                "ref": f"rm_activity_log:{rr.get('log_date')}",
+            }
+        )
+
+    text = da.emails_for(borrower_name)
+    if text:
+        redacted, _ = guards.redact_text(text, log=log, field="emails")
+        for block in _re.split(r"\n(?=\*\*From:\*\*)", redacted):
+            dm = _re.search(r"\*\*Date:\*\*\s*(.+)", block)
+            iso = _parse_email_date(dm.group(1)) if dm else None
+            if not iso:
+                continue
+            fm = _re.search(r"\*\*From:\*\*\s*(.+?)\s*(?:\*\*To:\*\*|<|$)", block)
+            sm = _re.search(r"\*\*Subject:\*\*\s*(.+)", block)
+            events.append(
+                {
+                    "date": iso,
+                    "source": "email",
+                    "who": (fm.group(1).strip() if fm else ""),
+                    "kind": "email",
+                    "summary": (sm.group(1).strip() if sm else ""),
+                    "ref": "emails/thread",
+                }
+            )
+
+    events.sort(key=lambda e: (e.get("date") or ""))
+    return {
+        "borrower": borrower,
+        "count": len(events),
+        "events": events,
+        "note": "Facts only (§4.2). Merged CRM log + email thread; compare dates/content to reconcile. "
+        "A log entry dated before the emails it summarizes is a mis-dating/conflation signal.",
+        "_compliance": {"policy": ["§2.1", "§5"], "redactions": log},
+    }
+
+
 # ---- Track A: deterministic portfolio-risk computations (facts only — the RM owns the credit judgment) ----
 
 
@@ -529,4 +604,114 @@ def assemble_watchlist(borrowers=None):
         "watchlist": items,
         "note": "facts only (§4.2); RM-private/advisory; automated alerting needs CCO approval (§4.1). A compliant borrower with 0 signals (e.g., Crestwood) sinks to the bottom — distress monitoring is structurally blind to it; renewal/retention risk is a separate lens.",
         "_compliance": {"policy": ["§2.1", "§4.1", "§4.2", "§5"]},
+    }
+
+
+# the inverse of early-warning: a healthy borrower being courted is the one you LOSE, and distress
+# monitoring is blind to it. Free-text signals of renewal activity / a competitor circling.
+_RENEWAL_KEYWORDS = (
+    "renewal",
+    "refinanc",
+    "term sheet",
+    "competing",
+    "first midwest",
+    "maturity",
+    "matures",
+    "attrition",
+)
+
+
+def flag_renewal_and_retention(borrower_name, lead_window_days=540):
+    """Proactive renewal/retention radar — the INVERSE of early-warning. Fires when a borrower is HEALTHY
+    *and* approaching renewal / being courted by a competitor / has renewal activity on record — so the RM
+    engages BEFORE losing them (the risk distress-monitoring is structurally blind to). Surfaces the
+    maturity clock, health & trend, the competitive signal, and relationship value — as FACTS (§4.2). It
+    flags *that* the RM should engage; it NEVER recommends a rate or price (the pricing committee owns
+    that). Automated alerting needs CCO approval (§4.1).
+    """
+    log = []
+    pf_rows = da.match_borrower(borrower_name, da.portfolio())
+    if not pf_rows:
+        return _not_found(borrower_name)
+    pf = pf_rows[0]
+    borrower = pf["borrower_name"]
+    guards.assert_processable(borrower, log=log)
+
+    as_of = _as_of_date()
+    mat = pf.get("maturity_date")
+    mat_d = _parse_date(mat)
+    days_to_maturity = (mat_d - as_of).days if (mat_d and as_of) else None
+
+    # health (reuse the deterministic Track-A tools)
+    cc = check_covenant_compliance(borrower)
+    det = detect_deterioration_signals(borrower)
+    construction = det.get("lifecycle") == "construction"
+    compliant = (not construction) and cc.get("computed_status") == "Compliant"
+    signal_count = len(det.get("signals", []))
+    rows = _lp_rows(borrower)
+    dscr_series = [_f(r.get("dscr_ttm")) for r in rows]
+    dscr_trend = None
+    if len(dscr_series) >= 2:
+        dscr_trend = (
+            "improving"
+            if dscr_series[-1] > dscr_series[0]
+            else ("declining" if dscr_series[-1] < dscr_series[0] else "flat")
+        )
+    healthy = bool(compliant) and signal_count == 0
+
+    # renewal / competitive signals from the free text (loan_perf notes + activity log), §2.1-redacted
+    signals = []
+    for r in rows:
+        note = r.get("notes") or ""
+        if any(k in note.lower() for k in _RENEWAL_KEYWORDS):
+            signals.append({"date": r.get("date"), "source": "loan_performance", "note": note})
+    for r in da.match_borrower(borrower, da.activity_log()):
+        rr = guards.strip_record(r, free_text_fields=("raw_notes",), log=log)
+        note = rr.get("raw_notes") or ""
+        if any(k in note.lower() for k in _RENEWAL_KEYWORDS) or "renewal" in (rr.get("contact_type") or "").lower():
+            signals.append({"date": rr.get("log_date"), "source": "activity_log", "note": note})
+    signals.sort(key=lambda s: s.get("date") or "")
+    competitive_signal = any(
+        ("competing" in s["note"].lower())
+        or ("first midwest" in s["note"].lower())
+        or ("term sheet" in s["note"].lower())
+        for s in signals
+    )
+    attrition_flagged = any("attrition" in s["note"].lower() for s in signals)
+    within_window = days_to_maturity is not None and days_to_maturity <= lead_window_days
+
+    reasons = []
+    if healthy:
+        reasons.append(f"healthy/improving (compliant, {signal_count} deterioration signals, DSCR {dscr_trend})")
+    if within_window:
+        reasons.append(f"renewal lead window: {days_to_maturity} days to maturity ({mat})")
+    if competitive_signal:
+        reasons.append("a competing offer / term sheet is on record")
+    if attrition_flagged:
+        reasons.append("attrition risk noted in the record")
+    fires = healthy and (within_window or competitive_signal or attrition_flagged)
+
+    return {
+        "borrower": borrower,
+        "as_of": as_of.isoformat() if as_of else None,
+        "retention_attention": fires,
+        "healthy": healthy,
+        "health": {"compliant": bool(compliant), "deterioration_signals": signal_count, "dscr_trend": dscr_trend},
+        "maturity_date": mat,
+        "days_to_maturity": days_to_maturity,
+        "relationship": {
+            "tier": pf.get("relationship_tier"),
+            "facility_size_mm": pf.get("facility_size_mm"),
+            "relationship_since": pf.get("relationship_since"),
+            "primary_contact": pf.get("primary_contact"),
+            "primary_contact_title": pf.get("primary_contact_title"),
+        },
+        "competitive_signal": competitive_signal,
+        "attrition_flagged": attrition_flagged,
+        "renewal_signals": signals,
+        "reasons": reasons,
+        "note": "Facts only (§4.2): the maturity clock, health/trend, competitive signal, and relationship "
+        "value — and that the RM should ENGAGE proactively. NEVER a rate/price (the pricing committee owns "
+        "that). Automated alerting needs CCO approval (§4.1).",
+        "_compliance": {"policy": ["§2.1", "§4.1", "§4.2", "§5"], "redactions": log},
     }

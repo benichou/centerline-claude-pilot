@@ -44,12 +44,12 @@ contact — a one-way notice or a missed call doesn't count.
 ## 25–50 min — DEMO 2 · TRACK B = Deliverable B (Relationship Review & Renewal + Doc-Intel)
 *Region 2 · one beat per RM · order is real-data-first (B2/B3 real; B1/B4 round out persona coverage).*
 
-**B1 (Tom) — Crestwood prep + retention** [wf4] ◐
+**B1 (Tom) — Crestwood prep + retention** [wf4] ✅ *Cowork-verified 2026-06-13 (v0.8.0)*
 ```
 Prep me for my Crestwood meeting — pull the relationship picture, the renewal/maturity clock, and the
 competitive situation; flag anything I should act on before they shop us.
 ```
-*Shows:* the "healthy-but-leaving" radar — the risk Track A is blind to; surfaces facts + "engage", never a rate (§4.2). *Gem: retention.*
+*Shows:* the "healthy-but-leaving" radar — the risk Track A is blind to; surfaces facts (maturity 457d out, First Midwest 4.90% term sheet, attrition noted) + "engage", **never a rate** (§4.2). *Skill: `flagging-renewal-and-retention`; tool: `flag_renewal_and_retention`. Gem: retention.*
 
 **B2 (Sarah) — Meridian Q1 package intake** ✅  *(in `deliverable-b/recipe.md`)*
 ```
@@ -64,24 +64,24 @@ Draft the missing-documents email to Meridian.
 ```
 *Shows:* DRAFT to David Kwan, 4 items, < 200 words, no breach/credit language, §4.3 review tag; the review tells the letter what to ask for.
 
-**B3 (Tom) — Arcadia reconciliation + close-the-loop** ◐  *(next build · Deliverable B's headline gem)*
+**B3 (Tom) — Arcadia reconciliation + close-the-loop** ✅ *Cowork-verified 2026-06-13 · Deliverable B's headline gem*
 ```
 Reconcile Arcadia's email thread against the CRM log — what actually happened, what's mis-dated, what
 decision isn't in the file, and what's still open?
 ```
-*Shows:* the Apr-9 mis-dated/conflated entry; Chen's credit guidance that's email-only, surfaced verbatim + attributed (scribe-not-author); the 75% condition unmet (pre-lease 71%). *Gem: close-the-loop + reconciliation.*
+*Shows:* the Apr-9 mis-dated/conflated entry (visible on the deterministic merged timeline); Chen's credit guidance that's email-only, surfaced verbatim + attributed (scribe-not-author); the 75% condition still open (pre-lease 71%). *Skills: `detecting-cross-source-discrepancies` + `verifying-commitment-fulfillment`; tool: `get_relationship_timeline`. Gem: close-the-loop + reconciliation.*
 
-**B3 cont. — draw-response letter** [wf1] ◐
+**B3 cont. — draw-response letter** [wf1] ✅ *Cowork-verified 2026-06-13*
 ```
 Draft the draw-response letter for Arcadia.
 ```
-*Shows:* requests the outstanding items the reconciliation surfaced; §4.3 review.
+*Shows:* requests the outstanding items the reconciliation surfaced (incl. executed leases + tenant names per Chen's condition); §4.3 review.
 
-**B4 (Marcus) — Summit annual relationship-review memo** [wf2, decomposed §4.2] ◐
+**B4 (Marcus) — Summit annual relationship-review memo** [wf2, decomposed §4.2] ✅ *Cowork-verified 2026-06-13 (v0.8.0)*
 ```
 Build my Summit annual relationship-review memo.
 ```
-*Shows:* AI assembles the 17-month data + contacts + open items (the 80%), **pauses for the RM's own assessment**, drafts narrative around the RM's words (§4.2) — wins the skeptic without changing how he thinks.
+*Shows:* AI assembles the 17-month data + contacts + open items (the 80%), **pauses for the RM's own assessment**, drafts narrative around the RM's words (§4.2) — wins the skeptic without changing how he thinks. *Skill: `drafting-relationship-review-memos`.*
 
 ## 50–55 min — HONEST EVAL (80/20)  *(narration, no prompt)*
 Works = grounded/compliant/reusable; hard 20% = flag≠action, data-quality limits, A blind to Crestwood/Arcadia, doc-intel on synthetic docs.
@@ -111,4 +111,4 @@ Run the evals.
 ---
 
 ## Tally
-~11 displayed prompts. **Built + verbatim today (7):** A1, A2, A3, B2 (×2), the two eval/governance display prompts (+ optional `run the evals`). **Planned (4):** B1, B3 (×2), B4 — finalized + recorded in `deliverable-b/recipe.md` as each is built. Scheduled-jobs is narrated, not typed.
+~11 displayed prompts — **ALL built + Cowork-verified (2026-06-13, plugin v0.8.0):** A1, A2, A3, B1, B2 (×2), B3 (×2), B4, the two eval/governance display prompts (+ optional `run the evals`). Scheduled-jobs is narrated, not typed. *(One eyeball pending: confirm the B1 Crestwood brief makes no rate recommendation.)*

@@ -35,6 +35,11 @@ summarize across them.
   eval loop** (e.g. eval coverage, run count, thresholds, cadence). Those flags are the most important to
   surface, since the analyst only *proposes* edits to the skill library, not to the automations.
 
+## Optional: a Centerline-styled PDF copy (for the CCO / the file)
+If the reviewer wants a fileable copy, pass the report content (from `get_latest_report`) to the
+**`render_pdf`** MCP tool — it adds the Centerline Bank letterhead + footer and writes a timestamped PDF to
+`reports/pdf/`. Keep showing the markdown inline; the PDF is an additional output.
+
 ## Be honest about what this is (and isn't)
 - **Advisory only.** Nothing here has been applied. Approving a change means a **human edits the skill library
   by hand**, which then goes through the normal pre-commit (black/flake8) + eval re-validation gate.

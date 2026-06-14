@@ -1,8 +1,10 @@
-# Nightly agent-behavior eval (Layer 3) — runs the Track-A demo prompts through Claude Code headless
-# and grades the MODEL's decisions (tool selection, §4.2-on-output, fact faithfulness) with deterministic code.
+# Nightly agent-behavior eval (Layer 3) — runs the demo prompts (A1-A3 Track A + B1 retention & B3
+# reconciliation, Track B) through Claude Code headless and grades the MODEL's decisions (tool selection,
+# §4.2-on-output, fact faithfulness) with deterministic code. (B2 doc-intel = extra API; B4 = interactive
+# pause — both covered by the golden set + unit tests, not this headless run.)
 #
-# COST: uses Sonnet 4.6 via an API key (pay-per-token) — NOT the Pro/Max subscription. ~9 short agent
-#       sessions/night. Change the model below if you want a different cost/fidelity trade-off.
+# COST: uses Sonnet 4.6 via an API key (pay-per-token) — NOT the Pro/Max subscription. ~15 short agent
+#       sessions/night (5 prompts × 3 runs). Change the model below for a different cost/fidelity trade-off.
 #       NOTE: nightly runs on Sonnet are a cheap *smoke/regression* signal; the live demo runs on Opus, so
 #       re-run with `--model claude-opus-4-8` (or omit --model) before the actual panel to test the demo model.
 #

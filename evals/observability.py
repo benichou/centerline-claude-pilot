@@ -50,6 +50,45 @@ _PROMPT_SPECS = [
         "reliability": "Grounded — one-way notices excluded; 78d vs naive 33d",
     },
     {
+        "id": "B1",
+        "title": "Prep me for Crestwood — retention radar ★ (the inverse of early-warning)",
+        "skills": ["flagging-renewal-and-retention", "building-client-360"],
+        "tools": ["flag_renewal_and_retention (reuses check_covenant_compliance + detect_deterioration_signals)"],
+        "guards": ["§2.1 strip", "§5 gate", "screen_and_finalize (§4.2 + footer + §4.3)"],
+        "reliability": "Grounded — facts + 'engage'; never a rate (pricing committee owns that); §4.1 for automation",
+    },
+    {
+        "id": "B2",
+        "title": "Meridian covenant-package intake (doc-intel)",
+        "skills": ["reviewing-covenant-package"],
+        "tools": [
+            "cross_validate_covenant + review_package (deterministic — graded here); classify_document + extract_document_fields (model/API — graded by the live agent-eval + unit tests)"
+        ],
+        "guards": ["§2.1 guarantor refusal (pre-screen)", "screen_and_finalize (§4.2 + footer + §4.3)"],
+        "reliability": "Partial — certified-vs-recomputed mismatch + missing/unsigned/withheld surfaced; extraction is model-driven",
+    },
+    {
+        "id": "B3",
+        "title": "Reconcile Arcadia emails vs the CRM log ★ (close-the-loop)",
+        "skills": ["detecting-cross-source-discrepancies", "verifying-commitment-fulfillment"],
+        "tools": ["get_relationship_timeline", "get_emails", "get_activity_log", "detect_deterioration_signals"],
+        "guards": ["§2.1 redaction", "§5 gate", "scribe-not-author (§4.2)", "screen_and_finalize"],
+        "reliability": "Partial — synthesis kept honest by grounding + scribe-not-author + footer (not pretend-deterministic)",
+    },
+    {
+        "id": "B4",
+        "title": "Summit annual relationship-review memo (decomposed §4.2)",
+        "skills": ["drafting-relationship-review-memos", "building-client-360"],
+        "tools": [
+            "get_loan_performance",
+            "check_covenant_compliance",
+            "detect_deterioration_signals",
+            "get_activity_log",
+        ],
+        "guards": ["RM-authored assessment required (§4.2 origination)", "screen_and_finalize (§4.2 + footer + §4.3)"],
+        "reliability": "T4 (generative) — rubric + HITL: facts cited, assessment RM-authored & non-empty; no deterministic golden case",
+    },
+    {
         "id": "foundation",
         "title": "Cross-cutting compliance guards (every prompt routes through these)",
         "skills": ["redacting-restricted-fields", "screening-and-gating-output", "assessing-output-reliability"],

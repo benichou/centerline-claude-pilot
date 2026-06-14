@@ -1,8 +1,8 @@
 # Eval results
 
-_Generated 2026-06-12 by `evals/runner.py` against the live `centerline_mcp` logic._
+_Generated 2026-06-13 by `evals/runner.py` against the live `centerline_mcp` logic._
 
-**81/81 cases passed.**
+**95/95 cases passed.**
 
 Grading is deterministic: each case calls the real tool/guard and checks source-grounded
 expectations. "Accuracy" is a clean number only here (T1/T2 ground truth); generative quality
@@ -91,3 +91,17 @@ expectations. "Accuracy" is a clean number only here (T1/T2 ground truth); gener
 | `A1-arcadia-fourth` | T1 | A1 | ✅ PASS | ok |
 | `A1-crestwood-last` | T1-neg | A1 | ✅ PASS | ok |
 | `A1-crestwood-zero-entry` | T1-neg | A1 | ✅ PASS | ok |
+| `B2-xval-recompute-dscr` | T1 | B2 | ✅ PASS | ok |
+| `B2-xval-no-reconcile` | T1 | B2 | ✅ PASS | ok |
+| `B2-xval-addback-bridge` | T1 | B2 | ✅ PASS | ok |
+| `B2-xval-mismatches-dscr-and-leverage` | T1 | B2 | ✅ PASS | ok |
+| `B2-xval-bank-corroborates` | T1 | B2 | ✅ PASS | ok |
+| `B2-pkg-missing-aerospace-po` | T2 | B2 | ✅ PASS | ok |
+| `B2-pkg-missing-projections` | T2 | B2 | ✅ PASS | ok |
+| `B2-pkg-unsigned-rep-letter` | T2 | B2 | ✅ PASS | ok |
+| `B2-pkg-ar-names-withheld` | T2 | B2 | ✅ PASS | ok |
+| `B2-pkg-guarantor-refused` | T2 | B2 | ✅ PASS | ok |
+| `B3-timeline-merged-count` | T1 | B3 | ✅ PASS | ok |
+| `B3-timeline-misdating-visible` | T1 | B3 | ✅ PASS | ok |
+| `B1-retention-crestwood-fires` | T1 | B1 | ✅ PASS | ok |
+| `B1-retention-meridian-negative` | T1 | B1 | ✅ PASS | ok |

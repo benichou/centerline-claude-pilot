@@ -31,6 +31,13 @@ even in Cowork. Then read the files below for the full detail / history.
   prompt (e.g. A1/A2/A3 each n/n across runs).
 - Make the **layer distinction explicit**: Layer 1 is a deterministic unit test of the tool *code* (the LLM is
   never invoked); Layer 3 is the eval of the *model's* decisions. Don't let one stand in for the other.
+- The Layer-1 scorecard (`reports/observability.md`) now spans **both tracks** — A1/A2/A3 (Track A) **and**
+  B1/B2/B3/B4 (Track B) — so present it as a whole-system reliability read for the CCO, not just early-warning.
+
+## Optional: a Centerline-styled PDF copy (for the CCO / the file)
+If the user wants a fileable, shareable copy, pass the report content (from `get_latest_report` or the file)
+to the **`render_pdf`** MCP tool — it adds the Centerline Bank letterhead + footer and writes a timestamped
+PDF to `reports/pdf/`. Keep showing the markdown inline; the PDF is an additional output.
 
 ## Important: display vs run (be honest about the surface)
 - **`run_evals`** (the MCP tool / `running-the-eval-suite` skill) re-runs Layers 1/2 live — works in Code **and**

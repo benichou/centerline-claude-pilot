@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.join(_REPO, "mcp"))
 
 from centerline_mcp import core, guards  # noqa: E402
 from centerline_mcp import data_access as da  # noqa: E402
+from centerline_mcp import package_review  # noqa: E402  (stdlib-safe: imports only core — keeps `python3` runnable)
 
 _CASES_DIR = os.path.join(_REPO, "evals", "cases")
 _RESULTS_DIR = os.path.join(_REPO, "evals", "results")
@@ -42,6 +43,12 @@ _TOOLS = {
     "detect_deterioration_signals": core.detect_deterioration_signals,
     "measure_engagement_coverage": core.measure_engagement_coverage,
     "assemble_watchlist": core.assemble_watchlist,
+    # Track B — the DETERMINISTIC half (the model-driven classify/extract need the API, so they're graded
+    # by the live agent-eval + unit tests, not here).
+    "cross_validate_covenant": package_review.cross_validate_covenant,
+    "review_package": package_review.review_package,
+    "flag_renewal_and_retention": core.flag_renewal_and_retention,
+    "get_relationship_timeline": core.get_relationship_timeline,
 }
 _FNS = {"refuse_if_guarantor_doc": guards.refuse_if_guarantor_doc}
 _EXC = {"ComplianceRefusal": guards.ComplianceRefusal}

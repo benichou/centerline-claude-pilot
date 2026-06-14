@@ -1,10 +1,10 @@
 # Observability — per-prompt scorecards
 
-_Generated 2026-06-12 by `evals/observability.py` from the live `centerline_mcp` logic + the run-trace ledger._
+_Generated 2026-06-13 by `evals/observability.py` from the live `centerline_mcp` logic + the run-trace ledger._
 
 **Performance is not one number.** It decomposes into **compliance (T2) + step-correctness (T3) + computation accuracy (T1) + generative quality (T4)**. T1/T2 are graded deterministically below; T3 is the expected-trace each prompt should exercise; T4 (emails/memos) is rubric + HITL edit-rate, reported with Track B — never a fabricated single %.
 
-**Overall T1/T2: 81/81 cases passed.** Run-trace ledger: 5 tool-use event(s) recorded by the PreToolUse hook (Code-only).
+**Overall T1/T2: 95/95 cases passed.** Run-trace ledger: 44 tool-use event(s) recorded by the PreToolUse hook (Code-only).
 
 ## At a glance
 
@@ -13,6 +13,10 @@ _Generated 2026-06-12 by `evals/observability.py` from the live `centerline_mcp`
 | **A1** Who needs attention this week? | assembling-watchlist-triage | 1 | 9/9 ✅ | Grounded — every line cited; ranking is deterministic, not a credit rating |
 | **A2** Is Meridian covenant-compliant — cushion and trend? | checking-covenant-compliance, detecting-deterioration-signals | 2 | 29/29 ✅ | Grounded — math computed in code; status-vs-trend mislabel surfaced |
 | **A3** Which distressed borrowers have I gone quiet on? ★ | measuring-engagement-coverage | 1 | 16/16 ✅ | Grounded — one-way notices excluded; 78d vs naive 33d |
+| **B1** Prep me for Crestwood — retention radar ★ (the inverse of early-warning) | flagging-renewal-and-retention, building-client-360 | 1 | 2/2 ✅ | Grounded — facts + 'engage'; never a rate (pricing committee owns that); §4.1 for automation |
+| **B2** Meridian covenant-package intake (doc-intel) | reviewing-covenant-package | 1 | 10/10 ✅ | Partial — certified-vs-recomputed mismatch + missing/unsigned/withheld surfaced; extraction is model-driven |
+| **B3** Reconcile Arcadia emails vs the CRM log ★ (close-the-loop) | detecting-cross-source-discrepancies, verifying-commitment-fulfillment | 4 | 2/2 ✅ | Partial — synthesis kept honest by grounding + scribe-not-author + footer (not pretend-deterministic) |
+| **B4** Summit annual relationship-review memo (decomposed §4.2) | drafting-relationship-review-memos, building-client-360 | 4 | — | T4 (generative) — rubric + HITL: facts cited, assessment RM-authored & non-empty; no deterministic golden case |
 | **foundation** Cross-cutting compliance guards (every prompt routes through these) | redacting-restricted-fields, screening-and-gating-output, assessing-output-reliability | 1 | 27/27 ✅ | n/a — these ARE the reliability/compliance layer |
 
 ## Per-prompt detail
@@ -104,6 +108,64 @@ _Generated 2026-06-12 by `evals/observability.py` from the live `centerline_mcp`
 | `A3-arcadia-gap-52` | T1 | ✅ | rm_activity_log.csv (Arcadia last substantive 2025-04-09) vs as-of 2025-05-31 | ok |
 | `A3-arcadia-no-undercount` | T1-neg | ✅ | Arcadia naive == true gap (no one-way-notice undercount) | ok |
 
+### B1 — Prep me for Crestwood — retention radar ★ (the inverse of early-warning)
+
+- **Expected skills (T3):** flagging-renewal-and-retention, building-client-360
+- **Expected MCP tools (T3):** flag_renewal_and_retention (reuses check_covenant_compliance + detect_deterioration_signals)
+- **Guards that must fire:** §2.1 strip, §5 gate, screen_and_finalize (§4.2 + footer + §4.3)
+- **Expected reliability footer:** Grounded — facts + 'engage'; never a rate (pricing committee owns that); §4.1 for automation
+- **Eval (T1/T2): 2/2 passed**
+
+| Case | Tier | Result | Grounded in | Detail |
+|---|---|---|---|---|
+| `B1-retention-crestwood-fires` | T1 | ✅ | Crestwood: healthy/improving, matures 2026-08-31, First Midwest 4.90% term sheet on record, attrition noted | ok |
+| `B1-retention-meridian-negative` | T1 | ✅ | negative case: a breached/distressed borrower is a DISTRESS flag, not a retention flag | ok |
+
+### B2 — Meridian covenant-package intake (doc-intel)
+
+- **Expected skills (T3):** reviewing-covenant-package
+- **Expected MCP tools (T3):** cross_validate_covenant + review_package (deterministic — graded here); classify_document + extract_document_fields (model/API — graded by the live agent-eval + unit tests)
+- **Guards that must fire:** §2.1 guarantor refusal (pre-screen), screen_and_finalize (§4.2 + footer + §4.3)
+- **Expected reliability footer:** Partial — certified-vs-recomputed mismatch + missing/unsigned/withheld surfaced; extraction is model-driven
+- **Eval (T1/T2): 10/10 passed**
+
+| Case | Tier | Result | Grounded in | Detail |
+|---|---|---|---|---|
+| `B2-xval-recompute-dscr` | T1 | ✅ | synthetic Meridian financials: GAAP EBITDA 10,100 / debt service 9,800 = 1.03 | ok |
+| `B2-xval-no-reconcile` | T1 | ✅ | certified 1.23/3.76 vs recomputed 1.03/4.50 do not match | ok |
+| `B2-xval-addback-bridge` | T1 | ✅ | Adjusted EBITDA 12,100 - GAAP 10,100 = 2,000 of add-backs | ok |
+| `B2-xval-mismatches-dscr-and-leverage` | T1 | ✅ | both DSCR and leverage diverge certified-vs-recomputed | ok |
+| `B2-xval-bank-corroborates` | T1 | ✅ | the bank's own loan_performance (Meridian, 2025-05) DSCR 1.03 agrees with the recompute | ok |
+| `B2-pkg-missing-aerospace-po` | T2 | ✅ | Meridian Feb-14 follow-up list: aerospace PO not received | ok |
+| `B2-pkg-missing-projections` | T2 | ✅ | Meridian Feb-14 follow-up list: updated 12-month projections not received | ok |
+| `B2-pkg-unsigned-rep-letter` | T2 | ✅ | the management representation letter is unsigned (signed=false) | ok |
+| `B2-pkg-ar-names-withheld` | T2 | ✅ | A/R aging present but customer names withheld (customer_names_present=false) | ok |
+| `B2-pkg-guarantor-refused` | T2 | ✅ | §2.1: a guarantor personal financial statement is refused on intake | ok |
+
+### B3 — Reconcile Arcadia emails vs the CRM log ★ (close-the-loop)
+
+- **Expected skills (T3):** detecting-cross-source-discrepancies, verifying-commitment-fulfillment
+- **Expected MCP tools (T3):** get_relationship_timeline, get_emails, get_activity_log, detect_deterioration_signals
+- **Guards that must fire:** §2.1 redaction, §5 gate, scribe-not-author (§4.2), screen_and_finalize
+- **Expected reliability footer:** Partial — synthesis kept honest by grounding + scribe-not-author + footer (not pretend-deterministic)
+- **Eval (T1/T2): 2/2 passed**
+
+| Case | Tier | Result | Grounded in | Detail |
+|---|---|---|---|---|
+| `B3-timeline-merged-count` | T1 | ✅ | Arcadia: 11 activity-log entries + 5 email messages | ok |
+| `B3-timeline-misdating-visible` | T1 | ✅ | the Apr-09 log row sorts immediately before the Apr-22 Draw #13 email it summarizes | ok |
+
+### B4 — Summit annual relationship-review memo (decomposed §4.2)
+
+- **Expected skills (T3):** drafting-relationship-review-memos, building-client-360
+- **Expected MCP tools (T3):** get_loan_performance, check_covenant_compliance, detect_deterioration_signals, get_activity_log
+- **Guards that must fire:** RM-authored assessment required (§4.2 origination), screen_and_finalize (§4.2 + footer + §4.3)
+- **Expected reliability footer:** T4 (generative) — rubric + HITL: facts cited, assessment RM-authored & non-empty; no deterministic golden case
+- **Eval (T1/T2): 0/0 passed**
+
+| Case | Tier | Result | Grounded in | Detail |
+|---|---|---|---|---|
+
 ### foundation — Cross-cutting compliance guards (every prompt routes through these)
 
 - **Expected skills (T3):** redacting-restricted-fields, screening-and-gating-output, assessing-output-reliability
@@ -147,4 +209,3 @@ _Generated 2026-06-12 by `evals/observability.py` from the live `centerline_mcp`
 - **Skill selection is probabilistic.** Mitigated because the critical math/compliance lives in deterministic MCP tools (enforced + testable), not in model choice; the T3 expected-trace above is the check, and the eval cases pin the tool outputs.
 - **The run-trace ledger is coarse today.** The PreToolUse hook records that a tool was used (Code-only), not which *skill* selected it. Full per-step attribution (a `log_step` MCP tool + a per-run `traces/run-<id>.jsonl`) is the production path; in prod the same hooks emit OpenTelemetry → Datadog as the §4.1 monitoring evidence.
 - **The golden set is small and self-authored.** Mitigated by source-grounded expected answers and negative/adversarial cases (a clean borrower must not flag; a normal doc must not be refused); production path is a larger labeled set + real RM accept/edit/dismiss feedback.
-

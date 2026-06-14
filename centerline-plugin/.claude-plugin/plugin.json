@@ -1,6 +1,6 @@
 {
   "name": "centerline",
   "description": "Centerline Bank commercial-banking skill library (synthetic-data pilot) — compliant relationship-management workflows. Loads in Claude Code (--plugin-dir) and Claude Cowork (Customize → Personal plugins → Upload). Compliance guardrails are enforced server-side in the local `centerline` MCP server (§2.1 strip, §5 gate, guarantor refusal, §4.2 output screening).",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "author": { "name": "Franck Benichou" }
 }

@@ -200,4 +200,50 @@ check("get_latest_report reports a path + exists flag", "path" in glr and "exist
 check("get_latest_report skips pull when pull=False", glr.get("pulled") == "skipped (pull=False)")
 check("get_latest_report rejects an unknown kind", "error" in core.get_latest_report("bogus", pull=False))
 
+# --- get_relationship_timeline (B3 reconciliation anchor): merge log + emails, expose the mis-dating ---
+tl = core.get_relationship_timeline("Arcadia Property Group")
+events = tl["events"]
+emails = [e for e in events if e["source"] == "email"]
+logs = [e for e in events if e["source"] == "activity_log"]
+check("timeline: 11 activity-log entries + 5 email messages merged", len(logs) == 11 and len(emails) == 5)
+check("timeline: sorted ascending by date", [e["date"] for e in events] == sorted(e["date"] for e in events))
+apr9 = next((e for e in events if e["source"] == "activity_log" and e["date"] == "2025-04-09"), None)
+apr22 = next((e for e in events if e["source"] == "email" and e["date"] == "2025-04-22"), None)
+check("timeline: the Apr-09 Draw #13 log entry is present", apr9 is not None and "Draw #13" in (apr9["summary"] or ""))
+check("timeline: the Apr-22 Draw #13 submission email is present", apr22 is not None)
+check(
+    "timeline: mis-dating visible — the Apr-09 log row sorts BEFORE the Apr-22-25 emails it summarizes",
+    events.index(apr9) < events.index(apr22),
+)
+chen = next((e for e in emails if e["date"] == "2025-04-25" and "Chen" in (e["who"] or "")), None)
+check("timeline: Marcus Chen's 2025-04-25 email (the email-only credit decision) is on the timeline", chen is not None)
+check("timeline: §2.1/§5 compliance metadata present", tl["_compliance"]["policy"] == ["§2.1", "§5"])
+
+# --- flag_renewal_and_retention (B1): the inverse of early-warning — the healthy-but-leaving radar ---
+rr = core.flag_renewal_and_retention("Crestwood Capital Advisors")
+check("retention: Crestwood fires retention_attention (healthy + courted)", rr["retention_attention"] is True)
+check(
+    "retention: Crestwood is healthy (compliant, 0 signals, DSCR improving)",
+    rr["healthy"] is True and rr["health"]["deterioration_signals"] == 0 and rr["health"]["dscr_trend"] == "improving",
+)
+check(
+    "retention: competitive signal + attrition both flagged from the record",
+    rr["competitive_signal"] is True and rr["attrition_flagged"] is True,
+)
+check(
+    "retention: maturity clock computed (2026-08-31, within the lead window)",
+    rr["maturity_date"] == "2026-08-31" and 450 <= rr["days_to_maturity"] <= 465,
+)
+check("retention: Growth-tier relationship surfaced", rr["relationship"]["tier"] == "Growth")
+check(
+    "retention: dated renewal signals found (incl. the First Midwest term sheet)",
+    any("first midwest" in s["note"].lower() for s in rr["renewal_signals"]),
+)
+# contrast: a distressed borrower is NOT a retention flag (it's a distress flag) — keeps the lenses distinct
+mr = core.flag_renewal_and_retention("Meridian Fabrication")
+check(
+    "retention: Meridian (breach) does NOT fire retention_attention (not healthy)",
+    mr["healthy"] is False and mr["retention_attention"] is False,
+)
+
 print(f"\nALL {_passed} CHECKS PASSED")
