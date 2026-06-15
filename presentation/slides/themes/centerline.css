@@ -516,3 +516,171 @@ section .pol { background: linear-gradient(160deg, var(--navy) 0%, var(--navy-2)
 section .pol .sec { font-weight: 800; color: var(--gold-lt); font-size: 19px; }
 section .pol .d { font-size: 13px; color: #C7D3E2; margin-top: 6px; line-height: 1.36; }
 section .pol strong { color: #FFFFFF; }
+
+/* Appendix (reference slides) */
+section.appendix { justify-content: flex-start; padding: 40px 56px 30px; }
+section.appendix .kicker { margin-bottom: 2px; }
+section.appendix h1 { font-size: 32px; margin-bottom: 6px; }
+section.appendix .lede { font-size: 16px; margin: 4px 0 12px; }
+section.appendix .callout { margin-top: 12px; font-size: 12.5px; padding: 10px 16px; line-height: 1.45; }
+/* capability grid */
+section.appendix .capgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+section.appendix .capcard { background: #F5F7FA; border: 1px solid var(--line); border-left: 4px solid var(--gold);
+  border-radius: 0 8px 8px 0; padding: 10px 12px; }
+section.appendix .capcard .ct { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; line-height: 1.25; }
+section.appendix .capcard .ct span { font-weight: 600; color: var(--slate); font-size: 11px; }
+section.appendix .capcard .sk { font-size: 10.5px; color: var(--slate); line-height: 1.4; }
+section.appendix .capcard .out { font-size: 10.5px; color: #8A6D3B; margin-top: 5px; line-height: 1.35; }
+/* glossary 2-column flow */
+section.appendix.gloss .cols { columns: 2; column-gap: 36px; }
+section.appendix.gloss h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold);
+  margin: 9px 0 3px; break-after: avoid; }
+section.appendix.gloss h4:first-child { margin-top: 0; }
+section.appendix.gloss .g { font-size: 11.5px; line-height: 1.4; margin: 3px 0; break-inside: avoid; color: var(--ink); }
+section.appendix.gloss .g b { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--navy); }
+/* MCP server band + tool grid */
+section.appendix .srvband { background: var(--navy); color: #E7EEF7; border-radius: 8px; padding: 12px 16px;
+  font-size: 12.5px; line-height: 1.46; margin-bottom: 12px; }
+section.appendix .srvband strong { color: #FFFFFF; }
+section.appendix .srvband code { background: rgba(255,255,255,0.12); color: #EAF0F7; padding: 0 4px; border-radius: 3px; }
+section.appendix .toolgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+section.appendix .toolcard { background: #F5F7FA; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+section.appendix .toolcard .ct { font-size: 12px; font-weight: 800; color: var(--navy); margin-bottom: 5px; }
+section.appendix .toolcard .t { font-size: 10.5px; line-height: 1.38; margin: 2px 0; color: var(--ink); }
+section.appendix .toolcard .t b { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--navy-2); }
+
+/* Appendix · skill capability MAP (2-axis) */
+section.appendix.map .skillmap { margin-top: 12px; --rl: 132px; }
+section.appendix.map .band { display: grid; grid-template-columns: var(--rl) 1fr; align-items: center;
+  gap: 12px; border-radius: 8px; padding: 9px 14px; }
+section.appendix.map .band .bl { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.25; }
+section.appendix.map .band .bl i { font-weight: 600; font-style: normal; text-transform: none; letter-spacing: 0; font-size: 10px; opacity: 0.85; }
+section.appendix.map .band .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+section.appendix.map .band .chips span { font-size: 9.5px; background: #fff; border-radius: 5px; padding: 3px 7px; color: var(--navy); }
+section.appendix.map .band.guards { background: rgba(176,141,87,0.16); border: 1px solid var(--gold-lt); }
+section.appendix.map .band.guards .bl { color: #8A6D3B; }
+section.appendix.map .band.guards .chips span { border: 1px solid #D8B98A; }
+section.appendix.map .band.eval { background: rgba(126,87,194,0.12); border: 1px solid #B9A7E0; }
+section.appendix.map .band.eval .bl { color: #5E35B1; }
+section.appendix.map .band.eval .chips span { border: 1px solid #C3B2E6; }
+
+section.appendix.map .plane { display: grid; grid-template-columns: var(--rl) 1fr 1fr 1fr; align-items: stretch;
+  border-radius: 8px; margin-top: 8px; overflow: hidden; }
+section.appendix.map .plane.risk { background: rgba(19,41,75,0.06); border: 1px solid #C2CCDA; }
+section.appendix.map .plane.rel  { background: rgba(67,160,71,0.09); border: 1px solid #BCD9BD; }
+section.appendix.map .plane .rl { font-size: 11px; font-weight: 800; color: var(--navy); padding: 10px 12px;
+  display: flex; flex-direction: column; justify-content: center; line-height: 1.25; }
+section.appendix.map .plane .rl i { font-weight: 600; font-style: normal; color: var(--slate); font-size: 10px; }
+section.appendix.map .plane .cell { padding: 9px 10px; display: flex; flex-wrap: wrap; gap: 6px;
+  align-content: flex-start; border-left: 1px dashed #B9C4D2; }
+section.appendix.map .plane .cell span { font-size: 9.5px; line-height: 1.2; background: #fff; border-radius: 5px;
+  padding: 3px 7px; color: var(--navy); }
+section.appendix.map .plane.risk .cell span { border: 1px solid #9FB0C8; }
+section.appendix.map .plane.rel .cell span { border: 1px solid #A9CFAB; }
+
+section.appendix.map .xaxis { display: grid; grid-template-columns: var(--rl) 1fr 1fr 1fr; margin-top: 6px; }
+section.appendix.map .xaxis .xstage { text-align: center; font-size: 10.5px; font-weight: 700; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 0.04em; border-top: 2px solid var(--gold); padding-top: 5px; margin: 0 6px; }
+section.appendix.map .xcap { text-align: center; font-size: 11px; color: var(--slate); margin-top: 6px; letter-spacing: 0.02em; }
+
+/* Skill capability MAP as a MAIN-flow slide (bigger, fills the slide) */
+section.skmap { justify-content: flex-start; padding: 56px 64px 44px; }
+section.skmap h1 { font-size: 42px; margin-bottom: 6px; }
+section.skmap .lede { font-size: 18px; margin: 6px 0 18px; }
+section.skmap .skillmap { --rl: 162px; margin-top: 6px; }
+
+section.skmap .band { display: grid; grid-template-columns: var(--rl) 1fr; align-items: center;
+  gap: 16px; border-radius: 9px; padding: 14px 18px; }
+section.skmap .band .bl { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.25; }
+section.skmap .band .bl i { font-weight: 600; font-style: normal; text-transform: none; letter-spacing: 0; font-size: 11.5px; opacity: 0.85; }
+section.skmap .band .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+section.skmap .band .chips span { font-size: 12.5px; background: #fff; border-radius: 6px; padding: 5px 11px; color: var(--navy); }
+section.skmap .band.guards { background: rgba(176,141,87,0.16); border: 1px solid var(--gold-lt); }
+section.skmap .band.guards .bl { color: #8A6D3B; }
+section.skmap .band.guards .chips span { border: 1px solid #D8B98A; }
+section.skmap .band.eval { background: rgba(126,87,194,0.12); border: 1px solid #B9A7E0; }
+section.skmap .band.eval .bl { color: #5E35B1; }
+section.skmap .band.eval .chips span { border: 1px solid #C3B2E6; }
+
+section.skmap .plane { display: grid; grid-template-columns: var(--rl) 1fr 1fr 1fr; align-items: stretch;
+  border-radius: 9px; margin-top: 12px; overflow: hidden; min-height: 104px; }
+section.skmap .plane.risk { background: rgba(19,41,75,0.06); border: 1px solid #C2CCDA; }
+section.skmap .plane.rel  { background: rgba(67,160,71,0.09); border: 1px solid #BCD9BD; }
+section.skmap .plane .rl { font-size: 13.5px; font-weight: 800; color: var(--navy); padding: 12px 14px;
+  display: flex; flex-direction: column; justify-content: center; line-height: 1.25; }
+section.skmap .plane .rl i { font-weight: 600; font-style: normal; color: var(--slate); font-size: 11.5px; }
+section.skmap .plane .cell { padding: 13px 14px; display: flex; flex-wrap: wrap; gap: 8px;
+  align-content: flex-start; border-left: 1px dashed #B9C4D2; }
+section.skmap .plane .cell span { font-size: 12.5px; line-height: 1.25; background: #fff; border-radius: 6px;
+  padding: 5px 11px; color: var(--navy); }
+section.skmap .plane.risk .cell span { border: 1px solid #9FB0C8; }
+section.skmap .plane.rel .cell span { border: 1px solid #A9CFAB; }
+
+section.skmap .xaxis { display: grid; grid-template-columns: var(--rl) 1fr 1fr 1fr; margin-top: 10px; }
+section.skmap .xaxis .xstage { text-align: center; font-size: 13px; font-weight: 700; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 0.04em; border-top: 2px solid var(--gold); padding-top: 7px; margin: 0 8px; }
+section.skmap .xcap { text-align: center; font-size: 13px; color: var(--slate); margin-top: 8px; letter-spacing: 0.02em; }
+
+/* skmap, tighten to fit one page */
+section.skmap { padding: 44px 64px 24px; }
+section.skmap h1 { margin-bottom: 4px; }
+section.skmap .lede { font-size: 16px; margin: 6px 0 10px; }
+section.skmap .skillmap { margin-top: 2px; }
+section.skmap .band { padding: 9px 16px; gap: 14px; }
+section.skmap .band .bl { font-size: 12.5px; }
+section.skmap .band .chips span { font-size: 12px; padding: 4px 9px; }
+section.skmap .plane { margin-top: 8px; min-height: 0; }
+section.skmap .plane .rl { font-size: 13px; padding: 10px 12px; }
+section.skmap .plane .cell { padding: 9px 11px; gap: 7px; }
+section.skmap .plane .cell span { font-size: 12px; padding: 4px 9px; }
+section.skmap .xaxis { margin-top: 6px; }
+section.skmap .xaxis .xstage { padding-top: 6px; font-size: 12.5px; }
+section.skmap .xcap { margin-top: 5px; font-size: 12.5px; }
+
+/* skmap, final fit pass (smaller title block + chips so all rows fit above the footer) */
+section.skmap { padding: 34px 64px 22px; }
+section.skmap h1 { font-size: 34px; margin-bottom: 3px; }
+section.skmap h1::after { margin: 7px 0 2px; }
+section.skmap .lede { font-size: 15px; margin: 5px 0 9px; line-height: 1.4; }
+section.skmap .band { padding: 8px 15px; }
+section.skmap .band .chips span { font-size: 11px; padding: 3px 8px; }
+section.skmap .band .bl { font-size: 12px; }
+section.skmap .plane { margin-top: 7px; }
+section.skmap .plane .rl { font-size: 12.5px; padding: 8px 11px; }
+section.skmap .plane .cell { padding: 8px 10px; gap: 6px; }
+section.skmap .plane .cell span { font-size: 11px; padding: 3px 8px; }
+section.skmap .xaxis { margin-top: 5px; }
+section.skmap .xaxis .xstage { padding-top: 5px; font-size: 12px; }
+section.skmap .xcap { margin-top: 4px; font-size: 12px; }
+
+/* Appendix reference slides (27 skills glossary, 28 MCP) — fill the top/bottom space */
+section.appendix { justify-content: center; padding-top: 48px; padding-bottom: 40px; }
+section.appendix h1 { font-size: 40px; margin-bottom: 8px; }
+section.appendix .kicker { font-size: 13px; }
+/* skills glossary */
+section.appendix.gloss .cols { column-gap: 50px; }
+section.appendix.gloss h4 { font-size: 13px; margin: 14px 0 5px; }
+section.appendix.gloss h4:first-child { margin-top: 0; }
+section.appendix.gloss .g { font-size: 14.5px; line-height: 1.6; margin: 7px 0; }
+section.appendix.gloss .g b { font-size: 13.5px; }
+/* MCP server + tools */
+section.appendix .srvband { font-size: 15px; line-height: 1.6; padding: 18px 22px; margin-bottom: 22px; }
+section.appendix .toolgrid { gap: 18px; }
+section.appendix .toolcard { padding: 16px 18px; }
+section.appendix .toolcard .ct { font-size: 15px; margin-bottom: 8px; }
+section.appendix .toolcard .t { font-size: 13px; line-height: 1.55; margin: 4px 0; }
+section.appendix .toolcard .t b { font-size: 12.5px; }
+
+/* appendix dial-back: fill without overflow */
+section.appendix { padding-top: 44px; padding-bottom: 34px; }
+section.appendix h1 { font-size: 38px; }
+section.appendix.gloss h4 { font-size: 12.5px; margin: 12px 0 4px; }
+section.appendix.gloss .g { font-size: 13px; line-height: 1.5; margin: 6px 0; }
+section.appendix.gloss .g b { font-size: 12.5px; }
+
+/* MCP appendix slide: trim so bottom cards clear the footer */
+section.appendix .srvband { font-size: 14px; padding: 14px 20px; margin-bottom: 15px; line-height: 1.5; }
+section.appendix .toolgrid { gap: 14px; }
+section.appendix .toolcard { padding: 12px 16px; }
+section.appendix .toolcard .ct { font-size: 14px; margin-bottom: 6px; }
+section.appendix .toolcard .t { font-size: 12.5px; line-height: 1.45; margin: 3px 0; }
