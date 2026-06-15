@@ -66,7 +66,7 @@ flowchart TB
   Data[("Corpus — CSVs · emails · memo<br/>+ synthetic Meridian covenant package")]:::data
   Out["Artifact — screened markdown + credit-file PDF"]:::out
   Human(["Human review — RM §4.3 · CCO §4.1"]):::human
-  Eval["Eval + governance<br/>L1 golden · L3 agent-eval · L4 improve loop · CI gate"]:::eval
+  Eval["Eval + governance<br/>L1 golden · L2 observability · L3 agent-eval · L4 improve loop · CI gate"]:::eval
 
   Code --> Skills
   Cowork --> Skills
@@ -98,8 +98,10 @@ flowchart TB
   quality / cross-validate).
 - **Sub-agents** (only for fan-out or scheduled work): a covenant-package reviewer and a portfolio
   early-warning sweep.
-- **MCP server + hooks**: the local `centerline` MCP server and deterministic hooks enforce compliance
-  centrally.
+- **Where enforcement lives**: the local `centerline` MCP server (plus `core.py`) is the **cross-surface
+  compliance chokepoint** — it runs in both Claude Code and Cowork, so §2.1/§4.2 hold regardless of what the
+  model says. Deterministic hooks add a **Code-only** redundant belt (they don't fire in Cowork — the server
+  is what's relied on).
 - **Packaging — one source, both surfaces**: the skill library ships as a single **plugin** that loads in
   **Claude Code** (`--plugin-dir`) and **Claude Cowork** (upload), and the MCP server is **bridged into
   Cowork** — so the same compliant workflows run on the engineer's surface and the RM's no-terminal surface.
@@ -129,19 +131,54 @@ See [`CLAUDE.md`](./CLAUDE.md) for the always-on rules Claude follows in this re
 4. **Honest evaluation** (what works / the hard 20%).
 5. **System, compliance, adoption, Q&A.**
 
+## Presentation & presenter materials
+The panel deck and prep live under [`presentation/`](./presentation/):
+- **[`slides/centerline-claude-pilot.md`](./presentation/slides/centerline-claude-pilot.md)** — the 25-slide
+  **Marp** deck (renders to PDF); Centerline theme in `slides/themes/`, architecture diagram in
+  `slides/diagrams/`.
+- **[`speaker-notes.md`](./presentation/speaker-notes.md)** — the tight spoken script, per slide.
+- **[`panel-qa-prep.md`](./presentation/panel-qa-prep.md)** — per-slide *Land* + likely Q&A / gotchas + the
+  hardest questions.
+- **[`slide-deep-dive.md`](./presentation/slide-deep-dive.md)** — a thorough slide-by-slide reader (intent,
+  facts to have cold, questions, landmines).
+
+Render the deck:
+```bash
+npx -y @marp-team/marp-cli --theme-set presentation/slides/themes --pdf --allow-local-files \
+  presentation/slides/centerline-claude-pilot.md -o presentation/slides/centerline-claude-pilot.pdf
+```
+
+## From pilot to production
+The pilot runs on a local MCP server + Claude Code/Cowork. For a real deployment it **maps 1:1 onto
+AWS-managed services** — not rebuilt, the same compliant design, hosted (Caylent's stack):
+- **Bedrock AgentCore Gateway** — the local MCP becomes a managed MCP server with **least-privilege**
+  execution roles, per-tool interceptors, and on-behalf-of identity (the agent acts only in the
+  authenticated user's scope).
+- **AgentCore Runtime** — serverless, **per-invocation microVM isolation**; skills deploy via the Claude
+  Agent SDK.
+- **AgentCore Observability** — OpenTelemetry → CloudWatch for token usage, latency, and errors.
+- **Bedrock Guardrails** — restricted-field/PII redaction and denied-topic filtering as **defense-in-depth**.
+  *Honest caveat: Guardrails is probabilistic and doesn't scan tool-call outputs — so our **deterministic
+  server-side guards stay the primary chokepoint**.*
+
+Production hardening: **query observability** (log + scan every query *and* response for non-compliant
+language — not just the artifacts), **per-RM/skill token & spend budgets**, **sandboxed least-privilege
+connectors**, **§4.1 monitoring** pending CCO sign-off, and **§2.3 residency** (local scheduled jobs over
+cloud routines). Scheduled jobs **prepare proposals only — never auto-act** (§4.3).
+
 ## Repo layout (scaffolded incrementally)
 ```
 .
 ├── CLAUDE.md                     # always-on project rules (compliance, data, conventions)
-├── .mcp.json                     # registers the local `centerline` MCP server
+├── .mcp.json                     # registers the local stdio `centerline` MCP server for Claude CODE
+│                                  #   (Cowork does NOT read this — see docs/mcp_local_cowork.md)
 ├── .claude/
-│   ├── settings.json             # deterministic compliance hooks
+│   ├── settings.json             # deterministic compliance hooks (Code-only belt)
 │   ├── skills/<name>/SKILL.md     # the composable skill library
 │   └── agents/<name>.md          # sub-agents (fan-out / scheduled only)
 ├── mcp/centerline_mcp/           # local stdio MCP server (+ compliance guards)
 ├── scripts/                      # shared deterministic math (e.g. ratio recompute)
-├── .mcp.json                     # registers the local stdio `centerline` MCP server for Claude CODE
-│                                  #   (Cowork does NOT read this — see docs/mcp_local_cowork.md)
+├── presentation/                 # the panel deck (Marp) + presenter materials
 ├── data/                         # OPERATIONAL — the only content the MCP serves
 │   ├── structured/               # 3 CSVs (portfolio, monthly performance, activity log)
 │   ├── emails/                   # 4 threads
@@ -183,27 +220,58 @@ increment**.
   + 81 source-grounded golden cases (`evals/cases/`, T1/T2 + negatives, all 5 borrowers) → `evals/results/latest.md`,
   `evals/observability.py` → `reports/observability.md` per-prompt scorecards, and the `run_evals` MCP tool
   (in-console on either surface).*
-- **Phase 3 — Synthetic documents ⏳ (not started).** A realistic covenant package as **labeled synthetic PDFs** that encode
-  facts already in the data (some deliberately incomplete or flawed), plus per-type extraction schemas.
-  *Exit: package + schemas + cross-validation targets in place.*
-- **Phase 4 — Track B (Relationship/Renewal + Doc-Intelligence) = Deliverable B ⏳ (not started).** Document
-  classification/extraction/completeness/quality/cross-validation (+ a package-review sub-agent) and the
-  relationship skills (open-items, close-the-loop, since-last-review diffing, industry signals, the
-  renewal/retention flag, meeting briefs, and the decomposed relationship memo). *Exit: the four per-RM demo
-  prompts run end-to-end — including the restricted-document refusal, scribe-not-author surfacing, and the
-  memo's human-in-the-loop pause; all five rebuilt shadow workflows confirmed live.*
-- **Phase 5 — Demo integration & dry-runs ⏳ (not started).** Wire the full one-hour flow, run it end-to-end in Cowork,
-  capture real outputs, and write the honest evaluation (what works / the hard 20%). *Exit: a full dry-run
-  within the hour, with outputs captured.*
-- **Phase 6 — Packaging & production story ⏳ (not started).** Optional plugin packaging; the deployment, compliance-approval,
-  and per-RM adoption narrative. *Exit: packaging and adoption story ready for Q&A.*
+- **Phase 3 — Synthetic documents ✅ (done).** A realistic Meridian covenant package as **labeled synthetic PDFs** that encode
+  facts already in the data (some deliberately incomplete or flawed: an unsigned rep letter, missing PO/AR
+  names/projections, a planted guarantor PFS for the §2.1 refusal), per-type extraction schemas, and the
+  doc-intel engine (classify / extract / recompute / cross-validate). *Exit met: package + schemas +
+  cross-validation targets in place; the certified-vs-recomputed catch reconciles to the bank's own data.*
+- **Phase 4 — Track B (Relationship/Renewal + Doc-Intelligence) = Deliverable B ✅ (complete).** Document
+  classification/extraction/completeness/quality/cross-validation and the relationship skills (open-items,
+  close-the-loop, renewal/retention flag, relationship-timeline reconciliation, and the decomposed
+  relationship memo). *Exit met: the four per-RM demo prompts run end-to-end and are Cowork-verified —
+  including the restricted-document refusal, scribe-not-author surfacing, and the memo's human-in-the-loop
+  pause; all five rebuilt shadow workflows confirmed live.*
+- **Phase 5 — Demo integration & dry-runs ✅ (deck built).** The full one-hour flow runs end-to-end in Cowork
+  with real captured outputs and the honest evaluation written; the **25-slide panel deck + presenter
+  materials** are built under [`presentation/`](./presentation/). *Exit met: a full dry-run within the hour,
+  outputs captured, deck drafted.*
+- **Phase 6 — Packaging & production story ◑ (narrated; polish remaining).** The library ships as one plugin
+  that loads in Code + Cowork; the deployment, compliance-approval, AWS-managed mapping, and per-RM adoption
+  narrative are ready for Q&A (see *From pilot to production* above). *Remaining: optional packaging polish +
+  panel rehearsal.*
 
 ## Scope discipline (built vs designed)
-The brief rewards **depth over breadth** and **honest evaluation**. So a focused **~15 skills are built to depth with evals** — the compliance/trust foundation, both Track-A and Track-B creative cores, and the per-RM rebuilds — while the broader library (the full per-type document-intelligence cluster, since-last-review diffing, the two sub-agents) is presented as **designed architecture**, clearly labeled built-vs-designed. **Both creative gems and the rebuilt early-warning run on real data**; the document-intelligence prompt is the one piece that runs on (clearly labeled) **synthetic** documents and is positioned as a supporting guardrail demonstration, not a creativity claim.
+The brief rewards **depth over breadth** and **honest evaluation**. So a focused **~15 skills are built to depth with evals** — the compliance/trust foundation, both Track-A and Track-B creative cores, and the per-RM rebuilds — while the broader library (the full per-type document-intelligence cluster, since-last-review diffing, the two sub-agents) is presented as **designed architecture**, clearly labeled built-vs-designed. **Both creative use cases and the rebuilt early-warning run on real data**; the document-intelligence prompt is the one piece that runs on (clearly labeled) **synthetic** documents and is positioned as a supporting guardrail demonstration, not a creativity claim.
 
 ## Status
-**Building — Phase 0–1 ✅, Phase 2 / Deliverable A ✅ COMPLETE (updated 2026-06-12).**
+**Complete & demo-ready — Phases 0–4 done; panel deck built (Phase 5). Plugin v0.11.0. (Updated 2026-06-15.)**
 
-**Done & verified:** repo live; local MCP server with **11 tools** (borrower/loan/activity/email retrieval + `screen_and_finalize` §4.2 + Track-A `check_covenant_compliance` / `detect_deterioration_signals` / `measure_engagement_coverage` / `assemble_watchlist` + `run_evals` + `get_latest_report` [git-pulls then returns the latest eval/improvement report — always-latest, cross-surface]), with §2.1 strip / §5 gate / guarantor refusal enforced server-side; **14 plugin skills** (incl. `running-the-eval-suite` + display-only `viewing-eval-results` / `viewing-proposed-improvements`); a Code-side run-ledger hook; **46 deterministic tests**; **verified end-to-end in Claude Code *and* Cowork** (watchlist ranking, covenant + status-mislabel, the 78-day engagement gap, §4.2 blocking). **Deliverable A complete:** the *"what changed & why vs Tom's wf5"* write-up (5 violations→fixes incl. the deterministic-tools-over-CSV point, architecture verdict, captured outputs, honest 80/20), the **recipe** (verbatim A1/A2/A3 prompts + skill/MCP design), and the **eval/observability infra** — `evals/runner.py` + **81 source-grounded golden cases** (T1/T2 + negatives across all 5 borrowers) → `evals/results/latest.md`, `evals/observability.py` → `reports/observability.md` per-prompt scorecards, and the **`run_evals` MCP tool** (run the suite in-console on either surface) — **81/81 + 46/46 passing**. A separate **agent-behavior eval** (`evals/agent_eval.py`) runs the demo prompts through **Claude Code headless** and grades the *model's* decisions — tool selection, §4.2 on its own narration, fact faithfulness — with deterministic code (the unit tests check the tool logic; this checks the LLM-driven layer), and **captures each run's actual analysis text**. A **Layer-4 improvement loop** (`evals/improve.py` / the `eval-improve` workflow) reads the latest eval and writes **advisory** proposals for the skill library to `reports/improvements/` — *report-only, no auto-edits* (it can't touch guards/code/eval-cases), for a human to review (via the `viewing-proposed-improvements` skill) and apply by hand. See [`docs/evals_and_observability.md`](./docs/evals_and_observability.md).
+**Built & Cowork-verified end-to-end (v0.11.0).** The local `centerline` MCP server exposes **19 tools** —
+retrieval (dossier · loan performance · activity log · emails · relationship timeline · documents); Track-A
+analysis (`check_covenant_compliance` · `detect_deterioration_signals` · `measure_engagement_coverage` ·
+`assemble_watchlist`); doc-intel (`classify_document` · `extract_document_fields` · `cross_validate_covenant`
+· `review_package`); `screen_and_finalize` (§4.2 scan + reliability footer) and `render_pdf` (Centerline
+letterhead); plus the eval/governance tools `run_evals` and `get_latest_report` — all with §2.1 strip / §5
+gate / guarantor refusal enforced server-side. The skill library ships as **one plugin (19 skills)** that
+loads in Claude Code and Cowork, with a Code-side run-ledger hook. **Tests:** golden **95/95**, compliance
+**70/70**, doc-intel **46/46**; flake8 clean.
 
-**Next:** **Phase 3** (the synthetic Meridian covenant package) → **Phase 4: Track B = Deliverable B** → Phase 5 demo integration → Phase 6 packaging.
+**All 11 panel prompts built + Cowork-verified** — Track A (A1 watchlist · A2 covenant cushion+trend · A3 the
+78-day engagement gap) and Track B (B1 retention radar · B2 covenant-package intake + missing-docs email · B3
+reconciliation + draw-response letter · B4 the decomposed annual memo with the §4.2 human pause), plus the two
+eval-display prompts.
+
+**Deliverables A & B complete** — the *"what changed & why vs Tom's wf5"* write-up and the verbatim recipes
+(`solutions/deliverable-a/`, `solutions/deliverable-b/`).
+
+**Eval & governance span both tracks** — a deterministic golden set (Layer 1, **95/95**, the LLM is never
+invoked), per-prompt observability scorecards (Layer 2, `reports/observability.md`), a live agent-behavior
+eval (Layer 3, `evals/agent_eval.py` — grades the *model's* tool choice, §4.2 on its own narration, and fact
+faithfulness, on A1–A3 + B1/B3), an **advisory** improvement loop (Layer 4, `evals/improve.py` — report-only;
+it can't touch guards/code/eval-cases), and a **CI prod-merge gate** (black · flake8 · deterministic suites).
+See [`docs/evals_and_observability.md`](./docs/evals_and_observability.md).
+
+**Panel deck built** — a 25-slide Marp deck + presenter materials under [`presentation/`](./presentation/).
+
+**Remaining:** optional plugin-packaging polish, panel rehearsal, and the production rollout (see *From pilot
+to production*).
