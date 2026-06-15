@@ -106,6 +106,41 @@ flowchart TB
   **Claude Code** (`--plugin-dir`) and **Claude Cowork** (upload), and the MCP server is **bridged into
   Cowork** — so the same compliant workflows run on the engineer's surface and the RM's no-terminal surface.
 
+## MCP server tools (19)
+Everything the model can do against the bank's data goes through these tools — **the model orchestrates and
+narrates; the tools do the math and enforce compliance.** Every retrieval tool strips the internal rating
+(§2.1), redacts watchlist/Special-Assets language, and halts Special-Assets/litigation borrowers (§5); the
+analysis tools are **deterministic** (the math is never the LLM's).
+
+**Retrieval — read the system of record**
+- `get_borrower_dossier` — profile + latest performance + memo presence (rating stripped; `covenant_status` kept as a fact).
+- `get_loan_performance` — monthly DSCR / leverage / revolver / status rows; restricted note language redacted.
+- `get_activity_log` — the CRM contact log.
+- `get_emails` — the borrower's email thread.
+- `get_relationship_timeline` — merges the CRM log + emails into one **source-tagged, chronological** timeline so mis-dated/conflated entries and email-only decisions surface (powers B3 reconciliation).
+- `list_documents` — enumerate a covenant-package directory **host-side** (no Cowork folder-access prompt).
+
+**Track-A analysis — deterministic, facts-only (§4.2)**
+- `check_covenant_compliance` — DSCR/leverage vs thresholds, cushion, breach flags, reported-vs-computed status (construction → N/A).
+- `detect_deterioration_signals` — trends, threshold crossings, the **status-vs-trend mislabel**, thin cushion, construction lifecycle (pre-leasing vs 75%).
+- `measure_engagement_coverage` — days since the last **substantive two-way** contact (one-way notices / missed calls don't count) vs the naive count.
+- `assemble_watchlist` — composes the three above across the book, ranked by **risk × neglect** (a facts-derived order, not a credit rating; §4.1 for automation).
+- `flag_renewal_and_retention` — the **inverse radar**: fires on a *healthy* borrower approaching renewal / being courted by a competitor; surfaces facts + "engage," **never a rate**.
+
+**Document intelligence — the synthetic covenant package**
+- `classify_document` — type a package PDF; the **§2.1 pre-screen refuses a guarantor PFS before any model call**.
+- `extract_document_fields` — per-type schema extraction (skips `other` / PO / projections; refuses guarantor).
+- `cross_validate_covenant` — certified vs **recomputed (GAAP)** vs the bank's own data, with the **EBITDA add-back bridge**; every figure provenance-tagged; returns `cross_source_mismatches` for an honest footer.
+- `review_package` — completeness (missing docs / outstanding items) + quality flags (unsigned letter, withheld names) + §2.1 refusals; returns `low_confidence_inputs` for the footer.
+
+**Compliance & output**
+- `screen_and_finalize` — the **cross-surface OUTPUT guard**: scans for §4.2 credit language (blocks), attaches the qualitative reliability footer (**never a %**), tags §4.3 review. Every artifact routes through it.
+- `render_pdf` — render a screened artifact to a **credit-file-grade PDF** (Centerline letterhead), preserving the DRAFT banner + footer; optional trend charts.
+
+**Eval & governance**
+- `run_evals` — run the deterministic **golden suite** against the live tool logic and refresh the observability scorecard (no LLM in the grader).
+- `get_latest_report` — read-only `git pull` + return the latest **eval / improvement / observability** report (always-current, cross-surface).
+
 ## Compliance, designed in (not disclaimers)
 - **Restricted inputs** — internal ratings, watchlist, Special-Assets status, and guarantor personal
   financials are never sent to the model (stripped server-side); guarantor documents are refused.
@@ -235,43 +270,25 @@ increment**.
   with real captured outputs and the honest evaluation written; the **25-slide panel deck + presenter
   materials** are built under [`presentation/`](./presentation/). *Exit met: a full dry-run within the hour,
   outputs captured, deck drafted.*
-- **Phase 6 — Packaging & production story ◑ (narrated; polish remaining).** The library ships as one plugin
-  that loads in Code + Cowork; the deployment, compliance-approval, AWS-managed mapping, and per-RM adoption
-  narrative are ready for Q&A (see *From pilot to production* above). *Remaining: optional packaging polish +
-  panel rehearsal.*
+- **Phase 6 — Packaging & production story ✅ (done).** The library ships as **one plugin** that loads on both
+  surfaces, and **Claude Cowork is fully configured** (see [How Claude Cowork is configured](#how-claude-cowork-is-configured)
+  below). The deployment, compliance-approval, AWS-managed mapping, and per-RM adoption narrative are ready
+  for Q&A (see [From pilot to production](#from-pilot-to-production)).
 
-## Scope discipline (built vs designed)
-The brief rewards **depth over breadth** and **honest evaluation**. So a focused **~15 skills are built to depth with evals** — the compliance/trust foundation, both Track-A and Track-B creative cores, and the per-RM rebuilds — while the broader library (the full per-type document-intelligence cluster, since-last-review diffing, the two sub-agents) is presented as **designed architecture**, clearly labeled built-vs-designed. **Both creative use cases and the rebuilt early-warning run on real data**; the document-intelligence prompt is the one piece that runs on (clearly labeled) **synthetic** documents and is positioned as a supporting guardrail demonstration, not a creativity claim.
+## How Claude Cowork is configured
+Cowork runs the agent in a **sandboxed Linux VM** and does **not** read the repo's `.mcp.json` or `.claude/`,
+so it's wired up three ways — once per run-surface concern:
 
-## Status
-**Complete & demo-ready — Phases 0–4 done; panel deck built (Phase 5). Plugin v0.11.0. (Updated 2026-06-15.)**
+1. **MCP tools → SDK bridge.** The `centerline` server is registered in
+   `~/Library/Application Support/Claude/claude_desktop_config.json`; Claude Desktop **SDK-bridges** it into
+   the VM (it appears as `type: sdk`). The server is spawned on the **host Mac** (via `uv run --with mcp`), so
+   the same server serves both Code (`.mcp.json`) and Cowork (the bridge) — and the §2.1/§5 guards hold on both.
+2. **Skills → uploaded plugin.** The skill library is installed by **uploading the plugin zip** (Customize →
+   Personal plugins → Create/Upload). Cowork doesn't auto-discover the repo's `.claude/skills/`, so the plugin
+   is the delivery vehicle.
+3. **Data → "Work in a folder."** Cowork opens the repo via **Work in a folder**, reading the corpus directly;
+   the MCP tools read the host files regardless.
 
-**Built & Cowork-verified end-to-end (v0.11.0).** The local `centerline` MCP server exposes **19 tools** —
-retrieval (dossier · loan performance · activity log · emails · relationship timeline · documents); Track-A
-analysis (`check_covenant_compliance` · `detect_deterioration_signals` · `measure_engagement_coverage` ·
-`assemble_watchlist`); doc-intel (`classify_document` · `extract_document_fields` · `cross_validate_covenant`
-· `review_package`); `screen_and_finalize` (§4.2 scan + reliability footer) and `render_pdf` (Centerline
-letterhead); plus the eval/governance tools `run_evals` and `get_latest_report` — all with §2.1 strip / §5
-gate / guarantor refusal enforced server-side. The skill library ships as **one plugin (19 skills)** that
-loads in Claude Code and Cowork, with a Code-side run-ledger hook. **Tests:** golden **95/95**, compliance
-**70/70**, doc-intel **46/46**; flake8 clean.
-
-**All 11 panel prompts built + Cowork-verified** — Track A (A1 watchlist · A2 covenant cushion+trend · A3 the
-78-day engagement gap) and Track B (B1 retention radar · B2 covenant-package intake + missing-docs email · B3
-reconciliation + draw-response letter · B4 the decomposed annual memo with the §4.2 human pause), plus the two
-eval-display prompts.
-
-**Deliverables A & B complete** — the *"what changed & why vs Tom's wf5"* write-up and the verbatim recipes
-(`solutions/deliverable-a/`, `solutions/deliverable-b/`).
-
-**Eval & governance span both tracks** — a deterministic golden set (Layer 1, **95/95**, the LLM is never
-invoked), per-prompt observability scorecards (Layer 2, `reports/observability.md`), a live agent-behavior
-eval (Layer 3, `evals/agent_eval.py` — grades the *model's* tool choice, §4.2 on its own narration, and fact
-faithfulness, on A1–A3 + B1/B3), an **advisory** improvement loop (Layer 4, `evals/improve.py` — report-only;
-it can't touch guards/code/eval-cases), and a **CI prod-merge gate** (black · flake8 · deterministic suites).
-See [`docs/evals_and_observability.md`](./docs/evals_and_observability.md).
-
-**Panel deck built** — a 25-slide Marp deck + presenter materials under [`presentation/`](./presentation/).
-
-**Remaining:** optional plugin-packaging polish, panel rehearsal, and the production rollout (see *From pilot
-to production*).
+**The one honest caveat:** project/plugin **hooks do not fire in Cowork** — which is exactly why compliance is
+enforced in the **MCP server / `core.py`** (the cross-surface chokepoint), not in hooks. Full setup + gotchas:
+**[`docs/mcp_local_cowork.md`](./docs/mcp_local_cowork.md)**; the alignment runbook: **[`cowork/`](./cowork/README.md)**.
