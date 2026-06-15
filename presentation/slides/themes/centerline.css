@@ -82,17 +82,17 @@ section.cover .topbar { position: absolute; top: 0; left: 0; right: 0; height: 5
   background: linear-gradient(90deg, var(--gold) 0%, var(--gold-lt) 100%); z-index: 6; }
 
 /* white logo-strip lockup band: Caylent × Centerline */
-section.cover .logo-strip {
+.logo-strip {
   position: absolute; top: 5px; left: 0; right: 0; height: 78px;
   background: #FFFFFF; display: flex; align-items: center; justify-content: space-between;
   padding: 0 52px; box-shadow: 0 2px 14px rgba(0,0,0,0.28); z-index: 5;
 }
-section.cover .logo-strip .lockup { display: inline-flex; align-items: center; gap: 11px; }
-section.cover .logo-strip img.logo-caylent   { height: 40px; width: auto; border-radius: 9px; }
-section.cover .logo-strip img.logo-centerline { height: 38px; width: auto; }
-section.cover .logo-strip .wm-caylent    { font-size: 23px; font-weight: 700; color: var(--caylent); letter-spacing: -0.3px; }
-section.cover .logo-strip .wm-centerline { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: 0.2px; }
-section.cover .logo-strip .logo-x { font-size: 22px; font-weight: 300; color: #9AA7B8; }
+.logo-strip .lockup { display: inline-flex; align-items: center; gap: 11px; }
+.logo-strip img.logo-caylent   { height: 40px; width: auto; border-radius: 9px; }
+.logo-strip img.logo-centerline { height: 38px; width: auto; }
+.logo-strip .wm-caylent    { font-size: 23px; font-weight: 700; color: var(--caylent); letter-spacing: -0.3px; }
+.logo-strip .wm-centerline { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: 0.2px; }
+.logo-strip .logo-x { font-size: 22px; font-weight: 300; color: #9AA7B8; }
 
 /* faint center-line motif watermark, lower-right */
 section.cover::before {
@@ -119,6 +119,7 @@ section.cover h3 { color: var(--gold-lt); font-weight: 600; font-size: 28px; tex
 
 section.cover .meta { margin-top: 50px; font-size: 17px; color: #DCE6F2; line-height: 1.6; position: relative; z-index: 3; }
 section.cover .meta strong { color: #FFFFFF; }
+section.cover .meta a { color: #FFFFFF; text-decoration: none; border-bottom: 1px solid rgba(155,217,201,0.55); padding-bottom: 1px; }
 
 section.cover .speaker { margin-top: 26px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.12);
   font-size: 17px; color: #FFFFFF; font-weight: 600; position: relative; z-index: 3; }
@@ -168,6 +169,19 @@ section .chips { margin-top: 12px; }
 section .chip { display: inline-block; background: #EAEEF3; color: var(--navy); border: 1px solid var(--line);
   border-radius: 999px; padding: 3px 12px; font-size: 13px; margin: 0 6px 7px 0; font-weight: 600; }
 
+/* Agenda / table of contents */
+section.agenda { justify-content: flex-start; padding: 64px 64px 52px; }
+section.agenda h1 { font-size: 46px; margin-bottom: 8px; }
+section.agenda .lede { font-size: 21px; margin: 8px 0 34px; }
+section.agenda .ag { display: grid; grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 26px 48px; }
+section.agenda .ag-item { display: flex; gap: 16px; align-items: flex-start; }
+section.agenda .ag-num { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--navy);
+  color: #FFFFFF; font-weight: 700; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+section.agenda .ag-item .t { font-size: 21px; font-weight: 700; color: var(--navy); line-height: 1.2; }
+section.agenda .ag-item .t .d { font-weight: 500; color: var(--slate); font-size: 15px; }
+section.agenda .ag-item .s { font-size: 15.5px; color: var(--slate); margin-top: 4px; line-height: 1.4; }
+
 /* About slide — top-align + enlarge so it fills the slide (less dead space) */
 section.about { justify-content: flex-start; padding: 60px 64px 44px; }
 section.about h1 { margin-bottom: 10px; }
@@ -189,17 +203,270 @@ section.situation .stat .big { font-size: 50px; }
 section.situation .stat .lbl { font-size: 17px; margin-top: 14px; line-height: 1.42; }
 section.situation .callout { font-size: 20px; padding: 24px 28px; line-height: 1.5; }
 
-/* Personas slide — three RM cards */
-section.personas h1 { font-size: 44px; margin-bottom: 8px; }
-section.personas .lede { font-size: 21px; margin: 10px 0 28px; }
-section.personas .three-col { gap: 22px; }
-section.personas .card { padding: 22px 24px; border-top: 4px solid var(--gold); }
-section.personas .card .hd { font-size: 22px; margin-bottom: 1px; }
-section.personas .card .ptag { font-size: 12.5px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.05em; color: var(--gold); margin: 0 0 12px; }
-section.personas .card p { font-size: 14.5px; margin: 8px 0 0; color: var(--ink); line-height: 1.42; }
-section.personas .card .hook { margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--line);
-  font-style: italic; font-weight: 600; color: var(--navy); }
+/* Personas slide — three RM cards (top-aligned; leaves room for the RM-definition footnote) */
+section.personas { justify-content: flex-start; padding: 50px 64px 64px; }
+section.personas h1 { font-size: 46px; margin-bottom: 10px; }
+section.personas .lede { font-size: 22px; margin: 10px 0 30px; }
+section.personas .three-col { gap: 24px; }
+section.personas .card { padding: 24px 26px; border-top: 5px solid var(--gold); }
+section.personas .card .hd { font-size: 24px; margin-bottom: 2px; }
+section.personas .card .ptag { font-size: 13.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--gold); margin: 0 0 14px; }
+section.personas .card p { font-size: 16px; margin: 11px 0 0; color: var(--ink); line-height: 1.46; }
+section.personas .card .hook { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--line);
+  font-style: italic; font-weight: 600; color: var(--navy); font-size: 16px; }
+/* RM definition footnote — pinned above the GitHub footer */
+section.personas .rmdef { position: absolute; left: 64px; right: 64px; bottom: 52px;
+  border-top: 1px solid var(--line); padding-top: 9px; font-size: 13.5px; color: var(--slate); line-height: 1.4; }
+section.personas .rmdef strong { color: var(--navy); }
+
+/* Catalyst slide — top-align + enlarge to fill the slide */
+section.catalyst { justify-content: flex-start; padding: 58px 64px 48px; }
+section.catalyst h1 { font-size: 46px; margin-bottom: 24px; }
+section.catalyst .two-col { gap: 40px; margin-top: 18px; align-items: center; }
+section.catalyst .card.flag { padding: 28px 30px; }
+section.catalyst .card .tag { font-size: 13px; }
+section.catalyst .card .hd { font-size: 23px; }
+section.catalyst .card p { font-size: 17px; line-height: 1.52; margin-top: 12px; }
+section.catalyst .ct { font-size: 15px; margin-bottom: 20px; }
+section.catalyst ul.why li { font-size: 20px; padding-bottom: 28px; line-height: 1.5; }
+section.catalyst ul.why li:last-child { padding-bottom: 0; }
+
+/* Compliance slide — top-align + enlarge/space to fill the slide */
+section.compliance { justify-content: flex-start; padding: 60px 64px 48px; }
+section.compliance h1 { font-size: 44px; margin-bottom: 18px; }
+section.compliance .lede { font-size: 22px; margin: 12px 0 42px; }
+section.compliance .policy { gap: 16px; margin: 14px 0 42px; }
+section.compliance .pol { padding: 26px 18px 28px; }
+section.compliance .pol .sec { font-size: 18px; }
+section.compliance .pol .d { font-size: 14.5px; margin-top: 11px; line-height: 1.46; }
+section.compliance .callout { font-size: 20px; padding: 24px 28px; line-height: 1.5; }
+
+/* Data slide — top-align + enlarge/space to fill the slide */
+section.data { justify-content: flex-start; padding: 60px 64px 48px; }
+section.data h1 { margin-bottom: 18px; }
+section.data .lede { font-size: 22px; margin: 12px 0 44px; }
+section.data .three-col { gap: 24px; }
+section.data .card { padding: 30px 28px; }
+section.data .card .hd { font-size: 24px; margin-bottom: 8px; }
+section.data .card p { font-size: 17px; margin-top: 10px; line-height: 1.55; }
+section.data .callout { font-size: 20px; padding: 26px 28px; margin-top: 44px; line-height: 1.55; }
+
+/* Approach slide — 2x2 decision cards + verdict */
+section .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 6px; }
+section.approach { justify-content: flex-start; padding: 52px 64px 42px; }
+section.approach h1 { font-size: 44px; margin-bottom: 8px; }
+section.approach .lede { font-size: 20px; margin: 8px 0 22px; }
+section.approach .grid2 { gap: 16px; }
+section.approach .card { padding: 18px 22px; }
+section.approach .card .hd { font-size: 19px; margin-bottom: 5px; }
+section.approach .card p { font-size: 15.5px; margin-top: 5px; line-height: 1.46; }
+section.approach .callout { margin-top: 18px; font-size: 18px; padding: 18px 24px; line-height: 1.5; }
+section.approach .card.lead { padding: 16px 22px; }
+section.approach .card.lead .hd .sub { font-weight: 500; color: var(--gold); font-size: 16px; }
+section.approach .card.lead { grid-column: 1 / -1; background: #FBF4E8; border: 1px solid #ECD9B8;
+  border-left: 4px solid var(--gold); }
+
+/* Architecture-picture slide — bespoke executive flow (keeps the MCP-chokepoint idea) */
+section.archslide { justify-content: flex-start; padding: 52px 56px 40px; }
+section.archslide h1 { font-size: 44px; margin-bottom: 10px; }
+section.archslide .lede { font-size: 22px; margin: 8px 0 30px; }
+
+section.archslide .exflow { display: flex; align-items: stretch; margin: 10px 0 20px; }
+section.archslide .portribbon { background: #F0F3F8; border: 1px solid var(--line); border-left: 4px solid var(--gold);
+  border-radius: 9px; padding: 15px 22px; font-size: 16px; color: var(--ink); text-align: center; margin-bottom: 12px; }
+section.archslide .portribbon strong { color: var(--navy); }
+section.archslide .exstage { background: #F5F7FA; border: 1px solid var(--line); border-radius: 11px;
+  padding: 24px 18px; display: flex; flex-direction: column; justify-content: center; }
+section.archslide .exarrow { display: flex; align-items: center; justify-content: center;
+  color: var(--gold); font-size: 28px; font-weight: 700; padding: 0 9px; flex: none; }
+section.archslide .exstage .et { font-weight: 800; font-size: 17.5px; color: var(--navy); line-height: 1.2; }
+section.archslide .exstage .es { font-size: 14px; color: var(--slate); margin-top: 8px; line-height: 1.42; }
+
+section.archslide .s-in { flex: 1.05; }
+section.archslide .s-skill { flex: 1; background: linear-gradient(160deg, var(--navy), var(--navy-2));
+  border: none; color: #EAF0F7; }
+section.archslide .s-skill .et { color: #FFFFFF; }
+section.archslide .s-skill .es { color: #C7D3E2; }
+section.archslide .s-skill .es strong { color: #FFFFFF; }
+section.archslide .s-human { flex: 1.15; background: #E8F5E9; border-color: #BFE0C4; }
+section.archslide .s-human .et { color: #1B5E20; }
+section.archslide .s-human .es { color: #356B3A; }
+
+/* the MCP server — the visual centerpiece / chokepoint */
+section.archslide .s-mcp { flex: 2.35; background: #FFFFFF; border: 2px solid var(--navy);
+  border-radius: 13px; padding: 0; overflow: hidden; }
+section.archslide .s-mcp .mcp-title { background: var(--navy); color: #FFFFFF; font-size: 14.5px;
+  font-weight: 700; text-align: center; padding: 11px 8px; letter-spacing: 0.02em; }
+section.archslide .s-mcp .mcp-steps { display: flex; gap: 12px; padding: 16px; }
+section.archslide .s-mcp .mstep { flex: 1; background: #FBF4E8; border: 1px solid #ECD9B8;
+  border-radius: 8px; padding: 14px 11px; text-align: center; }
+section.archslide .s-mcp .mstep .mt { font-weight: 800; color: var(--navy); font-size: 14.5px; line-height: 1.2; }
+section.archslide .s-mcp .mstep .ms { font-size: 12.5px; color: var(--slate); margin-top: 6px; line-height: 1.36; }
+
+section.archslide .evalribbon { background: #EDE7F6; border: 1px solid #D6CCEC; border-radius: 9px;
+  padding: 16px 22px; font-size: 16px; color: #4527A0; text-align: center; }
+section.archslide .evalribbon strong { color: #311B92; }
+
+/* ---------- shared content table ---------- */
+section table { border-collapse: collapse; width: 100%; font-size: 16px; margin: 6px 0; }
+section thead th { background: var(--navy); color: #FFFFFF; text-align: left; padding: 12px 16px;
+  font-size: 14px; font-weight: 700; }
+section tbody td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top;
+  line-height: 1.42; color: var(--ink); }
+section tbody tr:last-child td { border-bottom: none; }
+section tbody tr:nth-child(even) { background: #F5F7FA; }
+section table strong { color: var(--navy); }
+
+/* slide-level kicker (gold caps above the title) */
+section .kicker { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 8px; }
+
+/* Track-A intro (Tom's-workflows table) */
+section.trackA { justify-content: flex-start; padding: 52px 64px 44px; }
+section.trackA h1 { font-size: 44px; margin-bottom: 8px; }
+section.trackA .lede { font-size: 20px; margin: 8px 0 22px; }
+section.trackA table { font-size: 16.5px; }
+section.trackA .callout { margin-top: 22px; font-size: 18px; padding: 20px 24px; line-height: 1.5; }
+
+/* Track-B intro (creative claim vs compliant cleanup) */
+section.trackB { justify-content: flex-start; padding: 54px 64px 44px; }
+section.trackB h1 { font-size: 44px; margin-bottom: 8px; }
+section.trackB .lede { font-size: 20px; margin: 8px 0 26px; }
+section.trackB .two-col { gap: 28px; margin-top: 8px; align-items: stretch; }
+section.trackB .card .hd { font-size: 20px; margin-bottom: 8px; }
+section.trackB .card ul { margin: 6px 0 0; padding-left: 1.1em; }
+section.trackB .card li { font-size: 15.5px; margin: 8px 0; line-height: 1.44; }
+section.trackB .card p { font-size: 15px; margin-top: 12px; color: var(--slate); font-style: italic; }
+section.trackB .card.claim { background: #FBF4E8; border: 1px solid #ECD9B8; border-top: 4px solid var(--gold); }
+section.trackB .card.claim p { color: var(--navy); }
+section.trackB .callout { margin-top: 22px; font-size: 18px; padding: 18px 24px; line-height: 1.5; }
+
+/* human-step chip (the memo's §4.2 HITL pause) */
+section.demo .chain-legend .sw.hu { background: #FBEFA8; border: 1px solid #E0B83A; }
+
+/* ============================================================
+ * PART V — Trust · Eval · Adoption · Production · Close
+ * ============================================================ */
+/* Trust / eval + governance */
+section.trust { justify-content: flex-start; padding: 50px 64px 42px; }
+section.trust h1 { font-size: 34px; margin-bottom: 8px; }
+section.trust .lede { font-size: 20px; margin: 8px 0 20px; }
+section.trust .grid2 { gap: 16px; }
+section.trust .card { padding: 16px 20px; }
+section.trust .card .lyr { display: inline-block; background: var(--navy); color: #fff; border-radius: 5px;
+  padding: 2px 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 8px; }
+section.trust .card .hd { font-size: 18px; margin-bottom: 4px; }
+section.trust .card p { font-size: 14.5px; line-height: 1.42; margin: 0; }
+section.trust .callout { margin-top: 16px; font-size: 17px; padding: 16px 22px; line-height: 1.5; }
+
+/* Honest 80/20 */
+section.eval80 { justify-content: flex-start; padding: 54px 64px 44px; }
+section.eval80 h1 { font-size: 44px; margin-bottom: 10px; }
+section.eval80 .lede { font-size: 20px; margin: 8px 0 24px; }
+section.eval80 .two-col { gap: 28px; align-items: stretch; }
+section.eval80 .card .hd { font-size: 20px; margin-bottom: 8px; }
+section.eval80 .card ul { margin: 6px 0 0; padding-left: 1.1em; }
+section.eval80 .card li { font-size: 15.5px; margin: 9px 0; line-height: 1.44; }
+section.eval80 .card.claim { background: #E9F4EC; border: 1px solid #BFE0C4; border-top: 4px solid #43A047; }
+section.eval80 .card.claim .hd { color: #1B5E20; }
+section.eval80 .card.flag { background: #FDF1F0; border: 1px solid #F2C9C5; border-left: 4px solid var(--red); }
+section.eval80 .card.flag .hd { color: #B0322B; }
+section.eval80 .callout { margin-top: 22px; font-size: 18px; padding: 16px 22px; line-height: 1.5; }
+
+/* Adoption (persona-card look) */
+section.adoption { justify-content: flex-start; padding: 50px 64px 40px; }
+section.adoption h1 { font-size: 42px; margin-bottom: 8px; }
+section.adoption .lede { font-size: 20px; margin: 8px 0 22px; }
+section.adoption .three-col { gap: 22px; }
+section.adoption .card { padding: 20px 22px; border-top: 4px solid var(--gold); }
+section.adoption .card .hd { font-size: 21px; margin-bottom: 2px; }
+section.adoption .card .ptag { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold); margin: 0 0 12px; }
+section.adoption .card p { font-size: 15px; margin: 8px 0 0; line-height: 1.42; }
+section.adoption .card .lever { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-weight: 700; color: var(--navy); font-size: 14px; }
+section.adoption .callout { margin-top: 20px; font-size: 18px; padding: 16px 22px; line-height: 1.5; }
+
+/* Production */
+section.production { justify-content: flex-start; padding: 52px 64px 42px; }
+section.production h1 { font-size: 40px; margin-bottom: 8px; }
+section.production .grid2 { gap: 12px; margin-top: 6px; }
+section.production .grid2.g3 { grid-template-columns: repeat(3, 1fr); }
+section.production .card { padding: 12px 16px; }
+section.production .card .hd { font-size: 16.5px; margin-bottom: 4px; }
+section.production .card p { font-size: 13px; line-height: 1.38; margin: 0; }
+section.production .awspath { margin-top: 12px; padding: 10px 18px; font-size: 12.5px; line-height: 1.45;
+  color: #1F3A5F; background: rgba(176,141,87,0.10); border-left: 4px solid var(--gold); border-radius: 6px; }
+section.production .awspath .awslab { display: inline-block; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; font-size: 11px; color: var(--gold); margin-right: 10px; }
+section.production .awspath strong { color: var(--navy); }
+section.production .callout { margin-top: 12px; font-size: 16px; padding: 14px 20px; line-height: 1.42; }
+
+/* Close (navy wrap) */
+section.close { background: linear-gradient(150deg, var(--navy-deep) 0%, var(--navy) 55%, var(--navy-2) 100%);
+  color: #EAF0F7; justify-content: center; padding: 72px 84px; position: relative; }
+section.close .topbar { position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt)); }
+section.close h1 { color: #FFFFFF; font-size: 52px; margin-bottom: 14px; letter-spacing: -0.5px; }
+section.close h1::after { display: none; }
+section.close .tagline { font-size: 22px; color: var(--gold-lt); margin: 0 0 24px; font-weight: 600; }
+section.close .braid { font-size: 21px; line-height: 1.75; color: #DCE6F2; max-width: 94%; }
+section.close .braid b { color: var(--gold-lt); }
+section.close .qa { display: inline-block; margin-top: 28px; border: 2px solid var(--gold); color: var(--gold-lt);
+  border-radius: 6px; padding: 9px 28px; font-size: 23px; font-weight: 700; letter-spacing: 0.04em; }
+section.close .sig { margin-top: 24px; font-size: 15px; color: #AFC2DE; }
+section.close .sig a { color: #9BD9C9; text-decoration: none; border-bottom: 1px solid rgba(155,217,201,0.4); }
+section.close footer, section.close::after { display: none; }
+
+/* ---------- demo-slide template (A1/A2/A3 · B1–B4) ---------- */
+section.demo { justify-content: flex-start; padding: 48px 64px 38px; }
+section.demo .demohdr { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 6px; }
+section.demo .demohdr .kicker { margin: 0; }
+section.demo .persona { flex: none; background: #EAEEF3; border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 15px 4px 6px; font-size: 13px; font-weight: 600; color: var(--slate); white-space: nowrap; }
+section.demo .persona b { color: var(--navy); }
+/* circled person glyph signalling "persona" */
+section.demo .persona::before {
+  content: ""; display: inline-block; vertical-align: middle; width: 24px; height: 24px; border-radius: 50%; margin-right: 9px;
+  background: var(--navy) url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%23ffffff'%3E%3Ccircle%20cx='12'%20cy='8.5'%20r='3.6'/%3E%3Cpath%20d='M5%2020c0-3.9%203.1-6.6%207-6.6s7%202.7%207%206.6z'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+}
+section.demo h1 { font-size: 38px; margin-bottom: 6px; }
+section.demo h1 em { font-style: italic; }
+section.demo .promptbar { background: var(--navy-deep); color: #E7EEF7; border-left: 4px solid var(--gold);
+  border-radius: 8px; padding: 13px 18px; font-family: "JetBrains Mono", monospace; font-size: 14px;
+  line-height: 1.5; margin: 16px 0 4px; }
+section.demo .promptbar .lab { color: var(--gold-lt); font-weight: 700; font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-right: 10px; }
+section.demo .io { font-size: 13px; color: var(--ink); margin: 6px 0; line-height: 1.4;
+  background: #F5F7FA; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; }
+section.demo .io.in { border-left: 3px solid var(--slate); }
+section.demo .io.out { border-left: 3px solid var(--gold); }
+section.demo .io .iolab { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px;
+  padding: 1px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-right: 8px; }
+section.demo .io .iolab.in { background: var(--slate); color: #FFFFFF; }   /* INPUT — slate */
+section.demo .io .iolab.out { background: var(--gold); color: var(--navy); } /* OUTPUT — gold */
+section.demo .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 10px; align-items: start; }
+section.demo .lbl { font-size: 14px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 16px; }
+section.demo .seeit ul { margin: 0; padding-left: 1.1em; }
+section.demo .seeit li { font-size: 17.5px; margin: 10px 0; line-height: 1.46; }
+section.demo .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+section.demo .chain span:not(.ar) { background: #F0F3F8; border: 1px solid var(--line); border-radius: 6px;
+  padding: 7px 11px; font-size: 13px; font-family: "JetBrains Mono", monospace; color: var(--navy); }
+section.demo .chain span.sk { background: var(--navy); color: #FFFFFF; border-color: var(--navy); }
+section.demo .chain span.hu { background: #FBEFA8; color: #6B5200; border-color: #E0B83A; }
+section.demo .chain .ar { color: var(--gold); font-weight: 700; font-size: 16px; }
+section.demo .chain-legend { display: flex; gap: 22px; margin-top: 10px; font-size: 13px; color: var(--slate); align-items: center; }
+section.demo .chain-legend span { display: inline-flex; align-items: center; }
+section.demo .chain-legend .sw { width: 13px; height: 13px; border-radius: 3px; margin-right: 7px; }
+section.demo .chain-legend .sw.sk { background: var(--navy); }
+section.demo .chain-legend .sw.tl { background: #F0F3F8; border: 1px solid var(--line); }
+section.demo .livetag { display: inline-block; margin-top: 22px; background: var(--navy); color: #FFFFFF;
+  border-radius: 999px; padding: 8px 18px; font-size: 14px; font-weight: 600; }
+section.demo .point { margin-top: 12px; background: #F0F3F8; border-left: 4px solid var(--gold);
+  border-radius: 0 8px 8px 0; padding: 13px 20px; font-size: 17px; line-height: 1.46; }
+section.demo .point strong { color: var(--navy); }
+section.demo .point.bridge { border-left-color: var(--red); background: #FDF1F0; }
+section.demo .point.bridge strong { color: #B0322B; }
 
 /* stat cards */
 section .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 8px 0 16px; }

@@ -52,7 +52,7 @@ flowchart TB
   Code["Claude Code — build surface<br/>skills · hooks · MCP"]:::surf
   Cowork["Claude Cowork — RM surface<br/>skills · MCP bridge · no terminal"]:::surf
 
-  Skills["Composable skill library (~19 skills)<br/>Foundation · Track A early-warning · Track B relationship + doc-intel"]:::skill
+  Skills["Composable skill library (~19 skills) — one Claude plugin, loads in Code + Cowork<br/>Foundation · Track A early-warning · Track B relationship + doc-intel"]:::skill
 
   subgraph MCPS["centerline MCP server — local, Python — the cross-surface compliance chokepoint"]
     direction TB
@@ -100,6 +100,9 @@ flowchart TB
   early-warning sweep.
 - **MCP server + hooks**: the local `centerline` MCP server and deterministic hooks enforce compliance
   centrally.
+- **Packaging — one source, both surfaces**: the skill library ships as a single **plugin** that loads in
+  **Claude Code** (`--plugin-dir`) and **Claude Cowork** (upload), and the MCP server is **bridged into
+  Cowork** — so the same compliant workflows run on the engineer's surface and the RM's no-terminal surface.
 
 ## Compliance, designed in (not disclaimers)
 - **Restricted inputs** — internal ratings, watchlist, Special-Assets status, and guarantor personal
