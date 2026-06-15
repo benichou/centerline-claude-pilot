@@ -512,7 +512,7 @@ combines sources no one reconciles. Four prompts, one per RM."
 
 ---
 
-<!-- _class: demo -->
+<!-- _class: demo fill -->
 
 <div class="demohdr"><span class="kicker">Track B · B1 — retention radar</span><span class="persona">For: <b>Tom</b> · Crestwood</span></div>
 

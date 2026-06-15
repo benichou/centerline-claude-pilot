@@ -472,6 +472,18 @@ section.demo .rmwrites .rwmeta { display: block; margin-top: 6px; padding-top: 6
 section.demo .rmwrites .rwmeta b { color: #4A3A00; }
 section.demo .point { margin-top: 9px; background: #F0F3F8; border-left: 4px solid var(--gold);
   border-radius: 0 8px 8px 0; padding: 10px 20px; font-size: 15.5px; line-height: 1.4; }
+
+/* Demo slides with light content — enlarge + open spacing to fill the slide */
+section.demo.fill { padding-top: 50px; padding-bottom: 34px; }
+section.demo.fill .promptbar { margin: 12px 0 4px; }
+section.demo.fill .demo-grid { gap: 40px; margin-top: 16px; }
+section.demo.fill .seeit li { font-size: 19px; margin: 16px 0; line-height: 1.5; }
+section.demo.fill .io { font-size: 14.5px; margin: 11px 0; }
+section.demo.fill .chain { gap: 10px; margin-top: 4px; }
+section.demo.fill .chain span:not(.ar) { font-size: 13.5px; padding: 8px 12px; }
+section.demo.fill .chain-legend { margin-top: 14px; font-size: 13.5px; }
+section.demo.fill .io.out { margin-top: 14px; }
+section.demo.fill .point { margin-top: 16px; font-size: 17px; padding: 14px 22px; }
 section.demo .point strong { color: var(--navy); }
 section.demo .point.bridge { border-left-color: var(--red); background: #FDF1F0; }
 section.demo .point.bridge strong { color: #B0322B; }
