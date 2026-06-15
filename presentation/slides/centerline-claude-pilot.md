@@ -653,14 +653,16 @@ draw letter requests the missing items; Chen's internal disposition stays intern
 </div>
 </div>
 
-<div class="point"><strong>§4.2, made literal:</strong> the AI hands the RM the pen for the credit judgment — it assembles the 80%, Marcus keeps the 20%. The wedge that wins the skeptic.</div>
+<div class="rmwrites"><span class="rwl">⏸ The human step — what Marcus fills in (verbatim, attributed)</span><em>"Coverage thinned to 1.12x, just over the 1.10x floor — but I read it as seasonal softness, not a structural decline; leverage at 3.6x leaves cushion. My real concern is commercial, not credit: the Location-3 renewal at an 18% bump, and Castillo's sounded more stressed lately. Eyes on the Q2 package before I move my view."</em><span class="rwmeta">Outlook <b>Watch / monitor</b> · Next steps <b>follow up on the Location-3 lease; request updated Q2 projections</b> · Filed under <b>Marcus Webb (RM of record)</b></span></div>
+
+<div class="point"><strong>§4.2, made literal:</strong> the AI assembles the 80%; Marcus owns the credit judgment it never writes. The skeptic's wedge.</div>
 
 <!--
 NOTES (~28s): "The skeptic's wedge — Marcus, 71 memos a year. The compliant rebuild of the memo,
 decomposed for §4.2. It assembles and cites every factual section, then STOPS and asks Marcus for his
 assessment in his own words — the AI never writes the judgment; his words go in verbatim, attributed.
-That's §4.2 made literal — it hands him the pen. Removes the burden without changing how he thinks.
-Watch the yellow human-step in the chain — that pause is the compliance design."
+That's §4.2 made literal — it hands him the pen. The yellow box is exactly what Marcus types at the pause —
+a genuine credit judgment the AI must never author. Removes the burden without changing how he thinks."
 -->
 
 ---

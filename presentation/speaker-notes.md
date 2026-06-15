@@ -107,8 +107,8 @@ draw letter requests the missing items; Chen's internal disposition stays intern
 **19 · B4 — annual memo (~28s)** — "The skeptic's wedge — Marcus, 71 memos a year. The compliant rebuild of
 the memo, decomposed for §4.2. It assembles and cites every factual section, then STOPS and asks Marcus for
 his assessment in his own words — the AI never writes the judgment; his words go in verbatim, attributed.
-That's §4.2 made literal — it hands him the pen. Removes the burden without changing how he thinks. Watch
-the yellow human-step in the chain — that pause is the compliance design."
+That's §4.2 made literal — it hands him the pen. The yellow box is exactly what Marcus types at the pause —
+a genuine credit judgment the AI must never author. Removes the burden without changing how he thinks."
 
 **20 · How the CCO can trust it (~30s)** — "The CCO can't approve what she can't measure. Four layers. Layer
 1, a deterministic golden set, 95 of 95 — it tests the tool code; the model isn't called. Layer 2,

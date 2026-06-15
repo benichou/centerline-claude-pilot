@@ -418,7 +418,7 @@ section.close .sig a { color: #9BD9C9; text-decoration: none; border-bottom: 1px
 section.close footer, section.close::after { display: none; }
 
 /* ---------- demo-slide template (A1/A2/A3 · B1–B4) ---------- */
-section.demo { justify-content: flex-start; padding: 48px 64px 38px; }
+section.demo { justify-content: flex-start; padding: 44px 64px 30px; }
 section.demo .demohdr { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 6px; }
 section.demo .demohdr .kicker { margin: 0; }
 section.demo .persona { flex: none; background: #EAEEF3; border: 1px solid var(--line); border-radius: 999px;
@@ -462,8 +462,16 @@ section.demo .chain-legend .sw.sk { background: var(--navy); }
 section.demo .chain-legend .sw.tl { background: #F0F3F8; border: 1px solid var(--line); }
 section.demo .livetag { display: inline-block; margin-top: 22px; background: var(--navy); color: #FFFFFF;
   border-radius: 999px; padding: 8px 18px; font-size: 14px; font-weight: 600; }
-section.demo .point { margin-top: 12px; background: #F0F3F8; border-left: 4px solid var(--gold);
-  border-radius: 0 8px 8px 0; padding: 13px 20px; font-size: 17px; line-height: 1.46; }
+section.demo .rmwrites { margin-top: 9px; background: #FBEFA8; border-left: 4px solid #E0B83A;
+  border-radius: 0 8px 8px 0; padding: 9px 18px; font-size: 13.5px; line-height: 1.38; color: #5A4600; }
+section.demo .rmwrites .rwl { display: block; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; font-size: 10.5px; color: #6B5200; margin-bottom: 3px; }
+section.demo .rmwrites em { font-style: italic; color: #4A3A00; }
+section.demo .rmwrites .rwmeta { display: block; margin-top: 6px; padding-top: 6px;
+  border-top: 1px solid rgba(224,184,58,0.55); font-size: 12px; color: #6B5200; }
+section.demo .rmwrites .rwmeta b { color: #4A3A00; }
+section.demo .point { margin-top: 9px; background: #F0F3F8; border-left: 4px solid var(--gold);
+  border-radius: 0 8px 8px 0; padding: 10px 20px; font-size: 15.5px; line-height: 1.4; }
 section.demo .point strong { color: var(--navy); }
 section.demo .point.bridge { border-left-color: var(--red); background: #FDF1F0; }
 section.demo .point.bridge strong { color: #B0322B; }
