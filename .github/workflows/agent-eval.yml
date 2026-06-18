@@ -18,10 +18,10 @@
 name: agent-eval
 
 on:
-  schedule:
-    # 03:00 UTC = 22:00 EST (UTC-5). NOTE: GitHub Actions cron is ALWAYS UTC and does NOT follow DST, so
-    # during EDT (mid-Mar–early-Nov) this fires at 23:00 Eastern. For 22:00 Eastern during EDT use "0 2 * * *".
-    - cron: "0 3 * * *"
+  # schedule:
+  #   # 03:00 UTC = 22:00 EST (UTC-5). NOTE: GitHub Actions cron is ALWAYS UTC and does NOT follow DST, so
+  #   # during EDT (mid-Mar–early-Nov) this fires at 23:00 Eastern. For 22:00 Eastern during EDT use "0 2 * * *".
+  #   - cron: "0 3 * * *"
   workflow_dispatch: {}       # manual "Run workflow" button
 
 permissions:
